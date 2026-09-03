@@ -3,16 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTA III - Modo Historia Tracker</title>
+    <title>GTA III - Modo Espectador / Progreso Oficial</title>
     <style>
-        /* ==========================================================================
-           ZONA DE PERSONALIZACIÓN VISUAL (GTA III)
-           ==========================================================================
-           1. FONDO GLOBAL: Descomenta 'background-image' en body y coloca tu ruta/URL.
-           2. BANNER HEADER: Descomenta 'background-image' en header.
-           3. LOGO: Cambia .header-logo a 'display: block;' y descomenta la etiqueta <img>.
-           ========================================================================== */
-
         body {
             background-color: #0a0d14;
             /* background-image: linear-gradient(rgba(10, 13, 20, 0.90), rgba(10, 13, 20, 0.96)), url('fondo-gta3.jpg'); */
@@ -38,16 +30,6 @@
             box-shadow: 0 4px 25px rgba(0, 0, 0, 0.65);
         }
 
-        .header-logo {
-            max-height: 48px;
-            width: auto;
-            display: none;
-            object-fit: contain;
-        }
-
-        /* ==========================================================================
-           ESTILOS DEL TRACKER DE HISTORIA
-           ========================================================================== */
         :root {
             --bg-card: rgba(18, 24, 38, 0.88);
             --accent: #38bdf8;
@@ -171,7 +153,7 @@
             height: 22px;
             border: 2px solid var(--text-dim);
             border-radius: 4px;
-            cursor: pointer;
+            cursor: not-allowed;
             display: grid;
             place-content: center;
             margin-top: 2px;
@@ -283,34 +265,6 @@
             overflow: hidden;
         }
         .video-box iframe, .video-box video { width: 100%; height: 260px; }
-
-        .input-group {
-            margin-top: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            font-size: 0.8rem;
-            color: var(--text-dim);
-        }
-        .input-group input {
-            background: #080d17;
-            border: 1px solid var(--border);
-            padding: 8px;
-            border-radius: 4px;
-            color: #fff;
-        }
-
-        .btn-submit {
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            width: 100%;
-            margin-top: 16px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -319,8 +273,7 @@
         <div class="nav-bar">
             <a href="index.html" class="back-link">⬅ Menú Principal</a>
             <div style="display: flex; align-items: center; gap: 12px;">
-                <!-- <img src="logo-gta3.png" alt="GTA III Logo" class="header-logo"> -->
-                <h2 style="font-size: 1.2rem; color: var(--accent);">GTA III - Campaña Principal (Liberty City)</h2>
+                <h2 style="font-size: 1.2rem; color: var(--accent);">GTA III - Modo Espectador</h2>
             </div>
         </div>
     </header>
@@ -329,7 +282,7 @@
         <div class="dashboard">
             <section class="progress-card">
                 <div class="progress-header">
-                    <h3>Progreso de la Historia (51 Misiones)</h3>
+                    <h3>Progreso del Creador (51 Misiones)</h3>
                     <span id="pctDisplay" style="font-size: 1.4rem; font-weight: 800; color: var(--accent);">0%</span>
                 </div>
                 <div class="progress-bar-bg">
@@ -339,15 +292,15 @@
             </section>
 
             <section class="filter-panel">
-                <label style="font-size: 0.8rem; color: var(--text-dim);">Buscar misión o personaje:</label>
-                <input type="text" id="searchInput" class="search-input" placeholder="Ej: Bomb Da Base, Salvatore, Asuka, Catalina..." oninput="handleSearch()">
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Buscar misión:</label>
+                <input type="text" id="searchInput" class="search-input" placeholder="Ej: Bomb Da Base, Salvatore, Asuka..." oninput="handleSearch()">
             </section>
         </div>
 
         <section id="tasksContainer"></section>
     </main>
 
-    <!-- Modal Detallado con Objetivos y Multimedia -->
+    <!-- Modal Espectador -->
     <div id="taskModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">&times;</button>
@@ -366,96 +319,85 @@
 
             <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
 
-            <h4>Registro Multimedia / Evidencia</h4>
-            <div class="input-group">
-                <label>Enlace Web o YouTube:</label>
-                <input type="text" id="mUrl" placeholder="https://www.youtube.com/watch?v=...">
-            </div>
-            <div class="input-group">
-                <label>O cargar archivo local (mp4, webm):</label>
-                <input type="file" id="mFile" accept="video/*" onchange="handleFile(event)">
-            </div>
+            <h4>Video de la Misión (Registrado por el Creador)</h4>
             <div class="video-box" id="mVideoViewer">
                 <span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>
             </div>
-            <button class="btn-submit" onclick="saveTaskMedia()">Guardar Registro</button>
         </div>
     </div>
 
     <script>
         const GAME_ID = 'gta3';
 
-        // Las 51 misiones canónicas cronológicas de la historia de GTA III
         const tasks = [
-            // --- ACTO 1: ISLA DE PORTLAND ---
             { id: "g3_01", cat: "1. Isla de Portland", character: "8-Ball / Prólogo", name: "1. Give Me Liberty", diff: "facil", reward: "$0", desc: "Huida del furgón penitenciario volado en el Puente Callahan y llegada al primer piso franco.", objectives: ["Ver la cinemática de fuga en el puente", "Subir al Kuruma con 8-Ball", "Conducir hasta el piso franco en Red Light District", "Cambiar de ropa"] },
             { id: "g3_02", cat: "1. Isla de Portland", character: "Luigi Goterelli", name: "2. Luigi's Girls", diff: "facil", reward: "$1,500", desc: "Primer trabajo para el club de strippers Sex Club Seven.", objectives: ["Recoger el coche Kuruma frente al club", "Conducir hasta el hospital general en Trenton", "Recoger a Misty y llevarla de vuelta al club de Luigi"] },
-            { id: "g3_03", cat: "1. Isla de Portland", character: "Luigi Goterelli", name: "3. Don't Spank Ma Bitch Up", diff: "facil", reward: "$4,000", desc: "Eliminación de un camello de la droga 'SPANK' en los muelles de Portland Harbor.", objectives: ["Recoger el bate de béisbol", "Ir a los muelles", "Golpear al camello hasta matarlo", "Robar su coche Stallion, pintarlo en Pay 'n' Spray y guardarlo en el garaje de Luigi"] },
+            { id: "g3_03", cat: "1. Isla de Portland", character: "Luigi Goterelli", name: "3. Don't Spank Ma Bitch Up", diff: "facil", reward: "$4,000", desc: "Eliminación de un camello de la droga 'SPANK' en los muelles de Portland Harbor.", objectives: ["Recoger el bate de béisbol", "Ir a los muelles", "Golpear al camello hasta matarlo", "Robar su coche Stallion, pintarlo en Pay 'n' Spray y guardarlo en el garaje"] },
             { id: "g3_04", cat: "1. Isla de Portland", character: "Luigi Goterelli", name: "4. Drive Mister Cheetah", diff: "facil", reward: "$4,000", desc: "Transporte de Mister Cheetah hasta la clínica clandestina evadiendo a la policía.", objectives: ["Recoger el Cheetah", "Conducir con cuidado evitando daños", "Llevar al cliente a la clínica antes de que expire el tiempo"] },
-            { id: "g3_05", cat: "1. Isla de Portland", character: "Luigi Goterelli", name: "5. Pump-Action Pimp", diff: "media", reward: "$4,000", desc: "Ajuste de cuentas contra dos proxenetas armados con escopetas en un Diablo Stallion.", objectives: ["Recoger la pistola en Ammu-Nation", "Localizar el vehículo Diablo", "Embestir el coche para obligar a los rivales a bajar", "Eliminar a ambos proxenetas antes de que te abatan con sus escopetas"] },
-            { id: "g3_06", cat: "1. Isla de Portland", character: "Luigi Goterelli", name: "6. The Fuzz Ball", diff: "media", reward: "$2,000 - $4,000", desc: "Recogida contrarreloj de chicas de compañía por toda la isla para llevarlas a la fiesta del sindicato policial.", objectives: ["Conseguir un coche de 4 plazas rápido", "Recoger al menos a 4 chicas repartidas por Portland", "Llevarlas a la fiesta antes de que se agote el tiempo"] },
-            { id: "g3_07", cat: "1. Isla de Portland", character: "Joey Leone", name: "7. Mike Lips Won't Go", diff: "media", reward: "$10,000", desc: "Colocación de un coche bomba en el vehículo del matón Mike Lips de la familia Forelli.", objectives: ["Ir al bistró de Saint Mark's", "Robar el Idaho de Mike Lips sin rayarlo", "Llevarlo al taller de 8-Ball para armar el explosivo", "Devolverlo al mismo sitio de aparcamiento y alejarte antes de que suba"] },
-            { id: "g3_08", cat: "1. Isla de Portland", character: "Joey Leone", name: "8. Farewell 'Chunky' Lee Chong", diff: "facil", reward: "$10,000", desc: "Asesinato del vendedor ambulante de SPANK Chunky Lee Chong en Chinatown.", objectives: ["Comprar una pistola", "Entrar a pie a la zona peatonal de Chinatown", "Eliminar a los matones de las Tríadas", "Abatir a Lee Chong antes de que suba a su furgoneta Perennial"] },
-            { id: "g3_09", cat: "1. Isla de Portland", character: "Joey Leone", name: "9. Van Heist", diff: "media", reward: "$20,000", desc: "Asalto a un furgón blindado Securicar embistiéndolo para forzar a la tripulación a huir.", objectives: ["Conseguir un vehículo pesado", "Embestir reiteradamente el furgón Securicar hasta llenar la barra de daño", "Subir al furgón blindado y llevarlo al garaje de Joey en Trenton"] },
-            { id: "g3_10", cat: "1. Isla de Portland", character: "Joey Leone", name: "10. Cipriani's Chauffeur", diff: "facil", reward: "$2,000", desc: "Servicio de chófer para Toni Cipriani atacado por las Tríadas en la lavandería.", objectives: ["Llevar a Toni a la lavandería del Sr. Wong", "Esperar en el coche y sobrevivir a la emboscada con Uzi", "Escapar rápidamente y llevar a Toni a salvo al restaurante de su madre"] },
-            { id: "g3_11", cat: "1. Isla de Portland", character: "Joey Leone", name: "11. Dead Skunk in the Trunk", diff: "media", reward: "$10,000", desc: "Destrucción de un coche con un cadáver dentro en la trituradora de Harwood.", objectives: ["Localizar el coche frente al café de los Forelli", "Esquivar la emboscada de dos coches rivales que intentan cerrarte el paso", "Conducir el coche a la trituradora de chatarra"] },
-            { id: "g3_12", cat: "1. Isla de Portland", character: "Joey Leone", name: "12. The Getaway", diff: "media", reward: "$10,000", desc: "Conducción de huida para un atraco a un banco en Chinatown.", objectives: ["Conseguir un coche de 4 plazas rápido antes de las 17:00", "Recoger a los atracadores y llevarlos al banco", "Esperar a que completen el robo", "Despistar el nivel de 3 estrellas de búsqueda y dejarlos en su piso franco"] },
-            { id: "g3_13", cat: "1. Isla de Portland", character: "Toni Cipriani", name: "13. Taking Out the Laundry", diff: "facil", reward: "$20,000", desc: "Destrucción de las tres furgonetas de reparto de la lavandería de las Tríadas.", objectives: ["Recoger las granadas", "Localizar las tres furgonetas que circulan por Portland", "Bloquear su paso y destruirlas con granadas o armas pesadas"] },
-            { id: "g3_14", cat: "1. Isla de Portland", character: "Toni Cipriani", name: "14. The Pick-Up", diff: "media", reward: "$10,000", desc: "Recogida de un maletín con dinero de extorsión en un callejón de Chinatown.", objectives: ["Ir al callejón marcado", "Recoger el maletín", "Sobrevivir a la emboscada de las Tríadas que bloquean las salidas con camiones", "Llevar el dinero al restaurante de mamá Cipriani"] },
-            { id: "g3_15", cat: "1. Isla de Portland", character: "Toni Cipriani", name: "15. Salvatore's Called a Meeting", diff: "dificil", reward: "$15,000", desc: "Reunión familiar convocada por Salvatore Leone transportando a sus capos en limusina.", objectives: ["Recoger la limusina Stretch", "Buscar a Joey en su taller", "Recoger a Luigi en su club", "Recoger a Toni en el restaurante", "Esquivar los camiones de las Tríadas que intentan embestir la limusina", "Llegar a la mansión de Salvatore"] },
-            { id: "g3_16", cat: "1. Isla de Portland", character: "Toni Cipriani", name: "16. Triads and Tribulations", diff: "media", reward: "$30,000", desc: "Guerra abierta en Chinatown para liquidar a los tres líderes clave de las Tríadas.", objectives: ["Reclutar a dos mafiosos de los Leone", "Ir a Chinatown", "Eliminar al primer señor de la tríada en la calle", "Entrar a la plaza peatonal y eliminar al segundo", "Infiltrarse en la fábrica de pescado y abatir al tercero"] },
-            { id: "g3_17", cat: "1. Isla de Portland", character: "Toni Cipriani", name: "17. Blow Fish", diff: "dificil", reward: "$30,000", desc: "Infiltración con un camión de basura cargado de dinamita en la factoría de pescado.", objectives: ["Recoger el camión bomba en el taller de 8-Ball", "Conducir con extremo cuidado sin golpear nada", "Aparcar el camión entre los dos tanques de gas de la fábrica", "Activar el temporizador y escapar corriendo antes de la detonación"] },
-            { id: "g3_18", cat: "1. Isla de Portland", character: "Salvatore Leone", name: "18. Chaperone", diff: "facil", reward: "$10,000", desc: "Acompañamiento y protección a Maria Latore en una fiesta en los muelles de Atlantic Quays.", objectives: ["Llevar a Maria a ver a Chico", "Conducir al almacén de la fiesta clandestina", "Esperar en la limusina", "Rescatar a Maria de la redada de la SWAT y escapar con 3 estrellas hasta la mansión"] },
-            { id: "g3_19", cat: "1. Isla de Portland", character: "Salvatore Leone", name: "19. Cutting the Grass", diff: "media", reward: "$15,000", desc: "Seguimiento discreto a Curly Bob para descubrir al soplón del Cartel Colombiano.", objectives: ["Esperar a Curly Bob fuera del club de Luigi", "Seguir a su taxi a distancia prudente sin llenar la barra de sospecha", "Ver la entrega en los muelles de Portland Harbor", "Acribillar a Curly Bob antes de que escape"] },
-            { id: "g3_20", cat: "1. Isla de Portland", character: "Salvatore Leone", name: "20. Bomb Da Base: Act I", diff: "facil", reward: "$0", desc: "Reunión con 8-Ball para coordinar la demolición del barco carguero del Cartel.", objectives: ["Conducir hasta el taller de 8-Ball", "Pagar $100,000 para comprar el detonador y conseguir el rifle de francotirador"] },
-            { id: "g3_21", cat: "1. Isla de Portland", character: "Salvatore Leone", name: "21. Bomb Da Base: Act II", diff: "dificil", reward: "$150,000", desc: "Cobertura de francotirador mientras 8-Ball planta los explosivos en el carguero Les Cargo.", objectives: ["Subir al tejado del muelle con el rifle francotirador", "Abatir metódicamente a los guardias del Cartel antes de que disparen a 8-Ball", "Cubrir su subida por la rampa", "Ver la voladura y hundimiento del barco"] },
-            { id: "g3_22", cat: "1. Isla de Portland", character: "Salvatore Leone", name: "22. Last Requests", diff: "facil", reward: "$20,000", desc: "Trampa mortal con un coche bomba tendida por Salvatore y huida con Maria a Staunton Island.", objectives: ["Conducir hacia el coche señalado en el callejón", "Recibir el mensaje de texto de emergencia de Maria advirtiendo de la trampa", "Cambiar de rumbo hacia el muelle", "Subir a la lancha Reefer con Maria y Asuka Kasen", "Cruzar hacia Staunton Island"] },
-
-            // --- ACTO 2: STAUNTON ISLAND ---
-            { id: "g3_23", cat: "2. Staunton Island", character: "Asuka Kasen", name: "23. Sayonara Salvatore", diff: "media", reward: "$25,000", desc: "Venganza y ejecución del Don Salvatore Leone cuando sale del club de Luigi.", objectives: ["Regresar en lancha a Portland", "Apostarse en un tejado frente al Sex Club Seven", "Esperar a que Salvatore salga escoltado por sus guardaespaldas", "Eliminar a Salvatore antes de que suba a su limusina", "Volver a Staunton Island"] },
-            { id: "g3_24", cat: "2. Staunton Island", character: "Asuka Kasen", name: "24. Under Surveillance", diff: "media", reward: "$15,000", desc: "Eliminación de los tres puestos de espionaje de la mafia Leone en Staunton Island.", objectives: ["Localizar a los espías de la mafia en Belleville Park", "Abatir a los mafiosos que vigilan desde la furgoneta", "Francotirar a los dos vigías en el balcón del rascacielos"] },
-            { id: "g3_25", cat: "2. Staunton Island", character: "Asuka Kasen", name: "25. Paparazzi Purge", diff: "facil", reward: "$10,000", desc: "Persecución acuática a un reportero en lancha policial tras tomar fotos comprometedoras.", objectives: ["Robar la lancha Predator de la policía", "Perseguir la lancha del paparazzi por los canales marítimos", "Acribillarlo con las ametralladoras de proa hasta hundirlo"] },
-            { id: "g3_26", cat: "2. Staunton Island", character: "Asuka Kasen", name: "26. Payday for Ray", diff: "facil", reward: "$11,000", desc: "Carrera contrarreloj contestando cabinas telefónicas para pagar el soborno al detective Ray Machowski.", objectives: ["Llegar a la primera cabina antes de que termine el tiempo", "Seguir las pistas y contestar las 4 cabinas por Staunton Island", "Llegar al baño público de Belleville Park para entregar el dinero a Ray"] },
-            { id: "g3_27", cat: "2. Staunton Island", character: "Asuka Kasen", name: "27. Two-Faced Tanner", diff: "media", reward: "$20,000", desc: "Caza y destrucción del vehículo del policía encubierto Tanner (parodia de Driver).", objectives: ["Esperar a Tanner fuera del casino de Kenji", "Embestir y disparar a su coche deportivo en plena persecución urbana", "Destruir el vehículo y rematar a Tanner cuando intente huir a pie"] },
-            { id: "g3_28", cat: "2. Staunton Island", character: "Kenji Kasen", name: "28. Kanbu Bust-Out", diff: "media", reward: "$30,000", desc: "Rescate con coche bomba de un importante miembro de la Yakuza recluido en la comisaría.", objectives: ["Armar un coche de policía con una bomba en el taller de 8-Ball", "Entrar al patio de la comisaría de Torrington", "Detonar la pared de la celda", "Rescatar a Kanbu, perder el nivel de búsqueda policial y llevarlo al dojo"] },
-            { id: "g3_29", cat: "2. Staunton Island", character: "Kenji Kasen", name: "29. Grand Theft Auto", diff: "media", reward: "$25,000", desc: "Robo y entrega contrarreloj de 3 vehículos deportivos de lujo solicitados por Kenji.", objectives: ["Robar el Stinger sin llamar la atención", "Robar el Cheetah evitando daños graves", "Robar el Infernus", "Reparar cada uno en Pay 'n' Spray y entregarlos en el garaje antes de que expire el tiempo"] },
-            { id: "g3_30", cat: "2. Staunton Island", character: "Kenji Kasen", name: "30. Deal Steal", diff: "media", reward: "$25,000", desc: "Robo de una furgoneta de los Yardies para sabotear un intercambio con el Cartel.", objectives: ["Robar un Yardie Lobo en Newport", "Recoger al contacto", "Entrar al aparcamiento del hospital", "Tocar el claxon para iniciar el trato", "Aniquilar a todos los miembros del Cartel y destruir sus coches", "Recuperar el maletín"] },
-            { id: "g3_31", cat: "2. Staunton Island", character: "Kenji Kasen", name: "31. Shima", diff: "facil", reward: "$10,000", desc: "Cobro de extorsión a comercios y tiroteo en Portland contra los Diablos.", objectives: ["Recoger el primer maletín en el restaurante", "Recoger el segundo maletín en la tienda", "Ir a Hepburn Heights en Portland para liquidar a los Diablos que robaron el tercer maletín", "Devolver el dinero al casino"] },
-            { id: "g3_32", cat: "2. Staunton Island", character: "Kenji Kasen", name: "32. Smack Down", diff: "media", reward: "$10,000", desc: "Caza contrarreloj de camellos de SPANK repartidos por las calles de Staunton.", objectives: ["Conseguir un coche rápido", "Atropellar o abatir al menos a 8 camellos del Cartel antes de que se agoten las oportunidades"] },
-            { id: "g3_33", cat: "2. Staunton Island", character: "Ray Machowski", name: "33. Silence the Sneak", diff: "media", reward: "$30,000", desc: "Asesinato del informante Leon McAffrey arrojando granadas a su ventana.", objectives: ["Bloquear el callejón con un coche grande", "Lanzar una granada por la ventana del apartamento protegido", "Eliminar a los agentes federales", "Destruir el coche en el que intenta huir McAffrey"] },
-            { id: "g3_34", cat: "2. Staunton Island", character: "Ray Machowski", name: "34. Arms Shortage", diff: "dificil", reward: "$10,000", desc: "Defensa táctica del búnker militar de Phil Cassidy ante el asalto masivo del Cartel.", objectives: ["Reunirse con Phil Cassidy en Rockford", "Armarse con rifles y granadas del arsenal", "Repeler las oleadas de soldados del Cartel que asaltan en furgonetas", "Asegurar la supervivencia de Phil"] },
-            { id: "g3_35", cat: "2. Staunton Island", character: "Ray Machowski", name: "35. Evidence Dash", diff: "media", reward: "$10,000", desc: "Recogida de paquetes de pruebas judiciales que caen de la camioneta del fiscal.", objectives: ["Embestir repetidamente la camioneta Bobcat del fiscal", "Recoger los 6 paquetes de pruebas que caen al asfalto", "Llevar el coche a un taller para destruir las pruebas"] },
-            { id: "g3_36", cat: "2. Staunton Island", character: "Ray Machowski", name: "36. Gone Fishing", diff: "facil", reward: "$15,000", desc: "Caza marina en lancha militar al compañero corrupto de Ray cerca del faro.", objectives: ["Robar la lancha policial en los muelles", "Navegar hacia el faro de Portland", "Perseguir el pesquero del objetivo mientras te lanza barriles explosivos", "Hundir su barco a tiros"] },
-            { id: "g3_37", cat: "2. Staunton Island", character: "Ray Machowski", name: "37. Plaster Blaster", diff: "facil", reward: "$10,000", desc: "Asesinato de un testigo convaleciente dentro de una ambulancia protegida.", objectives: ["Localizar la ambulancia en tránsito", "Embestir la ambulancia hasta que el testigo caiga en camilla con yeso", "Atropellarlo o detonar una granada sobre él para liquidarlo"] },
-            { id: "g3_38", cat: "2. Staunton Island", character: "Donald Love", name: "38. Liberator", diff: "dificil", reward: "$40,000", desc: "Rescate del anciano caballero oriental en el complejo fortificado del Cartel.", objectives: ["Conseguir una furgoneta Cartel Cruiser", "Entrar al complejo del Cartel en Aspatria", "Eliminar a todos los guardias armados con AK-47", "Revisar los garajes hasta encontrar al rehén y llevarlo al rascacielos de Donald Love"] },
-            { id: "g3_39", cat: "2. Staunton Island", character: "Donald Love", name: "39. Waka-Gashira Wipeout", diff: "media", reward: "$30,000", desc: "Asesinato encubierto de Kenji Kasen haciéndose pasar por el Cartel para provocar una guerra.", objectives: ["Robar un Cartel Cruiser", "Subir al tejado del estacionamiento de Newport", "Atropellar a Kenji Kasen durante la reunión", "Escapar de Staunton Island sin bajarte del coche del Cartel para inculparlos"] },
-            { id: "g3_40", cat: "2. Staunton Island", character: "Donald Love", name: "40. A Drop in the Ocean", diff: "dificil", reward: "$10,000", desc: "Recogida marina de los 6 paquetes arrojados por una avioneta en alta mar.", objectives: ["Subir a una lancha rápida antes de que llegue el avión", "Seguir la trayectoria de vuelo en alta mar", "Recoger los 6 paquetes flotantes antes de que se hundan", "Desembarcar esquivando las 5 estrellas de búsqueda policial y volver con Donald"] },
-
-            // --- ACTO 3: SHORESIDE VALE Y FINAL ---
-            { id: "g3_41", cat: "3. Shoreside Vale", character: "Donald Love", name: "41. Grand Theft Aero", diff: "media", reward: "$50,000", desc: "Investigación en el Aeropuerto Francis y recuperación del maletín en la obra.", objectives: ["Cruzar a Shoreside Vale hacia el Aeropuerto Francis", "Inspeccionar el hangar y la avioneta Dodo vacía", "Seguir la pista de la furgoneta Panlantic a la obra de Fort Staunton", "Eliminar a los hombres del Cartel", "Enfrentar a Catalina y recuperar el paquete"] },
-            { id: "g3_42", cat: "3. Shoreside Vale", character: "Donald Love", name: "42. Escort Service", diff: "media", reward: "$40,000", desc: "Escolta y protección de la furgoneta blindada con el paquete a través del túnel.", objectives: ["Seguir al Securicar que transporta el paquete", "Defenderlo de las emboscadas del Cartel por el túnel de Porter", "Destruir a los coches kamikaze antes de que destruyan la furgoneta"] },
-            { id: "g3_43", cat: "3. Shoreside Vale", character: "Donald Love", name: "43. Decoy", diff: "media", reward: "$35,000", desc: "Misión de distracción conduciendo el Securicar señuelo con 6 estrellas de búsqueda.", objectives: ["Subir a la furgoneta blindada señuelo en Shoreside Vale", "Sobrevivir 3 minutos a la persecución más agresiva de la policía, SWAT y helicópteros", "Mantener el vehículo en movimiento hasta que Donald complete su plan"] },
-            { id: "g3_44", cat: "3. Shoreside Vale", character: "Donald Love", name: "44. Love's Disappearance", diff: "facil", reward: "$0", desc: "Descubrimiento de la misteriosa desaparición de Donald Love de su ático.", objectives: ["Subir en el ascensor al ático de Donald Love", "Comprobar que el recinto está completamente vacío", "Ver la caja abierta sin rastro de Donald"] },
-            { id: "g3_45", cat: "3. Shoreside Vale", character: "Ray Machowski", name: "45. Marked Man", diff: "dificil", reward: "$20,000 + Patriot Blindado", desc: "Escolta de Ray en fuga hasta el aeropuerto Francis esquivando las barricadas de la CIA.", objectives: ["Recoger a Ray en el baño de Belleville Park", "Cruzar hacia Shoreside Vale sin usar el puente vigilado (usar túnel subterráneo)", "Llevar a Ray a la terminal del aeropuerto", "Recibir la llave del garaje con el Patriot blindado y armas pesadas"] },
-            { id: "g3_46", cat: "3. Shoreside Vale", character: "Asuka Kasen", name: "46. Bait", diff: "media", reward: "$35,000", desc: "Misión de señuelo atrayendo a los tres escuadrones de la muerte del Cartel a una trampa.", objectives: ["Conseguir que los tres coches del Cartel en Shoreside Vale te persigan", "Guiarlos hasta Pike Creek", "Llevarlos a la emboscada donde los esperan los francotiradores de la Yakuza"] },
-            { id: "g3_47", cat: "3. Shoreside Vale", character: "Asuka Kasen", name: "47. Espresso-2-Go!", diff: "dificil", reward: "$40,000", desc: "Destrucción contrarreloj de los 9 puestos de café tapadera de SPANK en las tres islas.", objectives: ["Localizar y destrozar los puestos de café en Portland, Staunton y Shoreside", "Embestir y volar los puestos antes de que expire el tiempo total de la red"] },
-            { id: "g3_48", cat: "3. Shoreside Vale", character: "Asuka Kasen", name: "48. S.A.M.", diff: "dificil", reward: "$45,000", desc: "Derribo del avión comercial del Cartel con lanzamisiles y recogida de los paquetes.", objectives: ["Navegar en lancha hacia las boyas señaladas en el mar", "Esperar el descenso del avión Dodo", "Derribar el avión con el lanzacohetes", "Recoger los paquetes caídos en la pista del aeropuerto", "Volver con Asuka con 4 estrellas de búsqueda"] },
-            { id: "g3_49", cat: "3. Shoreside Vale", character: "Asuka Kasen", name: "49. Ransom", diff: "facil", reward: "$0", desc: "Descubrimiento del asesinato de Asuka y la carta de rescate de Catalina por Maria.", objectives: ["Llegar a la obra en Fort Staunton", "Encontrar los cadáveres de Asuka y Miguel", "Leer la nota de chantaje de Catalina exigiendo $500,000 en la mansión de Cochrane Dam"] },
-            { id: "g3_50", cat: "3. Shoreside Vale", character: "Catalina / Clímax", name: "50. The Exchange (Parte 1)", diff: "dificil", reward: "$0", desc: "Llegada a la mansión del Cartel con el dinero del rescate y emboscada de Catalina.", objectives: ["Tener $500,000 en efectivo", "Conducir a la villa del Cartel en Cedar Grove", "Ver la traición de Catalina", "Desarmar y abatir al guardia a golpes para conseguir su pistola", "Despejar la entrada de la mansión"] },
-            { id: "g3_51", cat: "3. Shoreside Vale", character: "Catalina / Clímax", name: "51. The Exchange (Parte 2 - Final)", diff: "extrema", reward: "$1,000,000", desc: "Asalto a la Presa Cochrane, rescate de Maria y derribo del helicóptero de Catalina con bazuca.", objectives: ["Seguir al helicóptero de Catalina hasta Cochrane Dam", "Abrirse paso a tiros por la base de la presa contra decenas de mercenarios del Cartel", "Recoger el lanzacohetes en la torre", "Derribar el helicóptero artillado de Catalina mientras bombardea la presa", "Rescatar a Maria Latore y consumar la venganza final"] }
+            { id: "g3_05", cat: "1. Isla de Portland", character: "Luigi Goterelli", name: "5. Pump-Action Pimp", diff: "media", reward: "$4,000", desc: "Ajuste de cuentas contra dos proxenetas armados con escopetas en un Diablo Stallion.", objectives: ["Recoger la pistola en Ammu-Nation", "Localizar el vehículo Diablo", "Embestir el coche para obligar a los rivales a bajar", "Eliminar a ambos proxenetas"] },
+            { id: "g3_06", cat: "1. Isla de Portland", character: "Luigi Goterelli", name: "6. The Fuzz Ball", diff: "media", reward: "$2,000 - $4,000", desc: "Recogida contrarreloj de chicas de compañía por toda la isla para llevarlas a la fiesta policial.", objectives: ["Conseguir un coche de 4 plazas rápido", "Recoger al menos a 4 chicas repartidas por Portland", "Llevarlas a la fiesta antes de que se agote el tiempo"] },
+            { id: "g3_07", cat: "1. Isla de Portland", character: "Joey Leone", name: "7. Mike Lips Won't Go", diff: "media", reward: "$10,000", desc: "Colocación de un coche bomba en el vehículo del matón Mike Lips de la familia Forelli.", objectives: ["Ir al bistró de Saint Mark's", "Robar el Idaho de Mike Lips sin rayarlo", "Llevarlo al taller de 8-Ball para armar el explosivo", "Devolverlo al mismo sitio de aparcamiento"] },
+            { id: "g3_08", cat: "1. Isla de Portland", character: "Joey Leone", name: "8. Farewell 'Chunky' Lee Chong", diff: "facil", reward: "$10,000", desc: "Asesinato del vendedor ambulante de SPANK Chunky Lee Chong en Chinatown.", objectives: ["Comprar una pistola", "Entrar a pie a la zona peatonal de Chinatown", "Eliminar a los matones de las Tríadas", "Abatir a Lee Chong"] },
+            { id: "g3_09", cat: "1. Isla de Portland", character: "Joey Leone", name: "9. Van Heist", diff: "media", reward: "$20,000", desc: "Asalto a un furgón blindado Securicar embistiéndolo para forzar a la tripulación a huir.", objectives: ["Conseguir un vehículo pesado", "Embestir reiteradamente el furgón Securicar hasta llenar la barra de daño", "Subir al furgón y llevarlo al garaje de Joey"] },
+            { id: "g3_10", cat: "1. Isla de Portland", character: "Joey Leone", name: "10. Cipriani's Chauffeur", diff: "facil", reward: "$2,000", desc: "Servicio de chófer para Toni Cipriani atacado por las Tríadas en la lavandería.", objectives: ["Llevar a Toni a la lavandería del Sr. Wong", "Esperar en el coche y sobrevivir a la emboscada con Uzi", "Llevar a Toni al restaurante de su madre"] },
+            { id: "g3_11", cat: "1. Isla de Portland", character: "Joey Leone", name: "11. Dead Skunk in the Trunk", diff: "media", reward: "$10,000", desc: "Destrucción de un coche con un cadáver dentro en la trituradora de Harwood.", objectives: ["Localizar el coche frente al café", "Esquivar la emboscada de dos coches rivales", "Conducir el coche a la trituradora de chatarra"] },
+            { id: "g3_12", cat: "1. Isla de Portland", character: "Joey Leone", name: "12. The Getaway", diff: "media", reward: "$10,000", desc: "Conducción de huida para un atraco a un banco en Chinatown.", objectives: ["Conseguir un coche de 4 plazas rápido antes de las 17:00", "Recoger a los atracadores y llevarlos al banco", "Despistar el nivel de 3 estrellas y dejarlos en su piso franco"] },
+            { id: "g3_13", cat: "1. Isla de Portland", character: "Toni Cipriani", name: "13. Taking Out the Laundry", diff: "facil", reward: "$20,000", desc: "Destrucción de las tres furgonetas de reparto de la lavandería de las Tríadas.", objectives: ["Recoger las granadas", "Localizar las tres furgonetas que circulan por Portland", "Bloquear su paso y destruirlas"] },
+            { id: "g3_14", cat: "1. Isla de Portland", character: "Toni Cipriani", name: "14. The Pick-Up", diff: "media", reward: "$10,000", desc: "Recogida de un maletín con dinero de extorsión en un callejón de Chinatown.", objectives: ["Ir al callejón marcado", "Recoger el maletín", "Sobrevivir a la emboscada de las Tríadas que bloquean las salidas", "Llevar el dinero al restaurante"] },
+            { id: "g3_15", cat: "1. Isla de Portland", character: "Toni Cipriani", name: "15. Salvatore's Called a Meeting", diff: "dificil", reward: "$15,000", desc: "Reunión familiar convocada por Salvatore Leone transportando a sus capos en limusina.", objectives: ["Recoger la limusina Stretch", "Buscar a Joey, Luigi y Toni", "Esquivar los camiones de las Tríadas y llegar a la mansión de Salvatore"] },
+            { id: "g3_16", cat: "1. Isla de Portland", character: "Toni Cipriani", name: "16. Triads and Tribulations", diff: "media", reward: "$30,000", desc: "Guerra abierta en Chinatown para liquidar a los tres líderes clave de las Tríadas.", objectives: ["Reclutar a dos mafiosos", "Eliminar al primer líder en la calle, al segundo en la plaza y al tercero en la fábrica"] },
+            { id: "g3_17", cat: "1. Isla de Portland", character: "Toni Cipriani", name: "17. Blow Fish", diff: "dificil", reward: "$30,000", desc: "Infiltración con un camión de basura cargado de dinamita en la factoría de pescado.", objectives: ["Recoger el camión bomba", "Conducir con cuidado sin golpear nada", "Aparcar entre los tanques de gas y escapar corriendo"] },
+            { id: "g3_18", cat: "1. Isla de Portland", character: "Salvatore Leone", name: "18. Chaperone", diff: "facil", reward: "$10,000", desc: "Acompañamiento y protección a Maria Latore en una fiesta en los muelles.", objectives: ["Llevar a Maria al almacén de la fiesta clandestina", "Rescatarla de la redada de la SWAT y escapar hasta la mansión"] },
+            { id: "g3_19", cat: "1. Isla de Portland", character: "Salvatore Leone", name: "19. Cutting the Grass", diff: "media", reward: "$15,000", desc: "Seguimiento discreto a Curly Bob para descubrir al soplón del Cartel Colombiano.", objectives: ["Esperar a Curly Bob fuera del club", "Seguir su taxi a distancia prudente sin llenar la barra de sospecha", "Acribillarlo"] },
+            { id: "g3_20", cat: "1. Isla de Portland", character: "Salvatore Leone", name: "20. Bomb Da Base: Act I", diff: "facil", reward: "$0", desc: "Reunión con 8-Ball para coordinar la demolición del barco carguero del Cartel.", objectives: ["Conducir al taller de 8-Ball", "Pagar $100,000 para comprar el detonador y conseguir el rifle de francotirador"] },
+            { id: "g3_21", cat: "1. Isla de Portland", character: "Salvatore Leone", name: "21. Bomb Da Base: Act II", diff: "dificil", reward: "$150,000", desc: "Cobertura de francotirador mientras 8-Ball planta los explosivos en el carguero.", objectives: ["Subir al tejado con el rifle", "Abatir a los guardias del Cartel antes de que disparen a 8-Ball", "Ver la voladura del barco"] },
+            { id: "g3_22", cat: "1. Isla de Portland", character: "Salvatore Leone", name: "22. Last Requests", diff: "facil", reward: "$20,000", desc: "Trampa mortal con un coche bomba tendida por Salvatore y huida a Staunton Island.", objectives: ["Recibir el aviso de Maria de la trampa", "Subir a la lancha Reefer con Maria y Asuka Kasen", "Cruzar hacia Staunton Island"] },
+            { id: "g3_23", cat: "2. Staunton Island", character: "Asuka Kasen", name: "23. Sayonara Salvatore", diff: "media", reward: "$25,000", desc: "Venganza y ejecución del Don Salvatore Leone cuando sale del club de Luigi.", objectives: ["Apostarse en un tejado frente al Sex Club Seven", "Eliminar a Salvatore antes de subir a la limusina", "Volver a Staunton Island"] },
+            { id: "g3_24", cat: "2. Staunton Island", character: "Asuka Kasen", name: "24. Under Surveillance", diff: "media", reward: "$15,000", desc: "Eliminación de los tres puestos de espionaje de la mafia Leone en Staunton Island.", objectives: ["Abatir a los mafiosos en Belleville Park y francotirar a los vigías en el rascacielos"] },
+            { id: "g3_25", cat: "2. Staunton Island", character: "Asuka Kasen", name: "25. Paparazzi Purge", diff: "facil", reward: "$10,000", desc: "Persecución acuática a un reportero en lancha policial tras tomar fotos comprometedoras.", objectives: ["Robar la lancha Predator de la policía", "Perseguir y hundir la lancha del paparazzi"] },
+            { id: "g3_26", cat: "2. Staunton Island", character: "Asuka Kasen", name: "26. Payday for Ray", diff: "facil", reward: "$11,000", desc: "Carrera contrarreloj contestando cabinas telefónicas para pagar el soborno a Ray.", objectives: ["Contestar las 4 cabinas por Staunton Island", "Entregar el dinero a Ray en Belleville Park"] },
+            { id: "g3_27", cat: "2. Staunton Island", character: "Asuka Kasen", name: "27. Two-Faced Tanner", diff: "media", reward: "$20,000", desc: "Caza y destrucción del vehículo del policía encubierto Tanner.", objectives: ["Embestir y disparar a su coche deportivo en persecución urbana", "Destruir el vehículo y rematar a Tanner"] },
+            { id: "g3_28", cat: "2. Staunton Island", character: "Kenji Kasen", name: "28. Kanbu Bust-Out", diff: "media", reward: "$30,000", desc: "Rescate con coche bomba de un miembro de la Yakuza recluido en la comisaría.", objectives: ["Armar un coche de policía con bomba en el taller", "Detonar la pared de la celda y rescatar a Kanbu"] },
+            { id: "g3_29", cat: "2. Staunton Island", character: "Kenji Kasen", name: "29. Grand Theft Auto", diff: "media", reward: "$25,000", desc: "Robo y entrega contrarreloj de 3 vehículos deportivos de lujo solicitados por Kenji.", objectives: ["Robar el Stinger, Cheetah e Infernus", "Repararlos en Pay 'n' Spray y entregarlos en el garaje"] },
+            { id: "g3_30", cat: "2. Staunton Island", character: "Kenji Kasen", name: "30. Deal Steal", diff: "media", reward: "$25,000", desc: "Robo de una furgoneta de los Yardies para sabotear un intercambio con el Cartel.", objectives: ["Robar un Yardie Lobo", "Iniciar el trato en el hospital", "Aniquilar al Cartel y recuperar el maletín"] },
+            { id: "g3_31", cat: "2. Staunton Island", character: "Kenji Kasen", name: "31. Shima", diff: "facil", reward: "$10,000", desc: "Cobro de extorsión a comercios y tiroteo en Portland contra los Diablos.", objectives: ["Recoger los maletines de extorsión", "Liquidar a los Diablos en Hepburn Heights que robaron el dinero"] },
+            { id: "g3_32", cat: "2. Staunton Island", character: "Kenji Kasen", name: "32. Smack Down", diff: "media", reward: "$10,000", desc: "Caza contrarreloj de camellos de SPANK repartidos por las calles.", objectives: ["Atropellar o abatir al menos a 8 camellos del Cartel"] },
+            { id: "g3_33", cat: "2. Staunton Island", character: "Ray Machowski", name: "33. Silence the Sneak", diff: "media", reward: "$30,000", desc: "Asesinato del informante Leon McAffrey arrojando granadas a su ventana.", objectives: ["Lanzar granada por la ventana del apartamento protegido", "Eliminar agentes federales y destruir su coche de huida"] },
+            { id: "g3_34", cat: "2. Staunton Island", character: "Ray Machowski", name: "34. Arms Shortage", diff: "dificil", reward: "$10,000", desc: "Defensa táctica del búnker militar de Phil Cassidy ante el asalto del Cartel.", objectives: ["Armarse en el búnker", "Repeler las oleadas de soldados del Cartel en furgonetas"] },
+            { id: "g3_35", cat: "2. Staunton Island", character: "Ray Machowski", name: "35. Evidence Dash", diff: "media", reward: "$10,000", desc: "Recogida de paquetes de pruebas judiciales que caen de la camioneta del fiscal.", objectives: ["Embestir la camioneta Bobcat", "Recoger los 6 paquetes de pruebas y destruir el coche"] },
+            { id: "g3_36", cat: "2. Staunton Island", character: "Ray Machowski", name: "36. Gone Fishing", diff: "facil", reward: "$15,000", desc: "Caza marina en lancha militar al compañero corrupto de Ray cerca del faro.", objectives: ["Navegar hacia el faro de Portland", "Hundir el pesquero mientras lanza barriles explosivos"] },
+            { id: "g3_37", cat: "2. Staunton Island", character: "Ray Machowski", name: "37. Plaster Blaster", diff: "facil", reward: "$10,000", desc: "Asesinato de un testigo convaleciente dentro de una ambulancia protegida.", objectives: ["Embestir la ambulancia hasta liberar la camilla y rematar al testigo"] },
+            { id: "g3_38", cat: "2. Staunton Island", character: "Donald Love", name: "38. Liberator", diff: "dificil", reward: "$40,000", desc: "Rescate del anciano caballero oriental en el complejo fortificado del Cartel.", objectives: ["Entrar al complejo en Aspatria con un Cartel Cruiser", "Eliminar guardias y rescatar al rehén"] },
+            { id: "g3_39", cat: "2. Staunton Island", character: "Donald Love", name: "39. Waka-Gashira Wipeout", diff: "media", reward: "$30,000", desc: "Asesinato encubierto de Kenji Kasen haciéndose pasar por el Cartel.", objectives: ["Atropellar a Kenji en el parking de Newport con un Cartel Cruiser y escapar"] },
+            { id: "g3_40", cat: "2. Staunton Island", character: "Donald Love", name: "40. A Drop in the Ocean", diff: "dificil", reward: "$10,000", desc: "Recogida marina de los 6 paquetes arrojados por una avioneta en alta mar.", objectives: ["Seguir la trayectoria del avión en lancha", "Recoger los 6 paquetes flotantes antes de que se hundan"] },
+            { id: "g3_41", cat: "3. Shoreside Vale", character: "Donald Love", name: "41. Grand Theft Aero", diff: "media", reward: "$50,000", desc: "Investigación en el Aeropuerto Francis y recuperación del maletín en la obra.", objectives: ["Inspeccionar el hangar en Shoreside Vale", "Seguir la pista a la obra en Fort Staunton y enfrentar a Catalina"] },
+            { id: "g3_42", cat: "3. Shoreside Vale", character: "Donald Love", name: "42. Escort Service", diff: "media", reward: "$40,000", desc: "Escolta y protección de la furgoneta blindada con el paquete a través del túnel.", objectives: ["Defender el Securicar de las emboscadas kamikaze del Cartel por el túnel"] },
+            { id: "g3_43", cat: "3. Shoreside Vale", character: "Donald Love", name: "43. Decoy", diff: "media", reward: "$35,000", desc: "Misión de distracción conduciendo el Securicar señuelo con 6 estrellas de búsqueda.", objectives: ["Sobrevivir 3 minutos a la persecución policial y SWAT más agresiva"] },
+            { id: "g3_44", cat: "3. Shoreside Vale", character: "Donald Love", name: "44. Love's Disappearance", diff: "facil", reward: "$0", desc: "Descubrimiento de la misteriosa desaparición de Donald Love de su ático.", objectives: ["Subir al ático y comprobar que se encuentra completamente vacío"] },
+            { id: "g3_45", cat: "3. Shoreside Vale", character: "Ray Machowski", name: "45. Marked Man", diff: "dificil", reward: "$20,000 + Patriot", desc: "Escolta de Ray en fuga hasta el aeropuerto Francis esquivando a la CIA.", objectives: ["Cruzando por el túnel subterráneo sin usar el puente, llevar a Ray a la terminal"] },
+            { id: "g3_46", cat: "3. Shoreside Vale", character: "Asuka Kasen", name: "46. Bait", diff: "media", reward: "$35,000", desc: "Misión de señuelo atrayendo a los tres escuadrones de la muerte del Cartel a una trampa.", objectives: ["Guiar a los coches del Cartel hasta la emboscada de los francotiradores Yakuza"] },
+            { id: "g3_47", cat: "3. Shoreside Vale", character: "Asuka Kasen", name: "47. Espresso-2-Go!", diff: "dificil", reward: "$40,000", desc: "Destrucción contrarreloj de los 9 puestos de café tapadera de SPANK.", objectives: ["Destruir todos los puestos de café repartidos por las tres islas a contrarreloj"] },
+            { id: "g3_48", cat: "3. Shoreside Vale", character: "Asuka Kasen", name: "48. S.A.M.", diff: "dificil", reward: "$45,000", desc: "Derribo del avión comercial del Cartel con lanzamisiles y recogida de paquetes.", objectives: ["Derribar el Dodo con bazuca desde una lancha y recoger los paquetes en la pista"] },
+            { id: "g3_49", cat: "3. Shoreside Vale", character: "Asuka Kasen", name: "49. Ransom", diff: "facil", reward: "$0", desc: "Descubrimiento del asesinato de Asuka y la carta de rescate de Catalina.", objectives: ["Encontrar los cadáveres en la obra y leer la nota exigiendo $500,000 en la presa"] },
+            { id: "g3_50", cat: "3. Shoreside Vale", character: "Catalina / Clímax", name: "50. The Exchange (Parte 1)", diff: "dificil", reward: "$0", desc: "Llegada a la mansión del Cartel con el dinero y emboscada de Catalina.", objectives: ["Llevar $500,000, sobrevivir a la trición y despejar la entrada de la villa"] },
+            { id: "g3_51", cat: "3. Shoreside Vale", character: "Catalina / Clímax", name: "51. The Exchange (Parte 2 - Final)", diff: "extrema", reward: "$1,000,000", desc: "Asalto a la Presa Cochrane, rescate de Maria y derribo del helicóptero de Catalina.", objectives: ["Asaltar la base de la presa contra mercenarios, tomar el bazuca y derribar el helicóptero final"] }
         ];
 
-        let masterStore = {};
+        let publicProgress = {};
         let activeTaskId = null;
-        let localVideoBlob = null;
         let currentFilter = "";
 
-        function init() {
-            const raw = localStorage.getItem('gta_master_save');
-            if (raw) {
-                try { masterStore = JSON.parse(raw); } catch(e) { masterStore = {}; }
+        async function init() {
+            try {
+                const response = await fetch('my-progress.json?' + new Date().getTime());
+                if (response.ok) {
+                    publicProgress = await response.json();
+                }
+            } catch (e) {
+                console.log("No se encontró archivo público externo.");
             }
-            if (!masterStore[GAME_ID]) masterStore[GAME_ID] = {};
+
+            if (!publicProgress[GAME_ID]) publicProgress[GAME_ID] = {};
             renderTasks();
         }
 
@@ -475,7 +417,7 @@
 
             categories.forEach(cat => {
                 const catTasks = filteredTasks.filter(t => t.cat === cat);
-                const catDone = catTasks.filter(t => masterStore[GAME_ID][t.id] && masterStore[GAME_ID][t.id].done).length;
+                const catDone = catTasks.filter(t => publicProgress[GAME_ID][t.id] && publicProgress[GAME_ID][t.id].done).length;
 
                 const section = document.createElement('div');
                 section.className = 'category-section';
@@ -489,12 +431,13 @@
                 grid.className = 'tasks-grid';
 
                 catTasks.forEach(task => {
-                    const status = masterStore[GAME_ID][task.id] || { done: false, video: null };
+                    const status = publicProgress[GAME_ID][task.id] || { done: false, video: null };
                     const card = document.createElement('div');
                     card.className = `task-card ${status.done ? 'completed' : ''}`;
+                    
                     card.innerHTML = `
                         <div class="task-top">
-                            <input type="checkbox" class="task-checkbox" ${status.done ? 'checked' : ''} onchange="toggleDone('${task.id}', this.checked)">
+                            <input type="checkbox" class="task-checkbox" ${status.done ? 'checked' : ''} disabled title="Progreso público de solo lectura">
                             <div class="task-info" onclick="openModal('${task.id}')">
                                 <div class="task-name">${task.name}</div>
                                 <div class="task-character">${task.character || 'Historia'}</div>
@@ -502,7 +445,7 @@
                         </div>
                         <div class="task-bottom">
                             <span class="difficulty diff-${task.diff}">${task.diff}</span>
-                            <button class="btn-modal" onclick="openModal('${task.id}')">${status.video ? '📺 Ver Video' : '➕ Ficha / Video'}</button>
+                            <button class="btn-modal" onclick="openModal('${task.id}')">${status.video ? '📺 Ver Video' : 'ℹ️ Ficha'}</button>
                         </div>
                     `;
                     grid.appendChild(card);
@@ -520,31 +463,24 @@
             renderTasks();
         }
 
-        function toggleDone(taskId, isChecked) {
-            if (!masterStore[GAME_ID][taskId]) masterStore[GAME_ID][taskId] = {};
-            masterStore[GAME_ID][taskId].done = isChecked;
-            saveMaster();
-            renderTasks();
-        }
-
         function calcProgress() {
-            const completed = tasks.filter(t => masterStore[GAME_ID][t.id] && masterStore[GAME_ID][t.id].done).length;
+            const completed = tasks.filter(t => publicProgress[GAME_ID][t.id] && publicProgress[GAME_ID][t.id].done).length;
             const pct = Math.round((completed / tasks.length) * 100);
 
             document.getElementById('pctDisplay').innerText = `${pct}%`;
             document.getElementById('barDisplay').style.width = `${pct}%`;
-            document.getElementById('statsText').innerText = `${completed} de ${tasks.length} misiones de historia completadas`;
+            document.getElementById('statsText').innerText = `${completed} de ${tasks.length} misiones de historia completadas por el creador`;
         }
 
         function openModal(taskId) {
             activeTaskId = taskId;
             const task = tasks.find(t => t.id === taskId);
-            const data = masterStore[GAME_ID][taskId] || {};
+            const data = publicProgress[GAME_ID][taskId] || {};
 
             document.getElementById('mName').innerText = task.name;
             document.getElementById('mCharacter').innerText = `Dador / Tipo: ${task.character}`;
             document.getElementById('mDesc').innerText = task.desc;
-            document.getElementById('mReward').innerText = `Recompensa: ${task.reward || '$0'}`;
+            document.getElementById('mReward').innerText = `Recompensa: ${task.reward}`;
 
             const diffElem = document.getElementById('mDiff');
             diffElem.className = `difficulty diff-${task.diff}`;
@@ -562,34 +498,19 @@
                 objList.innerHTML = '<li>Completar la misión con éxito.</li>';
             }
 
-            document.getElementById('mUrl').value = (data.video && !data.video.startsWith('data:')) ? data.video : '';
             showVideo(data.video);
-
             document.getElementById('taskModal').style.display = 'flex';
         }
 
         function closeModal() {
             document.getElementById('taskModal').style.display = 'none';
             document.getElementById('mVideoViewer').innerHTML = '<span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>';
-            localVideoBlob = null;
-        }
-
-        function handleFile(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    localVideoBlob = evt.target.result;
-                    showVideo(localVideoBlob);
-                };
-                reader.readAsDataURL(file);
-            }
         }
 
         function showVideo(src) {
             const box = document.getElementById('mVideoViewer');
             if (!src) {
-                box.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>';
+                box.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-dim);">El creador aún no ha subido video para esta misión.</span>';
                 return;
             }
             if (src.includes('youtube.com') || src.includes('youtu.be')) {
@@ -598,20 +519,6 @@
             } else {
                 box.innerHTML = `<video controls src="${src}"></video>`;
             }
-        }
-
-        function saveTaskMedia() {
-            if (!masterStore[GAME_ID][activeTaskId]) masterStore[GAME_ID][activeTaskId] = { done: false };
-            const inputUrl = document.getElementById('mUrl').value.trim();
-            masterStore[GAME_ID][activeTaskId].video = localVideoBlob || inputUrl || null;
-
-            saveMaster();
-            closeModal();
-            renderTasks();
-        }
-
-        function saveMaster() {
-            localStorage.setItem('gta_master_save', JSON.stringify(masterStore));
         }
 
         window.addEventListener('DOMContentLoaded', init);
