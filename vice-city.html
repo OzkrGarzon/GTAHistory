@@ -3,16 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTA Vice City - 100% Tracker</title>
+    <title>GTA Vice City - Base de Datos & Tracker 100%</title>
     <style>
+        /* ==========================================================================
+           ZONA DE PERSONALIZACIÓN VISUAL (TUTORIAL RÁPIDO)
+           ==========================================================================
+           1. FONDO GLOBAL: Descomenta la línea 'background-image' en body y pon tu foto.
+           2. BANNER HEADER: Descomenta la línea 'background-image' en header.
+           3. LOGO: Cambia .header-logo a 'display: block;' y descomenta el <img> abajo.
+           ========================================================================== */
+
+        body {
+            background-color: #0b0d14;
+            /* background-image: linear-gradient(rgba(11, 13, 20, 0.90), rgba(11, 13, 20, 0.96)), url('fondo-vice-city.jpg'); */
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-size: cover;
+            background-attachment: fixed;
+            color: #f3f4f6;
+            padding-bottom: 70px;
+        }
+
+        header {
+            background-color: #111424;
+            /* background-image: linear-gradient(180deg, rgba(17, 20, 36, 0.75) 0%, rgba(11, 13, 20, 0.95) 100%), url('banner-vice-city.jpg'); */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            border-bottom: 3px solid #ff49db;
+            padding: 18px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 60;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.65);
+        }
+
+        .header-logo {
+            max-height: 48px;
+            width: auto;
+            display: none;
+            object-fit: contain;
+        }
+
+        /* ==========================================================================
+           ESTILOS DEL SISTEMA Y BASE DE DATOS
+           ========================================================================== */
         :root {
-            --bg-main: #0c0d14;
-            --bg-card: #151824;
+            --bg-card: rgba(20, 24, 38, 0.88);
             --accent: #ff49db;
             --accent-cyan: #00f0ff;
             --text: #f3f4f6;
             --text-dim: #9ca3af;
-            --border: #262b40;
+            --border: #262c45;
             --easy: #10b981;
             --medium: #3b82f6;
             --hard: #f97316;
@@ -20,23 +62,14 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text); padding-bottom: 60px; }
-
-        header {
-            background: #111422;
-            border-bottom: 2px solid var(--accent);
-            padding: 16px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
 
         .nav-bar {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
         }
 
         .back-link {
@@ -44,33 +77,72 @@
             text-decoration: none;
             font-weight: 700;
             font-size: 0.95rem;
-            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-
         .back-link:hover { color: #fff; }
 
-        main { max-width: 1200px; margin: 24px auto; padding: 0 20px; }
+        main { max-width: 1300px; margin: 24px auto; padding: 0 20px; }
 
-        .progress-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 20px;
+        /* Panel de Estadísticas Globales */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
             margin-bottom: 24px;
         }
 
-        .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .progress-bar-bg { background: #090a0f; height: 18px; border-radius: 9px; overflow: hidden; border: 1px solid var(--border); }
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: 1fr; }
+        }
+
+        .progress-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .progress-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+        .progress-bar-bg { background: #080a10; height: 18px; border-radius: 9px; overflow: hidden; border: 1px solid var(--border); }
         .progress-bar-fill {
             background: linear-gradient(90deg, var(--accent), var(--accent-cyan));
             height: 100%;
             width: 0%;
-            transition: width 0.3s;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* Buscador / Filtro */
+        .filter-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #090b12;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        .search-input:focus { border-color: var(--accent); }
+
+        /* Categorías y Misiones */
+        .category-section { margin-top: 32px; }
         .category-title {
             font-size: 1.25rem;
-            margin: 32px 0 14px 0;
+            margin-bottom: 12px;
             border-bottom: 1px solid var(--border);
             padding-bottom: 6px;
             color: var(--accent-cyan);
@@ -78,10 +150,9 @@
             justify-content: space-between;
             align-items: baseline;
         }
-
         .category-sub { font-size: 0.85rem; color: var(--text-dim); font-weight: normal; }
 
-        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 14px; }
 
         .task-card {
             background: var(--bg-card);
@@ -93,11 +164,10 @@
             justify-content: space-between;
             transition: transform 0.15s, border-color 0.15s;
         }
+        .task-card:hover { border-color: #434c70; transform: translateY(-2px); }
+        .task-card.completed { border-color: rgba(16, 185, 129, 0.45); background: rgba(16, 185, 129, 0.05); }
 
-        .task-card:hover { border-color: #3f4769; transform: translateY(-2px); }
-        .task-card.completed { border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.04); }
-
-        .task-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+        .task-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
         .task-checkbox {
             appearance: none;
             width: 22px;
@@ -110,21 +180,12 @@
             margin-top: 2px;
             flex-shrink: 0;
         }
-
-        .task-checkbox:checked {
-            background-color: var(--easy);
-            border-color: var(--easy);
-        }
-
-        .task-checkbox:checked::before {
-            content: "✓";
-            color: #fff;
-            font-size: 14px;
-            font-weight: 900;
-        }
+        .task-checkbox:checked { background-color: var(--easy); border-color: var(--easy); }
+        .task-checkbox:checked::before { content: "✓"; color: #fff; font-size: 14px; font-weight: 900; }
 
         .task-info { flex-grow: 1; cursor: pointer; }
         .task-name { font-weight: 700; font-size: 0.95rem; line-height: 1.3; }
+        .task-character { font-size: 0.75rem; color: var(--accent); margin-top: 2px; }
 
         .task-bottom {
             display: flex;
@@ -143,7 +204,7 @@
         .diff-extrema { background: rgba(239, 68, 68, 0.2); color: var(--extreme); }
 
         .btn-modal {
-            color: var(--accent);
+            color: var(--accent-cyan);
             background: none;
             border: none;
             cursor: pointer;
@@ -152,7 +213,7 @@
             font-size: 0.75rem;
         }
 
-        /* Modal */
+        /* Modal Relacional */
         .modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -165,11 +226,11 @@
         }
 
         .modal-content {
-            background: var(--bg-card);
+            background: #141724;
             border: 1px solid var(--border);
-            max-width: 600px;
+            max-width: 640px;
             width: 100%;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 24px;
             position: relative;
             max-height: 90vh;
@@ -186,6 +247,33 @@
             cursor: pointer;
         }
 
+        .modal-badge-group { display: flex; gap: 8px; align-items: center; margin: 8px 0 14px 0; }
+        .tag-meta { background: #080a12; border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; color: var(--text-dim); }
+
+        .objectives-list {
+            list-style: none;
+            margin: 12px 0;
+            background: #090b12;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .objectives-list li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
+            color: #d1d5db;
+        }
+        .objectives-list li::before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
         .video-box {
             margin-top: 14px;
             width: 100%;
@@ -197,7 +285,6 @@
             border-radius: 6px;
             overflow: hidden;
         }
-
         .video-box iframe, .video-box video { width: 100%; height: 260px; }
 
         .input-group {
@@ -208,7 +295,6 @@
             font-size: 0.8rem;
             color: var(--text-dim);
         }
-
         .input-group input {
             background: #08090e;
             border: 1px solid var(--border);
@@ -227,47 +313,64 @@
             width: 100%;
             margin-top: 16px;
             cursor: pointer;
-            transition: opacity 0.2s;
         }
-
-        .btn-submit:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="nav-bar">
-            <a href="index.html" class="back-link">⬅ Volver al Menú Principal</a>
-            <h2 style="font-size: 1.2rem; color: var(--accent);">GTA: Vice City - Checklist Oficial 100%</h2>
+            <a href="index.html" class="back-link">⬅ Menú Principal</a>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <!-- <img src="logo-vice-city.png" alt="Vice City Logo" class="header-logo"> -->
+                <h2 style="font-size: 1.2rem; color: var(--accent);">GTA: Vice City - Base de Datos Oficial 100%</h2>
+            </div>
         </div>
     </header>
 
     <main>
-        <section class="progress-card">
-            <div class="progress-header">
-                <h3>Progreso General de Vice City</h3>
-                <span id="pctDisplay" style="font-size: 1.4rem; font-weight: 800; color: var(--accent);">0%</span>
-            </div>
-            <div class="progress-bar-bg">
-                <div id="barDisplay" class="progress-bar-fill"></div>
-            </div>
-            <p id="statsText" style="margin-top: 8px; font-size: 0.85rem; color: var(--text-dim);">0 de 0 misiones completadas</p>
-        </section>
+        <div class="dashboard">
+            <section class="progress-card">
+                <div class="progress-header">
+                    <h3>Progreso General de Vice City</h3>
+                    <span id="pctDisplay" style="font-size: 1.4rem; font-weight: 800; color: var(--accent);">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="barDisplay" class="progress-bar-fill"></div>
+                </div>
+                <p id="statsText" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-dim);">0 de 0 objetivos completados</p>
+            </section>
+
+            <section class="filter-panel">
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Buscar misión, coleccionable o vehículo:</label>
+                <input type="text" id="searchInput" class="search-input" placeholder="Ej: Demolition Man, Infernus, PCJ..." oninput="handleSearch()">
+            </section>
+        </div>
 
         <section id="tasksContainer"></section>
     </main>
 
-    <!-- Modal Detalle / Multimedia -->
+    <!-- Modal Detallado con Objetivos y Multimedia -->
     <div id="taskModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">&times;</button>
-            <h2 id="mName" style="margin-bottom: 6px;"></h2>
-            <span id="mDiff" class="difficulty"></span>
-            <p id="mDesc" style="margin-top: 14px; font-size: 0.95rem; line-height: 1.5; color: #d1d5db;"></p>
+            <h2 id="mName" style="margin-bottom: 2px;"></h2>
+            <div id="mCharacter" style="font-size: 0.85rem; color: var(--accent); font-weight: bold;"></div>
+
+            <div class="modal-badge-group">
+                <span id="mDiff" class="difficulty"></span>
+                <span id="mReward" class="tag-meta"></span>
+                <span id="mUnlock" class="tag-meta"></span>
+            </div>
+
+            <p id="mDesc" style="font-size: 0.92rem; line-height: 1.5; color: #d1d5db;"></p>
+
+            <h4 style="margin-top: 14px; font-size: 0.85rem; color: var(--accent-cyan); text-transform: uppercase;">Objetivos Canónicos:</h4>
+            <ul id="mObjectives" class="objectives-list"></ul>
 
             <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
 
-            <h4>Video o Clip de la Misión</h4>
+            <h4>Registro Multimedia / Evidencia</h4>
             <div class="input-group">
                 <label>Enlace Web o YouTube:</label>
                 <input type="text" id="mUrl" placeholder="https://www.youtube.com/watch?v=...">
@@ -279,129 +382,642 @@
             <div class="video-box" id="mVideoViewer">
                 <span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>
             </div>
-            <button class="btn-submit" onclick="saveTaskMedia()">Guardar Evidencia</button>
+            <button class="btn-submit" onclick="saveTaskMedia()">Guardar Registro</button>
         </div>
     </div>
 
     <script>
         const GAME_ID = 'gtavc';
 
-        // Base de datos completa oficial para el 100% de GTA Vice City
+        // Base de datos canónica completa e individualizada
         const tasks = [
-            // 1. Ken Rosenberg
-            { id: "vc_m01", cat: "Misiones Principales", name: "La fiesta (The Party)", diff: "facil", desc: "Ve a Rafael's para comprar un traje formal y dirígete al yate del Coronel Cortez para relacionarte con los peces gordos de Vice City." },
-            { id: "vc_m02", cat: "Misiones Principales", name: "Pelea en el callejón trasero (Back Alley Brawl)", diff: "facil", desc: "Encuentra a Kent Paul en el Malibu Club, dirígete al callejón de Ocean Beach, acaba con el chef Leo Teal y escapa con Lance Vance." },
-            { id: "vc_m03", cat: "Misiones Principales", name: "Furia en el jurado (Jury Fury)", diff: "facil", desc: "Intimida a dos jurados destruyendo sus coches usando un martillo sin llamar excesivamente la atención de la policía." },
-            { id: "vc_m04", cat: "Misiones Principales", name: "Disturbios (Riot)", diff: "facil", desc: "Cámbiate de ropa de obrero, inicia una pelea multitudinaria entre los trabajadores en huelga y destruye las tres furgonetas de Spand Express." },
+            // --- 1. Prólogo e Introducción ---
+            {
+                id: "vc_h01", cat: "1. Historia - Prólogo y Rosenberg", character: "Prólogo", order: 1,
+                name: "In The Beginning...", diff: "facil", reward: "$0", unlocks: "An Old Friend",
+                desc: "Secuencia inicial del trato fallido en los muelles de Vice Port.",
+                objectives: ["Sobrevivir a la emboscada durante el intercambio", "Subir al vehículo con Ken Rosenberg", "Conducir hasta el Ocean View Hotel siguiendo el radar"]
+            },
+            {
+                id: "vc_h02", cat: "1. Historia - Prólogo y Rosenberg", character: "Ken Rosenberg", order: 2,
+                name: "An Old Friend", diff: "facil", reward: "$0", unlocks: "The Party",
+                desc: "Llamada urgente de Sonny Forelli exigiendo el dinero y la droga perdida.",
+                objectives: ["Llegar al hotel", "Subir las escaleras hacia la habitación de Tommy", "Atender el teléfono y dar la cara ante Sonny"]
+            },
+            {
+                id: "vc_h03", cat: "1. Historia - Prólogo y Rosenberg", character: "Ken Rosenberg", order: 3,
+                name: "The Party", diff: "facil", reward: "$100", unlocks: "Back Alley Brawl",
+                desc: "Presentación formal ante los magnates y criminales de Vice City.",
+                objectives: ["Ir a Rafael's para comprar un traje de etiqueta", "Llegar al muelle y subir al yate del Coronel Juan García Cortez", "Hablar con los invitados clave", "Llevar a Mercedes Cortez al Pole Position Club"]
+            },
+            {
+                id: "vc_h04", cat: "1. Historia - Prólogo y Rosenberg", character: "Ken Rosenberg", order: 4,
+                name: "Back Alley Brawl", diff: "facil", reward: "$200", unlocks: "Jury Fury",
+                desc: "Búsqueda del cocinero callejero para conseguir un teléfono móvil.",
+                objectives: ["Hablar con Kent Paul en el Malibu Club", "Localizar al chef Leo Teal en el callejón de Ocean Beach", "Derrotarlo en combate cuerpo a cuerpo y recoger su celular", "Seguir a Lance Vance en su Infernus", "Visitar la armería Ammu-Nation"]
+            },
+            {
+                id: "vc_h05", cat: "1. Historia - Prólogo y Rosenberg", character: "Ken Rosenberg", order: 5,
+                name: "Jury Fury", diff: "facil", reward: "$400", unlocks: "Riot",
+                desc: "Intimidación directa a dos miembros del jurado asignados a Giorgio Forelli.",
+                objectives: ["Recoger el martillo en la ferretería", "Localizar al primer jurado y destrozar su coche sin herirlo de gravedad", "Perseguir y golpear el vehículo del segundo jurado hasta hacerlo huir despavorido"]
+            },
+            {
+                id: "vc_h06", cat: "1. Historia - Prólogo y Rosenberg", character: "Ken Rosenberg", order: 6,
+                name: "Riot", diff: "facil", reward: "$1,000", unlocks: "Misiones de Cortez & Avery",
+                desc: "Sabotaje industrial a la empresa transportista Spand Express provocando un motín.",
+                objectives: ["Cambiarse de ropa para vestirse de obrero", "Acudir a la sede de Spand Express", "Iniciar una pelea contra al menos 4 trabajadores en huelga", "Aprovechar el caos para detonar los 3 camiones de reparto"]
+            },
 
-            // 2. Coronel Cortez
-            { id: "vc_m05", cat: "Misiones Principales", name: "Cerdo traidor (Treacherous Swine)", diff: "facil", desc: "Ve al ático de González y elimínalo con una motosierra antes de perder las dos estrellas de nivel de búsqueda mediante un Pay 'n' Spray." },
-            { id: "vc_m06", cat: "Misiones Principales", name: "Tiroteo en el centro comercial (Mall Shootout)", diff: "media", desc: "Reúnete con el mensajero francés en Washington Mall. Cuando te tienda una emboscada, persíguelo en motocicleta y recupera los chips militares de guía." },
-            { id: "vc_m07", cat: "Misiones Principales", name: "Ángeles guardianes (Guardian Angels)", diff: "media", desc: "Recoge el rifle Ruger en el garaje y cubre el intercambio entre Díaz y los cubanos en el callejón eliminando a los haitianos desde las alturas." },
-            { id: "vc_m08", cat: "Misiones Principales", name: "¡Todos con las manos arriba! (All Hands on Deck!)", diff: "dificil", desc: "Defiende el yate del Coronel Cortez mientras zarpa de Vice City. Elimina barcos franceses, helicópteros de asalto y un helicóptero Apache." },
+            // --- 2. Avery Carrington ---
+            {
+                id: "vc_h07", cat: "2. Historia - Avery Carrington", character: "Avery Carrington", order: 7,
+                name: "Four Iron", diff: "facil", reward: "$500", unlocks: "Demolition Man",
+                desc: "Asesinato discreto a un promotor inmobiliario rival en el club de campo.",
+                objectives: ["Comprar indumentaria de golf en Jocksports", "Ingresar a Leaf Links desarmado pasando por el detector de metales", "Conseguir un palo de golf o un Caddy", "Eliminar al objetivo y evadir a sus guardaespaldas armados"]
+            },
+            {
+                id: "vc_h08", cat: "2. Historia - Avery Carrington", character: "Avery Carrington", order: 8,
+                name: "Demolition Man", diff: "dificil", reward: "$1,000", unlocks: "Two Bit Hit",
+                desc: "Demolición estratégica de un edificio en construcción utilizando aeromodelismo.",
+                objectives: ["Entrar a la furgoneta Top Fun y tomar el control del helicóptero RC Goblin", "Cargar individualmente las 4 bombas cronometradas", "Transportarlas a los 4 pisos señalados del edificio", "Detonar la estructura antes de que expire el temporizador"]
+            },
+            {
+                id: "vc_h09", cat: "2. Historia - Avery Carrington", character: "Avery Carrington", order: 9,
+                name: "Two Bit Hit", diff: "media", reward: "$2,500", unlocks: "Guerra de Bandas",
+                desc: "Provocación de una guerra territorial entre Cubanos y Haitianos.",
+                objectives: ["Ponerse la ropa de pandillero cubano", "Desplazarse hacia Little Haiti", "Localizar el funeral del capo haitiano", "Eliminar al nuevo líder haitiano y huir de la zona de represalia"]
+            },
 
-            // 3. Ricardo Díaz
-            { id: "vc_m09", cat: "Misiones Principales", name: "La persecución (The Chase)", diff: "facil", desc: "Sigue al ladrón de Díaz hasta su escondite en Prawn Island sin ser detectado ni dispararle para descubrir su guarida." },
-            { id: "vc_m10", cat: "Misiones Principales", name: "Franja de Phnom Penh (Phnom Penh '86)", diff: "media", desc: "Dispara con la ametralladora fija desde el helicóptero de Lance diezmando a los matones en Prawn Island y recupera el maletín del tejado." },
-            { id: "vc_m11", cat: "Misiones Principales", name: "El barco más rápido (The Fastest Boat)", diff: "dificil", desc: "Infíltrate en el astillero naval de Viceport, acciona el interruptor dentro del taller y roba la lancha Squalo antes de llevarla a la mansión." },
-            { id: "vc_m12", cat: "Misiones Principales", name: "Oferta y demanda (Supply & Demand)", diff: "dificil", desc: "Pilota la Squalo compitiendo contra tres lanchas rivales hasta llegar al carguero en el río y defiende la popa de las emboscadas mientras Lance pilota de vuelta." },
+            // --- 3. Coronel Juan García Cortez ---
+            {
+                id: "vc_h10", cat: "3. Historia - Coronel Cortez", character: "Coronel Cortez", order: 10,
+                name: "Treacherous Swine", diff: "facil", reward: "$250", unlocks: "Mall Shootout",
+                desc: "Ajuste de cuentas contra González por filtrar información del cartel.",
+                objectives: ["Recoger la motosierra en el apartamento", "Ir al ático de González", "Perseguirlo y ejecutarlo con la motosierra", "Eliminar las 2 estrellas de búsqueda en un Pay 'n' Spray"]
+            },
+            {
+                id: "vc_h11", cat: "3. Historia - Coronel Cortez", character: "Coronel Cortez", order: 11,
+                name: "Mall Shootout", diff: "media", reward: "$500", unlocks: "Guardian Angels",
+                desc: "Intercambio en Washington Mall interrumpido por fuerzas especiales francesas.",
+                objectives: ["Reunirse con el mensajero en el centro comercial", "Sobrevivir a la emboscada de los agentes franceses", "Perseguir al mensajero en moto antes de que escape de Ocean Beach", "Recuperar los chips y entregárselos al Coronel"]
+            },
+            {
+                id: "vc_h12", cat: "3. Historia - Coronel Cortez", character: "Coronel Cortez", order: 12,
+                name: "Guardian Angels", diff: "media", reward: "$1,000", unlocks: "Sir, Yes Sir! & Díaz",
+                desc: "Protección táctica durante el intercambio de dinero entre Díaz y los Cubanos.",
+                objectives: ["Recoger el rifle de asalto Ruger", "Posicionarse en las escaleras con Lance Vance", "Eliminar a las oleadas de haitianos que asaltan el callejón", "Abatir al motorista ladrón y devolver el maletín a Díaz"]
+            },
+            {
+                id: "vc_h13", cat: "3. Historia - Coronel Cortez", character: "Coronel Cortez", order: 13,
+                name: "Sir, Yes Sir!", diff: "dificil", reward: "$2,000", unlocks: "All Hands On Deck!",
+                desc: "Secuestro de un tanque Rhino militar blindado en pleno convoy militar.",
+                objectives: ["Localizar el convoy militar que cruza Little Havana", "Aprovechar la parada de provisiones para entrar al tanque Rhino", "Conducir velozmente hacia el garaje antes de que se active el sistema de autodestrucción"]
+            },
+            {
+                id: "vc_h14", cat: "3. Historia - Coronel Cortez", character: "Coronel Cortez", order: 14,
+                name: "All Hands On Deck!", diff: "dificil", reward: "$5,000", unlocks: "Lancha Speeder",
+                desc: "Escape armado del yate de Cortez de aguas territoriales de Vice City.",
+                objectives: ["Subir al yate y repeler los botes de asalto franceses", "Despejar las barricadas de barcos que bloquean el canal", "Destruir a los hombres que bajan en rápel desde helicópteros", "Derribar el helicóptero de asalto Apache"]
+            },
 
-            // 4. Avery Carrington
-            { id: "vc_m13", cat: "Misiones Principales", name: "Hierro, a fondo (Four Iron)", diff: "facil", desc: "Ponte ropa de golfista, entra al Leaf Links Golf Club sin armas de fuego y acaba con el promotor inmobiliario usando un palo de golf o arrollándolo con el carrito." },
-            { id: "vc_m14", cat: "Misiones Principales", name: "Demolición (Demolition Man)", diff: "dificil", desc: "Pilota el helicóptero a control remoto RC Goblin recogiendo 4 bombas e introduciéndolas en 4 plantas del edificio en construcción antes de 7 minutos." },
-            { id: "vc_m15", cat: "Misiones Principales", name: "Dos golpes leves (Two Bit Hit)", diff: "media", desc: "Vístete de cubano y asesina a un capo haitiano en Little Haiti durante un funeral para provocar una guerra entre ambas bandas." },
+            // --- 4. Ricardo Díaz ---
+            {
+                id: "vc_h15", cat: "4. Historia - Ricardo Díaz", character: "Ricardo Díaz", order: 15,
+                name: "The Chase", diff: "facil", reward: "$1,000", unlocks: "Phnom Penh '86",
+                desc: "Persecución sigilosa sobre tejados para hallar el escondite del ladrón de Díaz.",
+                objectives: ["Ir al departamento del sospechoso", "Perseguirlo por los tejados sin dispararle mortalmente", "Seguir su BF Injection a prudente distancia hasta la mansión de Prawn Island"]
+            },
+            {
+                id: "vc_h16", cat: "4. Historia - Ricardo Díaz", character: "Ricardo Díaz", order: 16,
+                name: "Phnom Penh '86", diff: "media", reward: "$2,000", unlocks: "The Fastest Boat",
+                desc: "Incursión aérea pesada con ametralladora fija sobre el complejo de Prawn Island.",
+                objectives: ["Disparar desde el helicóptero Maverick pilotado por Lance", "Aniquilar a los pandilleros en patios y azoteas", "Aterrizar, limpiar el interior de la mansión y recuperar el maletín de dinero"]
+            },
+            {
+                id: "vc_h17", cat: "4. Historia - Ricardo Díaz", character: "Ricardo Díaz", order: 17,
+                name: "The Fastest Boat", diff: "dificil", reward: "$4,000", unlocks: "Supply & Demand",
+                desc: "Robo de la lancha modificada Squalo en el astillero de Viceport.",
+                objectives: ["Asaltar el astillero fuertemente protegido", "Accionar el interruptor de la grúa dentro del hangar", "Bajar la Squalo al agua, abordarla y llevarla a la mansión de Starfish Island sorteando a la policía"]
+            },
+            {
+                id: "vc_h18", cat: "4. Historia - Ricardo Díaz", character: "Ricardo Díaz", order: 18,
+                name: "Supply & Demand", diff: "dificil", reward: "$10,000", unlocks: "Rub Out",
+                desc: "Carrera acuática de lanchas a contrarreloj y tiroteo defensivo en popa.",
+                objectives: ["Pilota la Squalo superando a las 3 embarcaciones competidoras", "Llegar en primer lugar al carguero del cartel", "Intercambiar posiciones con Lance y ametrallar a las lanchas y al helicóptero que te persiguen"]
+            },
 
-            // 5. Tommy Vercetti & Lance Vance (Conquista de la Mansión)
-            { id: "vc_m16", cat: "Misiones Principales", name: "Valedera de amenazas (Death Row)", diff: "dificil", desc: "Conduce rápidamente hasta el basurero de Little Haiti antes de que la vida de Lance se agote, elimina a los matones de Díaz y escapa al hospital." },
-            { id: "vc_m17", cat: "Misiones Principales", name: "Frotar (Rub Out)", diff: "dificil", desc: "Asalta la mansión de Ricardo Díaz en Starfish Island junto con Lance y ejecuta a Díaz en su oficina para apoderarte de su imperio y propiedades." },
+            // --- 5. Golpe a Díaz y Mansión Vercetti ---
+            {
+                id: "vc_h19", cat: "5. Historia - Toma de Poder", character: "Kent Paul", order: 19,
+                name: "Death Row", diff: "dificil", reward: "$0", unlocks: "Rub Out",
+                desc: "Rescate contrarreloj de Lance Vance secuestrado en el vertedero de Little Haiti.",
+                objectives: ["Hablar con Kent Paul en el Malibu Club", "Correr al vertedero antes de que se agote la barra de salud de Lance", "Eliminar a la guardia de Díaz, desatar a Lance y llevarlo al hospital"]
+            },
+            {
+                id: "vc_h20", cat: "5. Historia - Toma de Poder", character: "Tommy Vercetti & Lance", order: 20,
+                name: "Rub Out", diff: "dificil", reward: "$50,000", unlocks: "Vercetti Estate & Negocios",
+                desc: "Asalto final a la mansión de Starfish Island para derrocar y eliminar a Ricardo Díaz.",
+                objectives: ["Penetrar el complejo con Lance Vance", "Abrirse paso a tiros por la planta baja y escaleras", "Acribillar a Ricardo Díaz en su despacho y reclamar la propiedad del imperio"]
+            },
+            {
+                id: "vc_h21", cat: "5. Historia - Toma de Poder", character: "Tommy Vercetti", order: 21,
+                name: "Shakedown", diff: "media", reward: "$2,000", unlocks: "Compra de Activos Comerciales",
+                desc: "Extorsión relámpago a los comerciantes del North Point Mall.",
+                objectives: ["Llegar al centro comercial antes de 5 minutos", "Destrozar todas las vidrieras marcadas disparándoles con armas de fuego", "Demostrar a la ciudad que la banda Vercetti controla la protección"]
+            },
+            {
+                id: "vc_h22", cat: "5. Historia - Toma de Poder", character: "Tommy Vercetti", order: 22,
+                name: "Bar Brawl", diff: "media", reward: "$4,000", unlocks: "Cop Land",
+                desc: "Ajuste de cuentas violento contra una empresa de seguridad que extorsiona bares en Ocean Beach.",
+                objectives: ["Reclutar dos sicarios de la mansión", "Liquidar a los guardias en el Front Page Bar", "Asaltar su cuartel general y destruir los vehículos de los cabecillas antes de que huyan"]
+            },
+            {
+                id: "vc_h23", cat: "5. Historia - Toma de Poder", character: "Tommy Vercetti", order: 23,
+                name: "Cop Land", diff: "dificil", reward: "$10,000", unlocks: "$5,000/día en Mansión",
+                desc: "Infiltración policial encubierta y detonación en un café del centro comercial.",
+                objectives: ["Atraer dos policías a un garaje cerrado para quitarles los uniformes", "Subir a una patrulla con Lance e ingresar al North Point Mall", "Plantar la bomba en el Tarbrush Café", "Escapar con 5 estrellas de búsqueda hacia la mansión"]
+            },
 
-            // 6. Misiones de la Mansión Vercetti
-            { id: "vc_m18", cat: "Misiones Principales", name: "Extorsión (Shakedown)", diff: "media", desc: "Tienes 5 minutos para ir al North Point Mall y disparar a las vidrieras de las tiendas designadas para intimidar a los dueños y cobrar protección." },
-            { id: "vc_m19", cat: "Misiones Principales", name: "Pelea en el bar (Bar Brawl)", diff: "media", desc: "Llega con dos guardaespaldas al bar en Ocean Beach, liquida a los matones de seguridad, destruye su base en Front Page Bar y elimina a los dos que huyen en moto." },
-            { id: "vc_m20", cat: "Misiones Principales", name: "Tierra de policías (Cop Land)", diff: "dificil", desc: "Atrae a dos policías a un garaje para robar sus uniformes, entra al centro comercial, planta una bomba en el café y escapa con 5 estrellas de búsqueda." },
+            // --- 6. Asesinatos Telefónicos (Mr. Black) ---
+            {
+                id: "vc_t01", cat: "6. Asesinatos Telefónicos (Mr. Black)", character: "Mr. Black", order: 24,
+                name: "Road Kill", diff: "facil", reward: "$500", unlocks: "Waste the Wife",
+                desc: "Eliminación de un repartidor de pizzas antes de finalizar su recorrido.",
+                objectives: ["Atender la cabina telefónica", "Localizar al repartidor en moto", "Atropellarlo o destruir su vehículo antes de que complete 5 entregas"]
+            },
+            {
+                id: "vc_t02", cat: "6. Asesinatos Telefónicos (Mr. Black)", character: "Mr. Black", order: 25,
+                name: "Waste the Wife", diff: "media", reward: "$2,000", unlocks: "Autocide",
+                desc: "Simulación de accidente automovilístico mortal contra la mujer de un cliente.",
+                objectives: ["Esperar la salida del Comet de la tienda de joyas", "Embestir reiteradamente el vehículo hasta provocar su explosión", "No utilizar ningún tipo de arma de fuego para no alertar al seguro"]
+            },
+            {
+                id: "vc_t03", cat: "6. Asesinatos Telefónicos (Mr. Black)", character: "Mr. Black", order: 26,
+                name: "Autocide", diff: "dificil", reward: "$4,000", unlocks: "Check Out at the Check In",
+                desc: "Aniquilación en serie de una banda criminal en menos de 9 minutos.",
+                objectives: ["Recoger el rifle de francotirador y la moto", "Eliminar a Mike Griffin en el andamio", "Acabar con Dick Tanner en la furgoneta de seguridad", "Abatir a Marcus Hammond y Franco Carter", "Eliminar a Nick Kong y Charlie Dilson antes del tiempo límite"]
+            },
+            {
+                id: "vc_t04", cat: "6. Asesinatos Telefónicos (Mr. Black)", character: "Mr. Black", order: 27,
+                name: "Check Out at the Check In", diff: "media", reward: "$8,000", unlocks: "Loose Ends",
+                desc: "Tiroteo de precisión en el Aeropuerto Internacional Escobar.",
+                objectives: ["Tomar el rifle francotirador en la terminal aérea", "Vigilar el descenso de la mujer en las escaleras mecánicas", "Abatir al hombre con quien hace contacto", "Recoger el maletín y entregarlo en la armería de Downtown"]
+            },
+            {
+                id: "vc_t05", cat: "6. Asesinatos Telefónicos (Mr. Black)", character: "Mr. Black", order: 28,
+                name: "Loose Ends", diff: "dificil", reward: "$16,000", unlocks: "Fin de Contratos Telefónicos",
+                desc: "Incursión táctica en el tejado fuertemente custodiado de la fábrica Cherry Popper.",
+                objectives: ["Entrar al complejo industrial por la puerta trasera", "Limpiar metódicamente a los mercenarios y agentes", "Tomar el maletín de mercancía del helicóptero", "Llevarlo en helicóptero al helipuerto del aeropuerto"]
+            },
 
-            // 7. Banda Cubana (Umberto Robina)
-            { id: "vc_m21", cat: "Misiones de Bandas", name: "Truco del especialista (Stunt Boat Challenge)", diff: "facil", desc: "Completa la carrera en lancha por los canales de Vice City atravesando los 26 puntos de control en menos de 3 minutos." },
-            { id: "vc_m22", cat: "Misiones de Bandas", name: "Cañón (Cannon Fodder)", diff: "media", desc: "Asalta el complejo de los haitianos junto a los cubanos en Little Haiti, despeja la zona de francotiradores y roba la furgoneta cargada de droga." },
-            { id: "vc_m23", cat: "Misiones de Bandas", name: "Encuentro naval (Naval Engagement)", diff: "dificil", desc: "Reúnete con Rico en el muelle, embosca a los haitianos que comercian en una mansión costera, elimina a todos los guardias y huye con el dinero." },
-            { id: "vc_m24", cat: "Misiones de Bandas", name: "Carne de Troya (Trojan Voodoo)", diff: "dificil", desc: "Consigue un Voodoo haitiano con Pepe, infíltrate en su fábrica de drogas, planta tres bombas cronometradas y huye antes de la gran explosión." },
+            // --- 7. Misiones de Bandas (Cubanos y Haitianos) ---
+            {
+                id: "vc_b01", cat: "7. Bandas - Cubanos (Umberto Robina)", character: "Umberto Robina", order: 29,
+                name: "Stunt Boat Challenge", diff: "facil", reward: "$1,000", unlocks: "Cannon Fodder",
+                desc: "Demostración de destreza en lancha para ganar el respeto de Umberto.",
+                objectives: ["Abordar la lancha rápida en el muelle de Little Havana", "Cruzar los 26 puntos de control sobre rampas acuáticas", "Completar la prueba en menos de 3 minutos"]
+            },
+            {
+                id: "vc_b02", cat: "7. Bandas - Cubanos (Umberto Robina)", character: "Umberto Robina", order: 30,
+                name: "Cannon Fodder", diff: "media", reward: "$2,000", unlocks: "Naval Engagement",
+                desc: "Apoyo táctico en una batalla campal contra los Haitianos en una fábrica.",
+                objectives: ["Conseguir un auto de cuatro puertas y recoger a los sicarios cubanos", "Despejar la calle de enemigos", "Abatir al francotirador del tejado", "Robar la furgoneta cargada de droga y volver al café de Umberto"]
+            },
+            {
+                id: "vc_b03", cat: "7. Bandas - Cubanos (Umberto Robina)", character: "Umberto Robina", order: 31,
+                name: "Naval Engagement", diff: "dificil", reward: "$4,000", unlocks: "Trojan Voodoo",
+                desc: "Embosca marítima a una transacción entre Haitianos y traficantes en alta mar.",
+                objectives: ["Reunirse con Rico en la lancha", "Atacar el desembarcadero eliminando a todos los vigías", "Recuperar los maletines con dinero y producto", "Escapar con un nivel de búsqueda alto hasta el restaurante de Umberto"]
+            },
+            {
+                id: "vc_b04", cat: "7. Bandas - Cubanos (Umberto Robina)", character: "Umberto Robina", order: 32,
+                name: "Trojan Voodoo", diff: "dificil", reward: "$10,000", unlocks: "Destrucción Fábrica Haitiana",
+                desc: "Infiltración y voladura de la mayor factoría de drogas de los Haitianos.",
+                objectives: ["Secuestrar un automóvil Voodoo característico haitiano", "Unirse al convoy con Pepe y entrar al complejo sin levantar sospechas", "Colocar las 3 cargas de plástico en diferentes niveles", "Correr hacia la azotea y huir antes de la detonación total"]
+            },
+            {
+                id: "vc_b05", cat: "8. Bandas - Haitianos (Tía Poulet)", character: "Tía Poulet", order: 33,
+                name: "Juju Scramble", diff: "media", reward: "$1,000", unlocks: "Bombs Away!",
+                desc: "Recogida de alijos antes de que los federales los incauten en Little Haiti.",
+                objectives: ["Recoger el primer maletín en la azotea sorteando la emboscada SWAT", "Recoger el segundo y tercer alijo esquivando las patrullas policiales", "Entregar los paquetes en la choza de Tía Poulet"]
+            },
+            {
+                id: "vc_b06", cat: "8. Bandas - Haitianos (Tía Poulet)", character: "Tía Poulet", order: 34,
+                name: "Bombs Away!", diff: "dificil", reward: "$2,000", unlocks: "Dirty Lickin's",
+                desc: "Bombardeo por radiocontrol sobre la flotilla de botes de los Cubanos.",
+                objectives: ["Entrar a la furgoneta Top Fun y pilotar el aeromodelo RC Baron", "Soltar bombas aéreas sobre los botes de huida de los cubanos", "Destruir a los rezagados que intentan escapar en coches de banda"]
+            },
+            {
+                id: "vc_b07", cat: "8. Bandas - Haitianos (Tía Poulet)", character: "Tía Poulet", order: 35,
+                name: "Dirty Lickin's", diff: "media", reward: "$4,000", unlocks: "Fin Misiones Tía Poulet",
+                desc: "Intervención de francotirador protegiendo a los haitianos desde las alturas.",
+                objectives: ["Subir al tejado opuesto al callejón", "Apostarse con el rifle francotirador", "Eliminar a las oleadas sucesivas de pandilleros cubanos antes de que aniquilen a tus aliados"]
+            },
 
-            // 8. Banda Haitiana (Tía Poulet)
-            { id: "vc_m25", cat: "Misiones de Bandas", name: "Poción mágica (Juju Scramble)", diff: "media", desc: "Recoge 3 maletines de droga colocados en tejados antes de que la SWAT y la policía los incauten, sorteando el nivel de búsqueda creciente." },
-            { id: "vc_m26", cat: "Misiones de Bandas", name: "Bombas fuera (Bombs Away!)", diff: "dificil", desc: "Pilota el aeromodelo RC Baron desde la furgoneta Top Fun y lanza bombas sobre los botes de los cubanos antes de que escapen por el agua." },
-            { id: "vc_m27", cat: "Misiones de Bandas", name: "Guerra sucia (Dirty Lickin's)", diff: "media", desc: "Usa un rifle de francotirador desde el tejado opuesto para abatir a los pandilleros cubanos en un callejón sin permitir que eliminen a los haitianos." },
+            // --- 8. Contactos (Love Fist y Mitch Baker) ---
+            {
+                id: "vc_c01m", cat: "9. Contactos - Rockeros y Moteros", character: "Love Fist", order: 36,
+                name: "Love Juice", diff: "facil", reward: "$2,000", unlocks: "Psycho Killer",
+                desc: "Adquisición de estupefacientes y rescate de Mercedes para la banda.",
+                objectives: ["Reunirse con el camello", "Derribarlo de su motocicleta tras el robo del dinero", "Recoger a Mercedes Cortez en su residencia", "Conducir al estudio de grabación antes de que dé comienzo el concierto"]
+            },
+            {
+                id: "vc_c02m", cat: "9. Contactos - Rockeros y Moteros", character: "Love Fist", order: 37,
+                name: "Psycho Killer", diff: "media", reward: "$4,000", unlocks: "Publicity Tour & Mitch Baker",
+                desc: "Caza de un maníaco armado disfrazado de mujer que acosa al grupo.",
+                objectives: ["Conducir la limusina de Love Fist hasta la firma de autógrafos", "Identificar al acosador psicópata al salir del evento", "Perseguir su vehículo por la ciudad y destruirlo"]
+            },
+            {
+                id: "vc_c03m", cat: "9. Contactos - Rockeros y Moteros", character: "Love Fist", order: 38,
+                name: "Publicity Tour", diff: "dificil", reward: "$8,000", unlocks: "Banda Protegida",
+                desc: "Conducción al límite para evitar que una bomba de fragmentación explote.",
+                objectives: ["Subir a la limusina con los integrantes de Love Fist", "Mantener la velocidad por encima del umbral mínimo del velocímetro", "Evitar colisiones graves mientras la banda logra desarmar el explosivo"]
+            },
+            {
+                id: "vc_c04m", cat: "9. Contactos - Rockeros y Moteros", character: "Mitch Baker", order: 39,
+                name: "Alloy Wheels of Steel", diff: "media", reward: "$1,000", unlocks: "Messing with the Man",
+                desc: "Carrera urbana en motocicleta Freeway por las calles de Downtown.",
+                objectives: ["Montar una moto tipo chopper", "Competir contra tres expertos moteros", "Cruzar en primer lugar la línea de meta sin caer de la moto"]
+            },
+            {
+                id: "vc_c05m", cat: "9. Contactos - Rockeros y Moteros", character: "Mitch Baker", order: 40,
+                name: "Messing with the Man", diff: "facil", reward: "$2,000", unlocks: "Hog Tied",
+                desc: "Demostración de anarquía llenando el medidor de caos en 2 minutos.",
+                objectives: ["Destruir coches patrulla, peatones e infraestructura urbana", "Llenar el medidor de caos al 100% antes de finalizar el tiempo", "Sobrevivir a la persecución consecuente"]
+            },
+            {
+                id: "vc_c06m", cat: "9. Contactos - Rockeros y Moteros", character: "Mitch Baker", order: 41,
+                name: "Hog Tied", diff: "dificil", reward: "$4,000", unlocks: "Pacto con Moteros",
+                desc: "Recuperación acrobática de la moto personal de Mitch Baker en territorio rival.",
+                objectives: ["Usar una moto PCJ-600 para realizar un salto acrobático hacia la azotea del taller", "Liquidar a los matones del patio interior", "Robar la moto de Mitch y escapar en medio de camionetas enemigas que te embisten"]
+            },
 
-            // 9. Love Fist
-            { id: "vc_m28", cat: "Misiones de Contactos", name: "El zumo del amor (Love Juice)", diff: "facil", desc: "Compra la sustancia para la banda, persigue al camello que te roba la cartera en moto, recoge a Mercedes Cortez y llévala al estudio antes de que empiece la gira." },
-            { id: "vc_m29", cat: "Misiones de Contactos", name: "Asesino psicópata (Psycho Killer)", diff: "media", desc: "Conduce la limusina al club de firmas de Love Fist, persigue al acosador psicópata que huye en coche y hazlo explotar antes de que escape." },
-            { id: "vc_m30", cat: "Misiones de Contactos", name: "Gira publicitaria (Publicity Tour)", diff: "dificil", desc: "Conduce la limusina manteniendo una velocidad constante por encima del umbral crítico para evitar que detone la bomba mientras la banda la desactiva." },
+            // --- 9. Negocios y Activos Comerciales ---
+            {
+                id: "vc_a01", cat: "10. Negocios - Kaufman Cabs", character: "Kaufman Cabs", order: 42,
+                name: "V.I.P.", diff: "facil", reward: "$1,000", unlocks: "Friendly Rivalry",
+                desc: "Recogida prioritaria de un pasajero millonario en Starfish Island.",
+                objectives: ["Llegar a la mansión del cliente VIP antes que el taxi rival", "Destruir el vehículo competidor que intenta arrebatarte el pasaje", "Llevar al cliente ileso hasta el aeropuerto"]
+            },
+            {
+                id: "vc_a02", cat: "10. Negocios - Kaufman Cabs", character: "Kaufman Cabs", order: 43,
+                name: "Friendly Rivalry", diff: "facil", reward: "$2,000", unlocks: "Cabmageddon",
+                desc: "Guerra de tarifas destruyendo la flota de taxis de la competencia.",
+                objectives: ["Patrullar las calles de Vice City", "Localizar e incinerar 3 taxis pertenecientes a la empresa VC Cabs"]
+            },
+            {
+                id: "vc_a03", cat: "10. Negocios - Kaufman Cabs", character: "Kaufman Cabs", order: 44,
+                name: "Cabmageddon", diff: "media", reward: "$5,000", unlocks: "$5,000/día en Kaufman Cabs",
+                desc: "Supervivencia a una encerrona mortal en los muelles de Viceport.",
+                objectives: ["Conducir hacia el almacén portuario para recoger un supuesto cliente", "Esquivar a la horda de taxis que te embisten durante un minuto", "Destruir el taxi blindado Zebra Cab para consagrar el monopolio"]
+            },
+            {
+                id: "vc_a04", cat: "10. Negocios - Astillero y Cherry Popper", character: "Boatyard", order: 45,
+                name: "Checkpoint Charlie (Astillero)", diff: "media", reward: "Ingresos", unlocks: "$2,000/día en Astillero",
+                desc: "Prueba contrarreloj naval por los canales marítimos de Vice City.",
+                objectives: ["Abordar una de las dos lanchas en el astillero", "Atravesar los 26 puntos de control marítimos antes de terminar el tiempo"]
+            },
+            {
+                id: "vc_a05", cat: "10. Negocios - Astillero y Cherry Popper", character: "Cherry Popper", order: 46,
+                name: "Distribución (Cherry Popper)", diff: "media", reward: "Ingresos", unlocks: "$3,000/día en Cherry Popper",
+                desc: "Venta encubierta de sustancias utilizando el furgón Mr. Whoopee.",
+                objectives: ["Subir a la furgoneta de helados Mr. Whoopee", "Activar la música de reparto", "Completar 50 entregas consecutivas sin salir del vehículo ni ser arrestado"]
+            },
+            {
+                id: "vc_a06", cat: "10. Negocios - Pole Position Club", character: "Pole Position", order: 47,
+                name: "Pole Position Club - Danza Privada", diff: "facil", reward: "Ingresos", unlocks: "$4,000/día en Pole Position",
+                desc: "Inversión recreativa en la sala VIP de baile privado.",
+                objectives: ["Ingresar al reservado trasero", "Permanecer observando el baile hasta gastar un mínimo de $300"]
+            },
+            {
+                id: "vc_a07", cat: "10. Negocios - InterGlobal Studios", character: "InterGlobal Studios", order: 48,
+                name: "Recruitment Drive", diff: "facil", reward: "$1,000", unlocks: "Dildo Dodo",
+                desc: "Contratación estelar de Candy Suxxx y Mercedes para la productora de cine.",
+                objectives: ["Reunirse con Candy en Downtown", "Eliminar a su proxeneta tras una persecución", "Recoger a Mercedes en la pizzería y trasladarlas a los estudios"]
+            },
+            {
+                id: "vc_a08", cat: "10. Negocios - InterGlobal Studios", character: "InterGlobal Studios", order: 49,
+                name: "Dildo Dodo", diff: "dificil", reward: "$2,000", unlocks: "Martha's Mug Shot",
+                desc: "Distribución de folletos aéreos pilotando un hidroavión Skimmer.",
+                objectives: ["Despegar en el Skimmer desde el canal", "Atravesar los aros azules por los cielos de la ciudad", "Repartir toda la propaganda antes de que se agote el combustible"]
+            },
+            {
+                id: "vc_a09", cat: "10. Negocios - InterGlobal Studios", character: "InterGlobal Studios", order: 50,
+                name: "Martha's Mug Shot", diff: "media", reward: "$4,000", unlocks: "G-Spotlight",
+                desc: "Espionaje fotográfico comprometiendo al congresista Alex Shrub.",
+                objectives: ["Seguir la limusina del congresista en el Sparrow", "Apostarse en la azotea del hotel opuesto", "Tomar 3 fotografías nítidas y comprometedoras", "Huir con la cámara sorteando las 5 estrellas de búsqueda"]
+            },
+            {
+                id: "vc_a10", cat: "10. Negocios - InterGlobal Studios", character: "InterGlobal Studios", order: 51,
+                name: "G-Spotlight", diff: "dificil", reward: "$8,000", unlocks: "$7,000/día en Estudios",
+                desc: "Saltos acrobáticos en azoteas con una PCJ-600 para enfocar un proyector publicitario.",
+                objectives: ["Entrar a las oficinas de Downtown con la PCJ-600", "Romper la cristalera y saltar entre los rascacielos marcados", "Alcanzar el último tejado y accionar el reflector gigante antes de la medianoche"]
+            },
+            {
+                id: "vc_a11", cat: "10. Negocios - Print Works", character: "Print Works", order: 52,
+                name: "Spilling the Beans", diff: "facil", reward: "$2,000", unlocks: "Hit the Courier",
+                desc: "Investigación sobre una red de falsificación de dinero en gran escala.",
+                objectives: ["Interrogar a Kent Paul en el Malibu Club", "Infiltrarse en el barco carguero atracado en Viceport", "Interrogar al oficial al mando y regresar a la imprenta con la información"]
+            },
+            {
+                id: "vc_a12", cat: "10. Negocios - Print Works", character: "Print Works", order: 53,
+                name: "Hit the Courier", diff: "dificil", reward: "$5,000", unlocks: "$8,000/día en Imprenta",
+                desc: "Intercepción de las placas matrices de billetes falsos en los muelles.",
+                objectives: ["Emboscar la llegada del helicóptero al muelle", "Abatir a la mensajera y su escolta de mujeres armadas", "Recoger las placas de impresión y transportarlas intactas a Print Works"]
+            },
+            {
+                id: "vc_a13", cat: "10. Negocios - Malibu Club", character: "Malibu Club", order: 54,
+                name: "No Escape?", diff: "media", reward: "$1,000", unlocks: "The Shootist",
+                desc: "Rescate del cerrajero Cam Jones recluido en la comisaría de Washington Beach.",
+                objectives: ["Entrar a la estación policial desarmado", "Conseguir la tarjeta en los vestuarios y abrir la celda de Cam", "Salir del recinto policial con 4 estrellas y pintar el coche en un Pay 'n' Spray"]
+            },
+            {
+                id: "vc_a14", cat: "10. Negocios - Malibu Club", character: "Malibu Club", order: 55,
+                name: "The Shootist", diff: "media", reward: "$2,000", unlocks: "The Driver",
+                desc: "Competición de tiro en Ammu-Nation para convencer a Phil Cassidy.",
+                objectives: ["Entrar al campo de tiro de Downtown", "Superar las tres rondas con pistola, escopeta y fusil", "Alcanzar al menos 60 puntos superando la marca de Phil"]
+            },
+            {
+                id: "vc_a15", cat: "10. Negocios - Malibu Club", character: "Malibu Club", order: 56,
+                name: "The Driver", diff: "dificil", reward: "$3,000", unlocks: "The Job",
+                desc: "Carrera callejera contra Hilary King para asegurar al chófer del golpe.",
+                objectives: ["Competir a bordo de un Sentinel estándar", "Derrotar a Hilary en su veloz Sabre Turbo a lo largo del circuito urbano"]
+            },
+            {
+                id: "vc_a16", cat: "10. Negocios - Malibu Club", character: "Malibu Club", order: 57,
+                name: "The Job", diff: "extrema", reward: "$50,000", unlocks: "$10,000/día en Malibu Club",
+                desc: "El gran atraco al banco El Corrupto en Little Havana.",
+                objectives: ["Llegar al banco junto a todo el equipo", "Abrir la bóveda con Cam Jones", "Contener la alarma y sobrevivir al asalto del equipo SWAT", "Escapar en el taxi con el botín hasta el piso franco"]
+            },
+            {
+                id: "vc_a17", cat: "10. Negocios - Phil Cassidy", character: "Phil Cassidy", order: 58,
+                name: "Gun Runner", diff: "media", reward: "$2,000", unlocks: "Boomshine Saigon",
+                desc: "Interceptación y robo de armamento pesado a una milicia en movimiento.",
+                objectives: ["Derribar las 4 camionetas Waltons que transportan las cajas de armas", "Eliminar a los escoltas en scooter armados", "Recoger todo el cargamento armamentístico y llevárselo a Phil"]
+            },
+            {
+                id: "vc_a18", cat: "10. Negocios - Phil Cassidy", character: "Phil Cassidy", order: 59,
+                name: "Boomshine Saigon", diff: "media", reward: "$4,000", unlocks: "Phil's Place Armas Pesadas",
+                desc: "Traslado médico de urgencia de Phil mutilado bajo intoxicación alcohólica grave.",
+                objectives: ["Subir al Patriot", "Conducir hasta el hospital con la visión severamente distorsionada", "Cambiar de ruta hacia el cirujano clandestino en Little Haiti antes de que Phil se desangre"]
+            },
 
-            // 10. Los Moteros (Mitch Baker)
-            { id: "vc_m31", cat: "Misiones de Contactos", name: "Ruedas de acero (Alloy Wheels of Steel)", diff: "media", desc: "Gana la carrera urbana en moto Freeway por Downtown contra tres moteros profesionales sin caerte de la montura." },
-            { id: "vc_m32", cat: "Misiones de Contactos", name: "Caos en la ciudad (Messing with the Man)", diff: "facil", desc: "Llena el 'medidor de caos' en 2 minutos destruyendo coches, disparando peatones y haciendo explotar todo lo que encuentres a tu paso." },
-            { id: "vc_m33", cat: "Misiones de Contactos", name: "Puntada de pistola (Hog Tied)", diff: "dificil", desc: "Usa una PCJ-600 para saltar por los tejados de Downtown, infíltrate en el complejo de matones callejeros, recupera la moto robada de Mitch y llévala de vuelta." },
+            // --- 10. Misiones Finales ---
+            {
+                id: "vc_fin1", cat: "11. Misiones Finales del Juego", character: "Mafia Forelli", order: 60,
+                name: "Cap the Collector", diff: "dificil", reward: "$30,000", unlocks: "Keep Your Friends Close...",
+                desc: "Protección a sangre y fuego de tus activos ante los cobradores de Sonny Forelli.",
+                objectives: ["Localizar a las duplas de recaudadores de Sonny en moto", "Impedir que vacíen los ingresos diarios de tus negocios", "Exterminar a todas las cuadrillas de cobradores en la ciudad"]
+            },
+            {
+                id: "vc_fin2", cat: "11. Misiones Finales del Juego", character: "Clímax Final", order: 61,
+                name: "Keep Your Friends Close...", diff: "extrema", reward: "$30,000", unlocks: "Completado Canónico de Historia",
+                desc: "El gran enfrentamiento final en la Mansión Vercetti contra la traición y el pasado.",
+                objectives: ["Defender la caja fuerte en el vestíbulo principal", "Perseguir y acribillar al traidor de Lance Vance en el helipuerto", "Descender y liquidar a Sonny Forelli para consolidarte como el amo absoluto de Vice City"]
+            },
 
-            // 11. Misiones de Cabina Telefónica (Sr. Black)
-            { id: "vc_m34", cat: "Contratos de Asesinato", name: "El mensajero de la muerte (Road Kill)", diff: "facil", desc: "Atropella o destruye al repartidor de pizza en motocicleta antes de que complete sus 5 entregas en la ciudad." },
-            { id: "vc_m35", cat: "Contratos de Asesinato", name: "Eliminación de residuos (Waste the Wife)", diff: "media", desc: "Embestir repetidamente el coche de la esposa del cliente con tu vehículo hasta que explote simulando un accidente de tráfico sin usar armas." },
-            { id: "vc_m36", cat: "Contratos de Asesinato", name: "Autocidio (Autocide)", diff: "dificil", desc: "Asesina a los 6 miembros de una banda de atracadores en 9 minutos por toda la ciudad usando rifles, francotiradores y lanzacohetes." },
-            { id: "vc_m37", cat: "Contratos de Asesinato", name: "Comprobar (Check Out at the Check In)", diff: "media", desc: "Sigue al objetivo en el Aeropuerto Escobar, francotíralo cuando baje por la escalera mecánica, roba su maletín y llévalo a Downtown." },
-            { id: "vc_m38", cat: "Contratos de Asesinato", name: "Cabos sueltos (Loose Ends)", diff: "dificil", desc: "Asalta el tejado de la fábrica de helados Cherry Popper, liquida a todos los agentes federales fuertemente armados y roba el maletín del helicóptero." },
+            // --- 11. Sunshine Autos (Listas de Vehículos Individuales) ---
+            {
+                id: "vc_car_l1", cat: "12. Sunshine Autos - Listas de Vehículos", character: "Sunshine Autos", order: 62,
+                name: "Lista 1: Vehículos Urbanos (6)", diff: "media", reward: "Deluxo", unlocks: "$1,500/día",
+                desc: "Entrega de: Landstalker, Idaho, Esperanto, Stallion, Rancher y Blista Compact en el garaje.",
+                objectives: ["Landstalker entregado", "Idaho entregado", "Esperanto entregado", "Stallion entregado", "Rancher entregado", "Blista Compact entregado"]
+            },
+            {
+                id: "vc_car_l2", cat: "12. Sunshine Autos - Listas de Vehículos", character: "Sunshine Autos", order: 63,
+                name: "Lista 2: Berlinas y Lujo (6)", diff: "media", reward: "Sabre Turbo", unlocks: "$4,000/día",
+                desc: "Entrega de: Sabre, Virgo, Sentinel, Stretch, Washington y Admiral.",
+                objectives: ["Sabre entregado", "Virgo entregado", "Sentinel entregado", "Stretch entregado", "Washington entregado", "Admiral entregado"]
+            },
+            {
+                id: "vc_car_l3", cat: "12. Sunshine Autos - Listas de Vehículos", character: "Sunshine Autos", order: 64,
+                name: "Lista 3: Deportivos Exóticos (6)", diff: "dificil", reward: "Sandking", unlocks: "$6,500/día",
+                desc: "Entrega de: Cheetah, Infernus, Banshee, Phoenix, Comet y Stinger.",
+                objectives: ["Cheetah entregado", "Infernus entregado", "Banshee entregado", "Phoenix entregado", "Comet entregado", "Stinger entregado"]
+            },
+            {
+                id: "vc_car_l4", cat: "12. Sunshine Autos - Listas de Vehículos", character: "Sunshine Autos", order: 65,
+                name: "Lista 4: Especiales y Únicos (6)", diff: "dificil", reward: "Hotring Racer", unlocks: "$9,000/día",
+                desc: "Entrega de: Voodoo, Cuban Hermes, Caddy, Baggage Handler, Pizza Boy y Mr. Whoopee.",
+                objectives: ["Voodoo entregado", "Cuban Hermes entregado", "Caddy entregado", "Baggage Handler entregado", "Pizza Boy entregado", "Mr. Whoopee entregado"]
+            },
 
-            // 12. Activos Comerciales (Misiones de Negocios)
-            { id: "vc_m39", cat: "Activos y Negocios", name: "Astillero naval (Boatyard)", diff: "media", desc: "Supera la prueba contrarreloj 'Punto de control Charlie' usando cualquiera de las dos lanchas rápidas del muelle para generar $2,000/día." },
-            { id: "vc_m40", cat: "Activos y Negocios", name: "Cherry Popper (Vendedora de Helados)", diff: "media", desc: "Haz 50 repartos de droga seguidos con la furgoneta Mr. Whoopee sin ser arrestado ni bajarte de ella para generar $3,000/día." },
-            { id: "vc_m41", cat: "Activos y Negocios", name: "Club Pole Position (Sala VIP)", diff: "facil", desc: "Entra a la sala VIP trasera del club de striptease y gasta al menos $300 viendo el baile privado para generar $4,000/día." },
-            { id: "vc_m42", cat: "Activos y Negocios", name: "Kaufman Cabs: VIP", diff: "facil", desc: "Recoge al cliente VIP en Starfish Island antes que el taxi rival y condúcelo al aeropuerto tras destruir el vehículo de la competencia." },
-            { id: "vc_m43", cat: "Activos y Negocios", name: "Kaufman Cabs: Competición amistosa", diff: "facil", desc: "Destruye 3 taxis de la compañía rival VC Cabs que circulan por la ciudad para arrebatarles la cuota de clientes." },
-            { id: "vc_m44", cat: "Activos y Negocios", name: "Kaufman Cabs: Taxiageddon", diff: "media", desc: "Sobrevive a la trampa en Viceport donde múltiples taxis te embisten para destruirte y acaba con el taxi líder Zebra Cab para generar $5,000/día." },
-            { id: "vc_m45", cat: "Activos y Negocios", name: "Estudio Cinematográfico: Campaña de reclutamiento", diff: "facil", desc: "Recluta a Candy Suxxx en Downtown, elimina a su proxeneta en su coche deportivo y convence a Mercedes en la pizzería." },
-            { id: "vc_m46", cat: "Activos y Negocios", name: "Estudio Cinematográfico: Consolador Dodo", diff: "dificil", desc: "Vuela en el hidroavión Skimmer pasando por los puntos de control aéreos sobre Vice City para repartir folletos promocionales." },
-            { id: "vc_m47", cat: "Activos y Negocios", name: "Estudio Cinematográfico: La foto policial de Martha", diff: "media", desc: "Sigue la limusina de Alex Shrub en el Sparrow, toma fotos comprometedoras con Candy Suxxx desde el tejado y escapa con 5 estrellas." },
-            { id: "vc_m48", cat: "Activos y Negocios", name: "Estudio Cinematográfico: Punto G", diff: "dificil", desc: "Salta de tejado en tejado por los rascacielos de Downtown con una PCJ-600 para enfocar el foco gigante hacia la fachada del edificio ($7,000/día)." },
-            { id: "vc_m49", cat: "Activos y Negocios", name: "Imprenta: Descubriendo el pastel", diff: "facil", desc: "Dirígete a Vice City Beach, interroga a Kent Paul en el Malibu Club y vuela en helicóptero a los muelles para obtener información." },
-            { id: "vc_m50", cat: "Activos y Negocios", name: "Imprenta: Golpea al mensajero", diff: "dificil", desc: "Embosca al mensajero femenino que desembarca en helicóptero en los muelles, elimina a su escolta y roba las placas de billetes falsos ($8,000/día)." },
-            { id: "vc_m51", cat: "Activos y Negocios", name: "Malibu Club: ¿Sin escapatoria?", diff: "media", desc: "Entra en la comisaría de Washington Beach, libera a Cam Jones de la celda y escoltalo a salvo esquivando a las fuerzas policiales." },
-            { id: "vc_m52", cat: "Activos y Negocios", name: "Malibu Club: El tirador", diff: "media", desc: "Consigue al menos 60 puntos en las 3 fases de tiro del campo de tiro de Ammu-Nation para convencer a Phil Cassidy de unirse." },
-            { id: "vc_m53", cat: "Activos y Negocios", name: "Malibu Club: Conductor", diff: "dificil", desc: "Vence a Hilary King en una carrera urbana callejera conduciendo un Sentinel contra su veloz Sabre Turbo." },
-            { id: "vc_m54", cat: "Activos y Negocios", name: "Malibu Club: El atraco (The Job)", diff: "extrema", desc: "Atraca el banco El Corrupto de Little Havana, entra a la cámara acorazada, sobrevive al asalto SWAT y escapa al garaje de Cam ($10,000/día)." },
-            { id: "vc_m55", cat: "Activos y Negocios", name: "Autos Sunshine: Listas de Vehículos 1 al 4", diff: "dificil", desc: "Roba y entrega las 24 variedades de coches y todoterrenos solicitados en los garajes de Sunshine Autos ($9,000/día)." },
-            { id: "vc_m56", cat: "Activos y Negocios", name: "Phil Cassidy: Traficante de armas", diff: "media", desc: "Recoge las cajas de munición que caen de los camiones de los matones mexicanos y liquida a los rezagados antes de que huyan." },
-            { id: "vc_m57", cat: "Activos y Negocios", name: "Phil Cassidy: Boomshine Saigon", diff: "media", desc: "Conduce la furgoneta Patriot llevando a Phil gravemente herido y mutilado al cirujano bajo el efecto psicodélico del Boomshine." },
+            // --- 12. Carreras Callejeras Sunshine Autos ---
+            {
+                id: "vc_race_1", cat: "13. Carreras Callejeras (Sunshine Autos)", character: "Carreras Urbanas", order: 66,
+                name: "1. Terminal Velocity", diff: "media", reward: "$400", unlocks: "1/6 Carreras",
+                desc: "Carrera rápida por los alrededores del puerto y aeropuerto.",
+                objectives: ["Pagar cuota de inscripción", "Llegar en 1.er lugar superando a los otros 3 pilotos"]
+            },
+            {
+                id: "vc_race_2", cat: "13. Carreras Callejeras (Sunshine Autos)", character: "Carreras Urbanas", order: 67,
+                name: "2. Ocean Drive", diff: "media", reward: "$2,000", unlocks: "2/6 Carreras",
+                desc: "Circuito costero a lo largo de Washington Beach y Ocean Beach.",
+                objectives: ["Pagar cuota de inscripción", "Terminar en 1.er lugar"]
+            },
+            {
+                id: "vc_race_3", cat: "13. Carreras Callejeras (Sunshine Autos)", character: "Carreras Urbanas", order: 68,
+                name: "3. Border Run", diff: "media", reward: "$4,000", unlocks: "3/6 Carreras",
+                desc: "Carrera por los distritos industriales de Little Haiti y Little Havana.",
+                objectives: ["Pagar cuota", "Terminar en 1.er lugar"]
+            },
+            {
+                id: "vc_race_4", cat: "13. Carreras Callejeras (Sunshine Autos)", character: "Carreras Urbanas", order: 69,
+                name: "4. Capital Cruise", diff: "media", reward: "$8,000", unlocks: "4/6 Carreras",
+                desc: "Recorrido amplio bordeando los canales interiores y Starfish Island.",
+                objectives: ["Pagar cuota", "Terminar en 1.er lugar"]
+            },
+            {
+                id: "vc_race_5", cat: "13. Carreras Callejeras (Sunshine Autos)", character: "Carreras Urbanas", order: 70,
+                name: "5. Tour!", diff: "dificil", reward: "$20,000", unlocks: "5/6 Carreras",
+                desc: "Circuito de alta velocidad conectando puentes interinsulares.",
+                objectives: ["Pagar cuota", "Terminar en 1.er lugar"]
+            },
+            {
+                id: "vc_race_6", cat: "13. Carreras Callejeras (Sunshine Autos)", character: "Carreras Urbanas", order: 71,
+                name: "6. V.C. Endurance", diff: "dificil", reward: "$40,000", unlocks: "6/6 Carreras Completadas",
+                desc: "El circuito más extenso y desafiante que rodea toda la metrópoli.",
+                objectives: ["Pagar cuota de entrada", "Terminar en 1.er lugar"]
+            },
 
-            // 13. Misiones Finales
-            { id: "vc_m58", cat: "Misiones Finales", name: "El cobrador de impuestos (Cap the Collector)", diff: "dificil", desc: "Intercepta y liquida a las parejas de mafiosos de Sonny Forelli en motocicleta antes de que cobren el dinero de tus negocios en la ciudad." },
-            { id: "vc_m59", cat: "Misiones Finales", name: "Mantén cerca a tus amigos... (Keep Your Friends Close...)", diff: "extrema", desc: "Defiende la caja fuerte de tu mansión, persigue y mata al traidor de Lance Vance en el tejado, y abate finalmente a Sonny Forelli en el vestíbulo principal." },
+            // --- 13. Estadio Hyman Memorial ---
+            {
+                id: "vc_stadium_1", cat: "14. Eventos del Estadio (Hyman Memorial)", character: "Estadio (20:00 - 00:00)", order: 72,
+                name: "Hotring", diff: "dificil", reward: "$5,000", unlocks: "1/3 Estadio",
+                desc: "Carrera de turismos en óvalo a 12 vueltas esquivando coches accidentados.",
+                objectives: ["Entrar entre 20:00 y 00:00", "Reparar el auto en los boxes cuando eche humo", "Finalizar la carrera en 1.er lugar"]
+            },
+            {
+                id: "vc_stadium_2", cat: "14. Eventos del Estadio (Hyman Memorial)", character: "Estadio (20:00 - 00:00)", order: 73,
+                name: "Bloodring", diff: "media", reward: "$1,000 + bonus", unlocks: "2/3 Estadio",
+                desc: "Derbi de demolición pasando por puntos de control para ganar tiempo.",
+                objectives: ["Embestir y cruzar marcas amarillas", "Hacer subir el temporizador hasta 1 minuto", "Sobrevivir a la destrucción del vehículo"]
+            },
+            {
+                id: "vc_stadium_3", cat: "14. Eventos del Estadio (Hyman Memorial)", character: "Estadio (20:00 - 00:00)", order: 74,
+                name: "Dirtring", diff: "dificil", reward: "$50,000", unlocks: "3/3 Estadio",
+                desc: "Prueba acrobática sobre una moto Sánchez a través de rampas, vigas y fosos.",
+                objectives: ["Recoger los 32 puntos de control repartidos en la pista de obstáculos", "Completar el circuito"]
+            },
 
-            // 14. Vehículos de Servicio (R3)
-            { id: "vc_s01", cat: "Vehículos de Emergencia y Servicio", name: "Paramédico - Nivel 12", diff: "dificil", desc: "Completa 12 niveles consecutivos de recogida y traslado de pacientes al hospital en la ambulancia (Otorga carrera infinita)." },
-            { id: "vc_s02", cat: "Vehículos de Emergencia y Servicio", name: "Bombero - Nivel 12", diff: "media", desc: "Apaga 12 incendios consecutivos de vehículos y peatones en llamas usando el camión de bomberos (Otorga inmunidad al fuego)." },
-            { id: "vc_s03", cat: "Vehículos de Emergencia y Servicio", name: "Vigilante (Policía) - Nivel 12", diff: "dificil", desc: "Neutraliza criminales en 12 niveles consecutivos usando un coche de policía, Hunter o Rhino (Otorga 150 de blindaje)." },
-            { id: "vc_s04", cat: "Vehículos de Emergencia y Servicio", name: "Taxista - 100 Carreras", diff: "facil", desc: "Transporta a 100 pasajeros en taxi de forma acumulativa (Desbloquea el salto hidráulico en todos los taxis)." },
-            { id: "vc_s05", cat: "Vehículos de Emergencia y Servicio", name: "Repartidor de Pizza - Nivel 10", diff: "facil", desc: "Entrega pedidos de pizza consecutivamente con la moto Pizza Boy hasta completar el nivel 10 (Otorga 150 de salud máxima)." },
+            // --- 14. Desafíos Off-Road y Contrarrelojes ---
+            {
+                id: "vc_off_1", cat: "15. Desafíos Off-Road y Especiales", character: "Contrarreloj", order: 75,
+                name: "Cone Crazy", diff: "facil", reward: "$100 - $100k", unlocks: "Completado",
+                desc: "Recogida cronometrada en el aparcamiento de Ocean Beach sobre un Stallion.",
+                objectives: ["Entrar al Stallion en el tejado", "Recoger los 5 checkpoints sin romper ningún cono"]
+            },
+            {
+                id: "vc_off_2", cat: "15. Desafíos Off-Road y Especiales", character: "Contrarreloj", order: 76,
+                name: "PCJ Playground", diff: "media", reward: "$1,000", unlocks: "Completado",
+                desc: "Circuito acrobático vertical en moto recogiendo puntos en Ocean Beach.",
+                objectives: ["Subir a la PCJ-600", "Atravesar los 24 puntos de control antes de 2 minutos"]
+            },
+            {
+                id: "vc_off_3", cat: "15. Desafíos Off-Road y Especiales", character: "Contrarreloj", order: 77,
+                name: "Trial by Dirt", diff: "media", reward: "$100", unlocks: "Completado",
+                desc: "Circuito de lodo en Downtown con lluvia y emboscadas a bordo de una Sánchez.",
+                objectives: ["Montar la Sánchez en el circuito de tierra", "Completar la vuelta sorteando los obstáculos"]
+            },
+            {
+                id: "vc_off_4", cat: "15. Desafíos Off-Road y Especiales", character: "Contrarreloj", order: 78,
+                name: "Test Track", diff: "media", reward: "$100", unlocks: "Completado",
+                desc: "El mismo trazado accidentado de tierra completado al volante de un todoterreno Landstalker.",
+                objectives: ["Entrar al Landstalker", "Superar el circuito sin volcar"]
+            },
+            {
+                id: "vc_off_5", cat: "15. Desafíos Off-Road y Especiales", character: "Galería de Tiro", order: 79,
+                name: "Galería de Tiro Ammu-Nation", diff: "facil", reward: "Recarga Rápida", unlocks: "Habilidad Permanente",
+                desc: "Prueba de puntería en la armería de Downtown.",
+                objectives: ["Entrar al campo de tiro", "Alcanzar un mínimo de 45 puntos"]
+            },
 
-            // 15. Desafíos Off-Road y Contrarreloj
-            { id: "vc_c01", cat: "Desafíos y Contrarrelojes", name: "Carreras de Sunshine Autos (1 a 6)", diff: "media", desc: "Gana las 6 carreras callejeras del mapa de la pared del garaje: Terminal, Ocean Drive, Capital Cruise, etc." },
-            { id: "vc_c02", cat: "Desafíos y Contrarrelojes", name: "Desafío PCJ Playground", diff: "media", desc: "Recoge 24 puntos de control en menos de 2 minutos sobre la PCJ-600 en Ocean Beach realizando saltos sobre azoteas." },
-            { id: "vc_c03", cat: "Desafíos y Contrarrelojes", name: "Cone Crazy", diff: "facil", desc: "Recoge los 5 puntos de control en el aparcamiento de Ocean Beach con un Stallion sin volcar ni derribar conos." },
-            { id: "vc_c04", cat: "Desafíos y Contrarrelojes", name: "Trial by Dirt", diff: "media", desc: "Supera el circuito todoterreno de tierra en Downtown con la moto Sánchez mientras esquivas a matones armados." },
-            { id: "vc_c05", cat: "Desafíos y Contrarrelojes", name: "Test Track", diff: "media", desc: "Completa el circuito de tierra de Downtown a bordo de un Landstalker sin volcar ni destruir el todoterreno." },
-            { id: "vc_c06", cat: "Desafíos y Contrarrelojes", name: "Desafíos Chopper Checkpoint (4)", diff: "media", desc: "Completa los 4 circuitos de helicóptero Sparrow situados en Ocean Beach, Vice Point, Little Haiti y Downtown." },
-            { id: "vc_c07", cat: "Desafíos y Contrarrelojes", name: "Misiones RC Top Fun (3)", diff: "media", desc: "Supera las tres pruebas de vehículos teledirigidos: RC Bandit Race, RC Baron Race y RC Raider Pickup." },
-            { id: "vc_c08", cat: "Desafíos y Contrarrelojes", name: "Hyman Memorial Stadium (3 Eventos)", diff: "dificil", desc: "Supera los eventos nocturnos del estadio entre las 20:00 y las 00:00: Hotring, Bloodring y Dirtring." },
-            { id: "vc_c09", cat: "Desafíos y Contrarrelojes", name: "Puntuación de Galería Ammu-Nation (45 pts)", diff: "facil", desc: "Obtén al menos 45 puntos en la galería de tiro de Ammu-Nation de Downtown para obtener recarga rápida de armas." },
+            // --- 15. Circuitos de Helicóptero Sparrow (Chopper Checkpoints) ---
+            {
+                id: "vc_chop_1", cat: "16. Chopper Checkpoints (Sparrow)", character: "Piloto", order: 80,
+                name: "Ocean Beach Chopper", diff: "media", reward: "$100", unlocks: "1/4 Chopper",
+                desc: "Circuito aéreo por los tejados de Ocean Beach.",
+                objectives: ["Subir al Sparrow en el tejado", "Recoger todos los puntos de control"]
+            },
+            {
+                id: "vc_chop_2", cat: "16. Chopper Checkpoints (Sparrow)", character: "Piloto", order: 81,
+                name: "Vice Point Chopper", diff: "media", reward: "$100", unlocks: "2/4 Chopper",
+                desc: "Circuito aéreo alrededor de los edificios de Vice Point.",
+                objectives: ["Subir al Sparrow en Vice Point", "Completar la ruta de puntos"]
+            },
+            {
+                id: "vc_chop_3", cat: "16. Chopper Checkpoints (Sparrow)", character: "Piloto", order: 82,
+                name: "Little Haiti Chopper", diff: "media", reward: "$100", unlocks: "3/4 Chopper",
+                desc: "Circuito de baja altura sobre las casas de Little Haiti.",
+                objectives: ["Subir al Sparrow de la barriada", "Cruzar todos los marcadores"]
+            },
+            {
+                id: "vc_chop_4", cat: "16. Chopper Checkpoints (Sparrow)", character: "Piloto", order: 83,
+                name: "Downtown Chopper", diff: "media", reward: "$100", unlocks: "4/4 Chopper",
+                desc: "Prueba de vuelo de precisión entre los rascacielos de Downtown.",
+                objectives: ["Subir al Sparrow en la azotea de Downtown", "Superar todos los puntos aéreos"]
+            },
 
-            // 16. Coleccionables, Saltos y Propiedades
-            { id: "vc_s01b", cat: "Coleccionables y Secretos (100%)", name: "100 Paquetes Ocultos", diff: "extrema", desc: "Recoge las 100 figuras de estatua tiki repartidas por toda la urbe para desbloquear el Hunter, Rhino y armas gratuitas." },
-            { id: "vc_s02b", cat: "Coleccionables y Secretos (100%)", name: "36 Saltos Únicos", diff: "dificil", desc: "Ejecuta con éxito los 36 saltos acrobáticos con vehículos por rampas y accesos repartidos por la ciudad." },
-            { id: "vc_s03b", cat: "Coleccionables y Secretos (100%)", name: "35 Masacres (Rampages)", diff: "dificil", desc: "Supera los 35 iconos de calavera eliminando las cuotas exigidas de miembros de bandas con armas concretas." },
-            { id: "vc_s04b", cat: "Coleccionables y Secretos (100%)", name: "15 Tiendas Atracadas", diff: "facil", desc: "Apunta con un arma a los dependientes de las 15 tiendas de conveniencia, joyerías y farmacias hasta obtener el botín." },
-            { id: "vc_s05b", cat: "Coleccionables y Secretos (100%)", name: "Compra de los 7 Pisos Francos", diff: "facil", desc: "Adquiere todas las casas y áticos residenciales: 1102 Washington St, Ocean Heights, Links View, El Swanko, etc." }
+            // --- 16. Misiones de Radiocontrol Top Fun ---
+            {
+                id: "vc_rc_1", cat: "17. Misiones Top Fun (Vehículos RC)", character: "Radiocontrol", order: 84,
+                name: "RC Bandit Race", diff: "media", reward: "$100", unlocks: "1/3 RC",
+                desc: "Carrera de coches teledirigidos en la pista de arena de Vice Point.",
+                objectives: ["Entrar a la furgoneta Top Fun en la playa", "Ganar la carrera contra los otros 3 RC Bandit"]
+            },
+            {
+                id: "vc_rc_2", cat: "17. Misiones Top Fun (Vehículos RC)", character: "Radiocontrol", order: 85,
+                name: "RC Baron Race", diff: "media", reward: "$100", unlocks: "2/3 RC",
+                desc: "Carrera aérea de avionetas en el aparcamiento del North Point Mall.",
+                objectives: ["Subir a la furgoneta en la planta superior del estacionamiento", "Vencer en la carrera a las avionetas rivales"]
+            },
+            {
+                id: "vc_rc_3", cat: "17. Misiones Top Fun (Vehículos RC)", character: "Radiocontrol", order: 86,
+                name: "RC Raider Pickup", diff: "media", reward: "$100", unlocks: "3/3 RC",
+                desc: "Recogida de puntos de control dentro del aeropuerto con un helicóptero RC.",
+                objectives: ["Entrar a la furgoneta Top Fun del aeropuerto", "Recoger todos los checkpoints sin estrellar el helicóptero"]
+            },
+
+            // --- 17. Misiones de Vehículos de Emergencia / Servicio ---
+            {
+                id: "vc_srv_1", cat: "18. Misiones de Servicio (Vehículos R3)", character: "Emergencias", order: 87,
+                name: "Paramédico - Nivel 12", diff: "dificil", reward: "Sprint Infinito", unlocks: "Resistencia Ilimitada",
+                desc: "Transporte de pacientes heridos hasta el hospital en la ambulancia.",
+                objectives: ["Subir a la ambulancia", "Completar del Nivel 1 al 12 consecutivamente sin bajarse ni destruir el vehículo"]
+            },
+            {
+                id: "vc_srv_2", cat: "18. Misiones de Servicio (Vehículos R3)", character: "Emergencias", order: 88,
+                name: "Bombero - Nivel 12", diff: "media", reward: "Inmunidad al Fuego", unlocks: "Tommy Ignífugo",
+                desc: "Extinción de vehículos y personas en llamas con el cañón de agua.",
+                objectives: ["Subir al camión de bomberos", "Superar del Nivel 1 al 12 apagando los focos de incendio"]
+            },
+            {
+                id: "vc_srv_3", cat: "18. Misiones de Servicio (Vehículos R3)", character: "Emergencias", order: 89,
+                name: "Vigilante - Nivel 12", diff: "dificil", reward: "Blindaje Máximo a 150", unlocks: "+50 Blindaje",
+                desc: "Neutralización de criminales armados en vehículos patrulla, Hunter o Rhino.",
+                objectives: ["Subir a un auto policial, moto, tanque o helicóptero militar", "Eliminar criminales consecutivamente del Nivel 1 al 12"]
+            },
+            {
+                id: "vc_srv_4", cat: "18. Misiones de Servicio (Vehículos R3)", character: "Servicios", order: 90,
+                name: "Repartidor de Pizza - Nivel 10", diff: "facil", reward: "Salud Máxima a 150", unlocks: "+50 Salud",
+                desc: "Entrega a domicilio de pizzas con la moto Pizza Boy.",
+                objectives: ["Subir a la Pizza Boy en la pizzería", "Completar 10 niveles acumulando 55 pizzas entregadas"]
+            },
+            {
+                id: "vc_srv_5", cat: "18. Misiones de Servicio (Vehículos R3)", character: "Servicios", order: 91,
+                name: "Taxista - 100 Carreras", diff: "facil", reward: "Suspensión de Salto", unlocks: "Salto Hidráulico en Taxis",
+                desc: "Transporte regular de ciudadanos por Vice City.",
+                objectives: ["Subir a un Taxi o Cabbie", "Completar un acumulado total de 100 tarifas completadas"]
+            },
+
+            // --- 18. Pisos Francos (Safehouses) ---
+            {
+                id: "vc_prop_all", cat: "19. Propiedades y Pisos Francos", character: "Bienes Raíces", order: 92,
+                name: "Compra de los 7 Pisos Francos Requeridos", diff: "facil", reward: "Pisos Francos", unlocks: "7/7 Adquiridos",
+                desc: "Adquisición de todas las casas y apartamentos residenciales con punto de guardado.",
+                objectives: ["1102 Washington Street ($6,500)", "Ocean Heights Apartment ($7,000)", "3321 Vice Point ($2,500)", "Links View Apartment ($6,000)", "El Swanko Casa ($8,000)", "Skumole Shack ($1,000)", "Hyman Condo ($14,000)"]
+            },
+
+            // --- 19. Atracos a Tiendas (15) ---
+            {
+                id: "vc_rob_all", cat: "20. Atraco a Comercios (15)", character: "Robos Menores", order: 93,
+                name: "Atraco a las 15 Tiendas de la Ciudad", diff: "facil", reward: "$$$", unlocks: "15/15 Completado",
+                desc: "Apuntar con un arma de fuego al cajero hasta recibir el dinero en las 15 tiendas.",
+                objectives: [
+                    "Corner Store (Vice Point)", "Pharmacy (Vice Point)", "Jewelry Store (Vice Point)",
+                    "Dispensary (Downtown)", "Jewelry Store (Downtown)", "Pharmacy (Downtown)",
+                    "Laundromat (Little Havana)", "Deli (Little Havana)", "Pharmacy (Little Havana)",
+                    "Donut Store (Little Havana)", "Tooled Up (North Point Mall)", "Gash (North Point Mall)",
+                    "Music Store (North Point Mall)", "Jewelry Store (North Point Mall)", "Supermarket (Little Haiti)"
+                ]
+            },
+
+            // --- 20. Coleccionables del 100% ---
+            {
+                id: "vc_col_pack", cat: "21. Coleccionables del 100%", character: "Exploración", order: 94,
+                name: "100 Paquetes Ocultos", diff: "extrema", reward: "Blindaje, Armas, Rhino y Hunter", unlocks: "100/100 Obtenidos",
+                desc: "Recoger las 100 figuras de tiki verde repartidas por tierra y agua en Vice City.",
+                objectives: ["Paquetes 1 al 20 recogidos", "Paquetes 21 al 40 recogidos", "Paquetes 41 al 60 recogidos", "Paquetes 61 al 80 recogidos", "Paquetes 81 al 100 recogidos"]
+            },
+            {
+                id: "vc_col_rampage", cat: "21. Coleccionables del 100%", character: "Violencia", order: 95,
+                name: "35 Masacres (Rampages)", diff: "dificil", reward: "$$$", unlocks: "35/35 Superadas",
+                desc: "Superar los 35 iconos de calavera eliminando cuotas de pandilleros con armamento forzado.",
+                objectives: ["Masacres 1 a 10 en Vice City Beach", "Masacres 11 a 20 en Starfish y Prawn Island", "Masacres 21 a 35 en Vice City Mainland"]
+            },
+            {
+                id: "vc_col_jumps", cat: "21. Coleccionables del 100%", character: "Acrobacias", order: 96,
+                name: "36 Saltos Únicos", diff: "dificil", reward: "$$$", unlocks: "36/36 Saltos Completados",
+                desc: "Completar los 36 saltos cinemáticos en rampas naturales y urbanas con vehículos veloces.",
+                objectives: ["Saltos 1 a 12 completados", "Saltos 13 a 24 completados", "Saltos 25 a 36 completados"]
+            }
         ];
 
         let masterStore = {};
         let activeTaskId = null;
         let localVideoBlob = null;
+        let currentFilter = "";
 
         function init() {
             const raw = localStorage.getItem('gta_master_save');
@@ -415,16 +1031,28 @@
         function renderTasks() {
             const container = document.getElementById('tasksContainer');
             container.innerHTML = '';
-            const categories = [...new Set(tasks.map(t => t.cat))];
+
+            const filteredTasks = tasks.filter(t => {
+                const search = currentFilter.toLowerCase();
+                return t.name.toLowerCase().includes(search) ||
+                       t.cat.toLowerCase().includes(search) ||
+                       t.desc.toLowerCase().includes(search) ||
+                       (t.character && t.character.toLowerCase().includes(search));
+            });
+
+            const categories = [...new Set(filteredTasks.map(t => t.cat))];
 
             categories.forEach(cat => {
-                const catTasks = tasks.filter(t => t.cat === cat);
+                const catTasks = filteredTasks.filter(t => t.cat === cat);
                 const catDone = catTasks.filter(t => masterStore[GAME_ID][t.id] && masterStore[GAME_ID][t.id].done).length;
+
+                const section = document.createElement('div');
+                section.className = 'category-section';
 
                 const headerWrap = document.createElement('div');
                 headerWrap.className = 'category-title';
                 headerWrap.innerHTML = `<span>${cat}</span><span class="category-sub">${catDone} / ${catTasks.length}</span>`;
-                container.appendChild(headerWrap);
+                section.appendChild(headerWrap);
 
                 const grid = document.createElement('div');
                 grid.className = 'tasks-grid';
@@ -438,20 +1066,27 @@
                             <input type="checkbox" class="task-checkbox" ${status.done ? 'checked' : ''} onchange="toggleDone('${task.id}', this.checked)">
                             <div class="task-info" onclick="openModal('${task.id}')">
                                 <div class="task-name">${task.name}</div>
+                                <div class="task-character">${task.character || 'Misión'}</div>
                             </div>
                         </div>
                         <div class="task-bottom">
                             <span class="difficulty diff-${task.diff}">${task.diff}</span>
-                            <button class="btn-modal" onclick="openModal('${task.id}')">${status.video ? '📺 Ver Video' : '➕ Video / Info'}</button>
+                            <button class="btn-modal" onclick="openModal('${task.id}')">${status.video ? '📺 Ver Video' : '➕ Ficha / Video'}</button>
                         </div>
                     `;
                     grid.appendChild(card);
                 });
 
-                container.appendChild(grid);
+                section.appendChild(grid);
+                container.appendChild(section);
             });
 
             calcProgress();
+        }
+
+        function handleSearch() {
+            currentFilter = document.getElementById('searchInput').value;
+            renderTasks();
         }
 
         function toggleDone(taskId, isChecked) {
@@ -467,7 +1102,7 @@
 
             document.getElementById('pctDisplay').innerText = `${pct}%`;
             document.getElementById('barDisplay').style.width = `${pct}%`;
-            document.getElementById('statsText').innerText = `${completed} de ${tasks.length} misiones completadas`;
+            document.getElementById('statsText').innerText = `${completed} de ${tasks.length} tareas completadas para el 100%`;
         }
 
         function openModal(taskId) {
@@ -476,11 +1111,27 @@
             const data = masterStore[GAME_ID][taskId] || {};
 
             document.getElementById('mName').innerText = task.name;
+            document.getElementById('mCharacter').innerText = `Dador / Tipo: ${task.character || 'General'}`;
             document.getElementById('mDesc').innerText = task.desc;
-            
+            document.getElementById('mReward').innerText = `Recompensa: ${task.reward || '$0'}`;
+            document.getElementById('mUnlock').innerText = `Desbloquea: ${task.unlocks || 'Progreso'}`;
+
             const diffElem = document.getElementById('mDiff');
             diffElem.className = `difficulty diff-${task.diff}`;
             diffElem.innerText = task.diff;
+
+            // Renderizado de Objetivos Individuales
+            const objList = document.getElementById('mObjectives');
+            objList.innerHTML = '';
+            if (task.objectives && task.objectives.length > 0) {
+                task.objectives.forEach(obj => {
+                    const li = document.createElement('li');
+                    li.innerText = obj;
+                    objList.appendChild(li);
+                });
+            } else {
+                objList.innerHTML = '<li>Completar la misión con éxito.</li>';
+            }
 
             document.getElementById('mUrl').value = (data.video && !data.video.startsWith('data:')) ? data.video : '';
             showVideo(data.video);
