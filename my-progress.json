@@ -1,0 +1,42 @@
+{
+  "gtavc": {
+    "vc_01": {
+      "done": true,
+      "video": "https://www.youtube.com/watch?v=xUNeK6mi8Us"
+    },
+    "vc_02": {
+      "done": false,
+      "video": null
+    }
+  },
+  "gtasa": {
+    "sa_01": {
+      "done": true,
+      "video": "https://www.youtube.com/watch?v=xUNeK6mi8Us"
+    }
+  },
+  "gta3": {
+    "g3_01": {
+      "done": false,
+      "video": null
+    }
+  },
+  "gta4": {
+    "g4_01": {
+      "done": false,
+      "video": null
+    }
+  },
+  "gta5": {
+    "g5_01": {
+      "done": false,
+      "video": null
+    }
+  },
+  "gta6": {
+    "g6_01": {
+      "done": false,
+      "video": null
+    }
+  }
+}
