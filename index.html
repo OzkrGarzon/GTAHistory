@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTA 100% Hub | Progreso Oficial del Creador</title>
+    <title>GTA Master Tracker Hub | Progreso Oficial</title>
     <style>
         body {
             background-color: #0b0d14;
-            background-image: linear-gradient(rgba(11, 13, 20, 0.88), rgba(11, 13, 20, 0.95)), url('gtaback.jpg'); 
+            /* background-image: linear-gradient(rgba(11, 13, 20, 0.88), rgba(11, 13, 20, 0.95)), url('fondo-hub.jpg'); */
             background-repeat: no-repeat;
             background-position: center top;
             background-size: cover;
@@ -295,6 +295,72 @@
                 </div>
             </a>
 
+            <!-- 4. GTA IV -->
+            <a href="gta4.html" class="game-card">
+                <div class="card-cover">
+                    <img src="cover-gta4.jpg" alt="GTA IV" onerror="this.src='https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&w=600&q=80'">
+                </div>
+                <div class="card-body">
+                    <div>
+                        <div class="game-title" style="color: #eab308;">GTA IV</div>
+                        <p class="game-desc">Niko Bellic y el desencanto del sueño americano en Liberty City.</p>
+                    </div>
+                    <div class="progress-box">
+                        <div class="progress-label">
+                            <span>Progreso Público</span>
+                            <span id="pct-gta4">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="bar-gta4" class="progress-bar-fill" style="background: linear-gradient(90deg, #eab308, #ef4444);"></div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 5. GTA V -->
+            <a href="gta5.html" class="game-card">
+                <div class="card-cover">
+                    <img src="cover-gta5.jpg" alt="GTA V" onerror="this.src='https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=600&q=80'">
+                </div>
+                <div class="card-body">
+                    <div>
+                        <div class="game-title" style="color: #a855f7;">GTA V</div>
+                        <p class="game-desc">Michael, Franklin y Trevor: grandes golpes y caos en Los Santos.</p>
+                    </div>
+                    <div class="progress-box">
+                        <div class="progress-label">
+                            <span>Progreso Público</span>
+                            <span id="pct-gta5">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="bar-gta5" class="progress-bar-fill" style="background: linear-gradient(90deg, #a855f7, #ec4899);"></div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 6. GTA VI -->
+            <a href="gta6.html" class="game-card">
+                <div class="card-cover">
+                    <img src="cover-gta6.jpg" alt="GTA VI" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80'">
+                </div>
+                <div class="card-body">
+                    <div>
+                        <div class="game-title" style="color: #f43f5e;">GTA VI</div>
+                        <p class="game-desc">Lucia y Jason: atracos y supervivencia en el estado de Leonida.</p>
+                    </div>
+                    <div class="progress-box">
+                        <div class="progress-label">
+                            <span>Progreso Público</span>
+                            <span id="pct-gta6">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="bar-gta6" class="progress-bar-fill" style="background: linear-gradient(90deg, #f43f5e, #f59e0b);"></div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
         </div>
     </main>
 
@@ -316,7 +382,10 @@
         const expectedStoryTotals = {
             gtavc: 48,
             gtasa: 100,
-            gta3: 51
+            gta3: 51,
+            gta4: 46,
+            gta5: 42,
+            gta6: 4
         };
 
         async function refreshHubStats() {
