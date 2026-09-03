@@ -3,41 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTA 100% Tracker | Hub Principal</title>
+    <title>GTA 100% Hub | Selector de Juegos</title>
     <style>
-        :root {
-            --bg-main: #0c0d14;
-            --bg-card: #151824;
-            --bg-card-hover: #1e2235;
-            --accent: #f59e0b;
-            --text: #f3f4f6;
-            --text-dim: #9ca3af;
-            --border: #262b40;
-        }
+        /* ==========================================================================
+           TUTORIAL DE PERSONALIZACIÓN VISUAL Y MULTIMEDIA (INDEX)
+           ==========================================================================
+           
+           1. FONDO GLOBAL DE LA PÁGINA:
+              - Sube tu imagen de fondo (ej: 'fondo-hub.jpg' o a la carpeta 'img/').
+              - En la regla 'body' de abajo, descomenta la línea 'background-image'.
+           
+           2. BANNER SUPERIOR (HEADER):
+              - En la regla 'header', descomenta la línea 'background-image' y pon tu foto.
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
+           3. CARÁTULAS / PORTADAS DE CADA GTA:
+              - En el HTML, dentro de cada tarjeta '<a class="game-card">', verás un contenedor:
+                <div class="card-cover">
+                    <img src="img/cover-vc.jpg" alt="GTA Vice City">
+                </div>
+              - Solo cambia la ruta del 'src' por tu archivo local o tu enlace directo de GitHub:
+                (Ej: https://raw.githubusercontent.com/TU_USER/REPO/main/img/cover-vc.jpg)
 
+           4. MÚSICA DE FONDO:
+              - Coloca tu pista en formato .mp3 en la carpeta (ej: 'tema-principal.mp3').
+              - Al final del <body> verás la etiqueta:
+                <audio id="bgMusic" loop src="audio/tema-principal.mp3"></audio>
+              - El botón flotante en la esquina inferior derecha permite al usuario reproducir/pausar.
+           ========================================================================== */
+
+        /* --- 1. FONDO GENERAL --- */
         body {
-            background-color: var(--bg-main);
-            color: var(--text);
+            background-color: #0b0d14;
+            
+            /* PASO A: Descomenta la siguiente línea para activar tu imagen de fondo: */
+            /* background-image: linear-gradient(rgba(11, 13, 20, 0.88), rgba(11, 13, 20, 0.95)), url('fondo-hub.jpg'); */
+            
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-size: cover;
+            background-attachment: fixed;
+            color: #f3f4f6;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
+        /* --- 2. HEADER CON BANNER OPCIONAL --- */
         header {
-            background: linear-gradient(180deg, #111422 0%, var(--bg-main) 100%);
-            border-bottom: 1px solid var(--border);
-            padding: 24px 20px;
+            background-color: #111424;
+            
+            /* PASO B: Descomenta la siguiente línea si quieres un banner fotográfico en la cabecera: */
+            /* background-image: linear-gradient(180deg, rgba(17, 20, 36, 0.75) 0%, rgba(11, 13, 20, 0.95) 100%), url('banner-hub.jpg'); */
+            
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            border-bottom: 2px solid #f59e0b;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
         }
+
+        /* ==========================================================================
+           FIN DEL TUTORIAL - ESTILOS DEL HUB Y TARJETAS
+           ========================================================================== */
+        :root {
+            --bg-card: rgba(21, 24, 38, 0.9);
+            --bg-card-hover: rgba(30, 35, 55, 0.95);
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.35);
+            --text: #f3f4f6;
+            --text-dim: #9ca3af;
+            --border: #262c45;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         .header-container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -49,7 +92,7 @@
         h1 {
             font-size: 1.6rem;
             font-weight: 800;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: var(--accent);
             text-transform: uppercase;
         }
@@ -60,10 +103,10 @@
         }
 
         .btn {
-            background-color: var(--bg-card);
+            background-color: rgba(21, 24, 38, 0.8);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 8px 16px;
+            padding: 9px 16px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
@@ -75,11 +118,12 @@
             background-color: var(--accent);
             color: #000;
             border-color: var(--accent);
+            box-shadow: 0 0 12px var(--accent-glow);
         }
 
         main {
-            max-width: 1100px;
-            margin: 40px auto;
+            max-width: 1200px;
+            margin: 36px auto;
             padding: 0 20px;
             flex-grow: 1;
             width: 100%;
@@ -91,8 +135,9 @@
         }
 
         .intro h2 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             margin-bottom: 8px;
+            font-weight: 800;
         }
 
         .intro p {
@@ -100,34 +145,68 @@
             font-size: 1rem;
         }
 
+        /* Rejilla de juegos */
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
         }
 
         .game-card {
             background-color: var(--bg-card);
+            backdrop-filter: blur(8px);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 24px;
+            overflow: hidden;
             text-decoration: none;
             color: inherit;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
         .game-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-6px);
             border-color: var(--accent);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            background-color: var(--bg-card-hover);
+        }
+
+        /* Carátula / Portada */
+        .card-cover {
+            width: 100%;
+            height: 180px;
+            background-color: #080a12;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            transition: transform 0.4s ease;
+        }
+
+        .game-card:hover .card-cover img {
+            transform: scale(1.05);
+        }
+
+        /* Contenido de la tarjeta */
+        .card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
         }
 
         .game-title {
             font-size: 1.3rem;
-            font-weight: 700;
+            font-weight: 800;
             margin-bottom: 6px;
         }
 
@@ -140,18 +219,20 @@
 
         .progress-box {
             margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 14px;
         }
 
         .progress-label {
             display: flex;
             justify-content: space-between;
             font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 6px;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
 
         .progress-bar-bg {
-            background-color: #090a0f;
+            background-color: #07080f;
             height: 10px;
             border-radius: 5px;
             overflow: hidden;
@@ -165,12 +246,57 @@
             transition: width 0.3s ease;
         }
 
+        /* Reproductor de Música Flotante */
+        .music-player-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(17, 20, 36, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .music-btn {
+            background: var(--accent);
+            border: none;
+            color: #000;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: transform 0.15s;
+        }
+
+        .music-btn:hover { transform: scale(1.08); }
+
+        .music-info {
+            font-size: 0.78rem;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .music-info span:first-child { font-weight: bold; }
+        .music-info span:last-child { color: var(--text-dim); font-size: 0.7rem; }
+
         footer {
             border-top: 1px solid var(--border);
             padding: 20px;
             text-align: center;
             color: var(--text-dim);
             font-size: 0.85rem;
+            margin-top: auto;
         }
     </style>
 </head>
@@ -190,131 +316,182 @@
     <main>
         <div class="intro">
             <h2>Selecciona una Entrega</h2>
-            <p>Elige el juego para gestionar sus tareas, misiones ocultas, logros y videos.</p>
+            <p>Elige el juego para gestionar sus misiones canónicas, registrar avances y guardar videos.</p>
         </div>
 
         <div class="games-grid">
+            
+            <!-- 1.1 GTA Vice City -->
             <a href="vice-city.html" class="game-card">
-                <div>
-                    <div class="game-title">GTA: Vice City</div>
-                    <p class="game-desc">Tommy Vercetti, mansiones, paquetes ocultos y el dominio de los 80s.</p>
+                <div class="card-cover">
+                    <!-- Cambia 'cover-vice-city.jpg' por la ruta de tu imagen -->
+                    <img src="cover-vice-city.jpg" alt="GTA Vice City" onerror="this.src='https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80'">
                 </div>
-                <div class="progress-box">
-                    <div class="progress-label">
-                        <span>Progreso Total</span>
-                        <span id="pct-gtavc">0%</span>
+                <div class="card-body">
+                    <div>
+                        <div class="game-title" style="color: #ff49db;">GTA: Vice City</div>
+                        <p class="game-desc">Tommy Vercetti, mansiones de neón, guerras de bandas y el control de los años 80.</p>
                     </div>
-                    <div class="progress-bar-bg">
-                        <div id="bar-gtavc" class="progress-bar-fill"></div>
+                    <div class="progress-box">
+                        <div class="progress-label">
+                            <span>Progreso de Historia</span>
+                            <span id="pct-gtavc">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="bar-gtavc" class="progress-bar-fill" style="background: linear-gradient(90deg, #ff49db, #00f0ff);"></div>
+                        </div>
                     </div>
                 </div>
             </a>
 
+            <!-- 1.2 GTA San Andreas -->
             <a href="san-andreas.html" class="game-card">
-                <div>
-                    <div class="game-title">GTA: San Andreas</div>
-                    <p class="game-desc">CJ, bandas de Grove Street, graffitis, herraduras y saltos únicos.</p>
+                <div class="card-cover">
+                    <img src="cover-san-andreas.jpg" alt="GTA San Andreas" onerror="this.src='https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=600&q=80'">
                 </div>
-                <div class="progress-box">
-                    <div class="progress-label">
-                        <span>Progreso Total</span>
-                        <span id="pct-gtasa">0%</span>
+                <div class="card-body">
+                    <div>
+                        <div class="game-title" style="color: #22c55e;">GTA: San Andreas</div>
+                        <p class="game-desc">CJ, Grove Street Families, conspiraciones policíacas y el viaje a través de tres ciudades.</p>
                     </div>
-                    <div class="progress-bar-bg">
-                        <div id="bar-gtasa" class="progress-bar-fill"></div>
+                    <div class="progress-box">
+                        <div class="progress-label">
+                            <span>Progreso de Historia</span>
+                            <span id="pct-gtasa">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="bar-gtasa" class="progress-bar-fill" style="background: linear-gradient(90deg, #22c55e, #eab308);"></div>
+                        </div>
                     </div>
                 </div>
             </a>
 
+            <!-- 1.3 GTA III -->
             <a href="gta3.html" class="game-card">
-                <div>
-                    <div class="game-title">GTA III</div>
-                    <p class="game-desc">Claude Speed, las 3 islas de Liberty City y las misiones de paramédico.</p>
+                <div class="card-cover">
+                    <img src="cover-gta3.jpg" alt="GTA III" onerror="this.src='https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=600&q=80'">
                 </div>
-                <div class="progress-box">
-                    <div class="progress-label">
-                        <span>Progreso Total</span>
-                        <span id="pct-gta3">0%</span>
+                <div class="card-body">
+                    <div>
+                        <div class="game-title" style="color: #60a5fa;">GTA III</div>
+                        <p class="game-desc">Claude Speed, la mafia Leone y la venganza a lo largo de las tres islas de Liberty City.</p>
                     </div>
-                    <div class="progress-bar-bg">
-                        <div id="bar-gta3" class="progress-bar-fill"></div>
+                    <div class="progress-box">
+                        <div class="progress-label">
+                            <span>Progreso de Historia</span>
+                            <span id="pct-gta3">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="bar-gta3" class="progress-bar-fill" style="background: linear-gradient(90deg, #60a5fa, #3b82f6);"></div>
+                        </div>
                     </div>
                 </div>
             </a>
 
+            <!-- 1.4 GTA IV -->
             <a href="gta4.html" class="game-card">
-                <div>
-                    <div class="game-title">GTA IV</div>
-                    <p class="game-desc">Niko Bellic, el sueño americano, palomas infectadas y acrobacias.</p>
+                <div class="card-cover">
+                    <img src="cover-gta4.jpg" alt="GTA IV" onerror="this.src='https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&w=600&q=80'">
                 </div>
-                <div class="progress-box">
-                    <div class="progress-label">
-                        <span>Progreso Total</span>
-                        <span id="pct-gta4">0%</span>
+                <div class="card-body">
+                    <div>
+                        <div class="game-title" style="color: #eab308;">GTA IV</div>
+                        <p class="game-desc">Niko Bellic, el desencanto del sueño americano y decisiones morales en una Liberty City HD.</p>
                     </div>
-                    <div class="progress-bar-bg">
-                        <div id="bar-gta4" class="progress-bar-fill"></div>
+                    <div class="progress-box">
+                        <div class="progress-label">
+                            <span>Progreso de Historia</span>
+                            <span id="pct-gta4">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="bar-gta4" class="progress-bar-fill" style="background: linear-gradient(90deg, #eab308, #ef4444);"></div>
+                        </div>
                     </div>
                 </div>
             </a>
 
+            <!-- 1.5 GTA V -->
             <a href="gta5.html" class="game-card">
-                <div>
-                    <div class="game-title">GTA V</div>
-                    <p class="game-desc">Michael, Franklin y Trevor: golpes, piezas de nave y misiones Epsilon.</p>
+                <div class="card-cover">
+                    <img src="cover-gta5.jpg" alt="GTA V" onerror="this.src='https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=600&q=80'">
                 </div>
-                <div class="progress-box">
-                    <div class="progress-label">
-                        <span>Progreso Total</span>
-                        <span id="pct-gta5">0%</span>
+                <div class="card-body">
+                    <div>
+                        <div class="game-title" style="color: #a855f7;">GTA V</div>
+                        <p class="game-desc">Michael, Franklin y Trevor: grandes golpes millonarios y el FIB en Los Santos y Blaine County.</p>
                     </div>
-                    <div class="progress-bar-bg">
-                        <div id="bar-gta5" class="progress-bar-fill"></div>
+                    <div class="progress-box">
+                        <div class="progress-label">
+                            <span>Progreso de Historia</span>
+                            <span id="pct-gta5">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="bar-gta5" class="progress-bar-fill" style="background: linear-gradient(90deg, #a855f7, #ec4899);"></div>
+                        </div>
                     </div>
                 </div>
             </a>
 
+            <!-- 1.6 GTA VI -->
             <a href="gta6.html" class="game-card">
-                <div>
-                    <div class="game-title">GTA VI</div>
-                    <p class="game-desc">Vice Dale County, los cayos de Leonida, robos y misiones dinámicas.</p>
+                <div class="card-cover">
+                    <img src="cover-gta6.jpg" alt="GTA VI" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80'">
                 </div>
-                <div class="progress-box">
-                    <div class="progress-label">
-                        <span>Progreso Total</span>
-                        <span id="pct-gta6">0%</span>
+                <div class="card-body">
+                    <div>
+                        <div class="game-title" style="color: #f43f5e;">GTA VI</div>
+                        <p class="game-desc">Lucia y Jason: atracos a mano armada, redes sociales y supervivencia en el estado de Leonida.</p>
                     </div>
-                    <div class="progress-bar-bg">
-                        <div id="bar-gta6" class="progress-bar-fill"></div>
+                    <div class="progress-box">
+                        <div class="progress-label">
+                            <span>Progreso de Historia</span>
+                            <span id="pct-gta6">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="bar-gta6" class="progress-bar-fill" style="background: linear-gradient(90deg, #f43f5e, #f59e0b);"></div>
+                        </div>
                     </div>
                 </div>
             </a>
+
         </div>
     </main>
 
+    <!-- Reproductor de Música de Fondo -->
+    <div class="music-player-widget">
+        <!-- Reemplaza 'audio/tema-principal.mp3' por tu archivo o URL directa de música -->
+        <audio id="bgMusic" loop src="audio/tema-principal.mp3"></audio>
+        
+        <button id="musicToggleBtn" class="music-btn" onclick="togglePlayMusic()">▶</button>
+        <div class="music-info">
+            <span>Banda Sonora</span>
+            <span id="musicStatus">Pausado</span>
+        </div>
+    </div>
+
     <footer>
-        <p>&copy; GTA 100% Complete Hub. Progreso persistente compartido vía JSON / LocalStorage.</p>
+        <p>&copy; GTA Master Tracker Hub. Progreso sincronizado vía JSON & LocalStorage.</p>
     </footer>
 
     <script>
-        // Total aproximado de misiones para calcular las barras en el index (actualizable según cargues tus listas)
-        const expectedTotals = {
-            gtavc: 59,
-            gtasa: 137,
-            gta3: 73,
-            gta4: 90,
+        // Número de misiones canónicas de historia por juego para el cálculo de porcentaje en el Hub
+        const expectedStoryTotals = {
+            gtavc: 48, // Total exacto de las 48 misiones cronológicas de Vice City
+            gtasa: 100,
+            gta3: 51,
+            gta4: 88,
             gta5: 69,
-            gta6: 50
+            gta6: 30
         };
 
         function refreshHubStats() {
             const raw = localStorage.getItem('gta_master_save');
             const data = raw ? JSON.parse(raw) : {};
 
-            Object.keys(expectedTotals).forEach(gameKey => {
+            Object.keys(expectedStoryTotals).forEach(gameKey => {
                 const gameData = data[gameKey] || {};
                 const completed = Object.values(gameData).filter(task => task.done).length;
-                const total = expectedTotals[gameKey];
+                const total = expectedStoryTotals[gameKey];
                 const pct = Math.min(100, Math.round((completed / total) * 100));
 
                 const pctElem = document.getElementById(`pct-${gameKey}`);
@@ -326,13 +503,14 @@
             });
         }
 
+        /* Respaldo y Carga Global */
         function exportMasterData() {
             const raw = localStorage.getItem('gta_master_save') || "{}";
             const blob = new Blob([raw], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `GTA_Global_100_Progress_${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `GTA_Story_Progress_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         }
@@ -344,15 +522,36 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    JSON.parse(e.target.result); // Validar JSON
+                    JSON.parse(e.target.result);
                     localStorage.setItem('gta_master_save', e.target.result);
                     refreshHubStats();
-                    alert("¡Progreso global cargado con éxito!");
+                    alert("¡Progreso global cargado correctamente!");
                 } catch (err) {
-                    alert("El archivo subido no es un JSON válido.");
+                    alert("Error: El archivo no es un JSON válido.");
                 }
             };
             reader.readAsText(file);
+        }
+
+        /* Control del Reproductor de Música */
+        function togglePlayMusic() {
+            const audio = document.getElementById('bgMusic');
+            const btn = document.getElementById('musicToggleBtn');
+            const status = document.getElementById('musicStatus');
+
+            if (audio.paused) {
+                audio.volume = 0.35; // Volumen moderado para no saturar
+                audio.play().then(() => {
+                    btn.innerText = "⏸";
+                    status.innerText = "Reproduciendo";
+                }).catch(() => {
+                    alert("Para reproducir música, asegúrate de haber colocado el archivo .mp3 en la carpeta 'audio/' o haber indicado la URL correcta.");
+                });
+            } else {
+                audio.pause();
+                btn.innerText = "▶";
+                status.innerText = "Pausado";
+            }
         }
 
         window.addEventListener('DOMContentLoaded', refreshHubStats);
