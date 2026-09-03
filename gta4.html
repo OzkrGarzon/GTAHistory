@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTA IV - Modo Espectador / Progreso Oficial</title>
+    <style>
+        body {
+            background-color: #0b0e14;
+            /* background-image: linear-gradient(rgba(11, 14, 20, 0.90), rgba(11, 14, 20, 0.96)), url('fondo-gta4.jpg'); */
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-size: cover;
+            background-attachment: fixed;
+            color: #f3f4f6;
+            padding-bottom: 70px;
+        }
+
+        header {
+            background-color: #121824;
+            /* background-image: linear-gradient(180deg, rgba(18, 24, 36, 0.75) 0%, rgba(11, 14, 20, 0.95) 100%), url('banner-gta4.jpg'); */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            border-bottom: 3px solid #eab308;
+            padding: 18px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 60;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.65);
+        }
+
+        :root {
+            --bg-card: rgba(18, 24, 38, 0.88);
+            --accent: #eab308;
+            --accent-glow: #facc15;
+            --text: #f3f4f6;
+            --text-dim: #9ca3af;
+            --border: #273046;
+            --easy: #10b981;
+            --medium: #3b82f6;
+            --hard: #f97316;
+            --extreme: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+        .nav-bar {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .back-link:hover { color: #fff; }
+
+        main { max-width: 1300px; margin: 24px auto; padding: 0 20px; }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: 1fr; }
+        }
+
+        .progress-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .progress-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+        .progress-bar-bg { background: #07090f; height: 18px; border-radius: 9px; overflow: hidden; border: 1px solid var(--border); }
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--accent), #ef4444);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .filter-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #090c14;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        .search-input:focus { border-color: var(--accent); }
+
+        .category-section { margin-top: 32px; }
+        .category-title {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            color: var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .category-sub { font-size: 0.85rem; color: var(--text-dim); font-weight: normal; }
+
+        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 14px; }
+
+        .task-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .task-card:hover { border-color: #d97706; transform: translateY(-2px); }
+        .task-card.completed { border-color: rgba(234, 179, 8, 0.5); background: rgba(234, 179, 8, 0.06); }
+
+        .task-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+        .task-checkbox {
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--text-dim);
+            border-radius: 4px;
+            cursor: not-allowed;
+            display: grid;
+            place-content: center;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        .task-checkbox:checked { background-color: var(--easy); border-color: var(--easy); }
+        .task-checkbox:checked::before { content: "✓"; color: #fff; font-size: 14px; font-weight: 900; }
+
+        .task-info { flex-grow: 1; cursor: pointer; }
+        .task-name { font-weight: 700; font-size: 0.95rem; line-height: 1.3; }
+        .task-character { font-size: 0.75rem; color: var(--accent); margin-top: 2px; }
+
+        .task-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        .difficulty { padding: 2px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
+        .diff-facil { background: rgba(16, 185, 129, 0.2); color: var(--easy); }
+        .diff-media { background: rgba(59, 130, 246, 0.2); color: var(--medium); }
+        .diff-dificil { background: rgba(249, 115, 22, 0.2); color: var(--hard); }
+        .diff-extrema { background: rgba(239, 68, 68, 0.2); color: var(--extreme); }
+
+        .btn-modal {
+            color: var(--accent);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+            font-size: 0.75rem;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: #131926;
+            border: 1px solid var(--border);
+            max-width: 640px;
+            width: 100%;
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 14px; right: 16px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-badge-group { display: flex; gap: 8px; align-items: center; margin: 8px 0 14px 0; }
+        .tag-meta { background: #080b12; border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; color: var(--text-dim); }
+
+        .objectives-list {
+            list-style: none;
+            margin: 12px 0;
+            background: #080b12;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .objectives-list li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
+            color: #d1d5db;
+        }
+        .objectives-list li::before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .video-box {
+            margin-top: 14px;
+            width: 100%;
+            min-height: 200px;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .video-box iframe, .video-box video { width: 100%; height: 260px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-bar">
+            <a href="index.html" class="back-link">⬅ Menú Principal</a>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <h2 style="font-size: 1.2rem; color: var(--accent);">GTA IV - Modo Espectador</h2>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="dashboard">
+            <section class="progress-card">
+                <div class="progress-header">
+                    <h3>Progreso del Creador (88 Misiones)</h3>
+                    <span id="pctDisplay" style="font-size: 1.4rem; font-weight: 800; color: var(--accent);">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="barDisplay" class="progress-bar-fill"></div>
+                </div>
+                <p id="statsText" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-dim);">0 de 88 misiones completadas</p>
+            </section>
+
+            <section class="filter-panel">
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Buscar misión:</label>
+                <input type="text" id="searchInput" class="search-input" placeholder="Ej: Three Leaf Clover, Museum Piece..." oninput="handleSearch()">
+            </section>
+        </div>
+
+        <section id="taskListContainer"></section>
+    </main>
+
+    <!-- Modal Espectador -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2 id="mName" style="margin-bottom: 2px;"></h2>
+            <div id="mCharacter" style="font-size: 0.85rem; color: var(--accent); font-weight: bold;"></div>
+
+            <div class="modal-badge-group">
+                <span id="mDiff" class="difficulty"></span>
+                <span id="mReward" class="tag-meta"></span>
+            </div>
+
+            <p id="mDesc" style="font-size: 0.92rem; line-height: 1.5; color: #d1d5db;"></p>
+
+            <h4 style="margin-top: 14px; font-size: 0.85rem; color: var(--accent); text-transform: uppercase;">Objetivos Canónicos:</h4>
+            <ul id="mObjectives" class="objectives-list"></ul>
+
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+
+            <h4>Video de la Misión (Registrado por el Creador)</h4>
+            <div class="video-box" id="mVideoViewer">
+                <span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GAME_ID = 'gta4';
+
+        const tasks = [
+            { id: "g4_01", cat: "1. Broker & Dukes", character: "Roman Bellic", name: "1. The Cousins Bellic", diff: "facil", reward: "$0", desc: "Llegada de Niko a Liberty City en el Platypus y traslado inicial con Roman.", objectives: ["Recoger a Niko en el muelle de Broker", "Conducir hasta el piso franco en Hove Beach", "Aparcar el coche"] },
+            { id: "g4_02", cat: "1. Broker & Dukes", character: "Roman Bellic", name: "2. It's Your Call", diff: "facil", reward: "$25", desc: "Resolución de deudas de juego de Roman con los cobradores albaneses.", objectives: ["Ir al desguace con Roman", "Confrontar a los matones", "Llevar a Roman a la central de taxis"] },
+            { id: "g4_03", cat: "1. Broker & Dukes", character: "Vlad Gleasov", name: "3. Three's a Crowd", diff: "facil", reward: "$50", desc: "Recogida de Michelle y compra de ropa en la tienda rusa.", objectives: ["Ir a Broker Yard", "Recoger a Michelle", "Comprar ropa en Perseus o Rusa", "Llevar a Michelle a casa"] },
+            { id: "g4_04", cat: "1. Broker & Dukes", character: "Vlad Gleasov", name: "4. Bleed Out", diff: "media", reward: "$100", desc: "Rescate de Roman secuestrado por los hombres de Vlad en un almacén de Broker.", objectives: ["Conducir al almacén de los albaneses", "Pelear cuerpo a cuerpo con los captores", "Perseguir a Vlad en coche"] },
+            { id: "g4_05", cat: "1. Broker & Dukes", character: "Vlad Gleasov", name: "5. Easy Fare", diff: "facil", reward: "$100", desc: "Servicio rápido de taxi para un cliente de Roman perseguido por la mafia.", objectives: ["Hacer de taxista para el cliente", "Despistar a los perseguidores albaneses", "Llevarlo a destino"] },
+            { id: "g4_06", cat: "1. Broker & Dukes", character: "Vlad Gleasov", name: "6. Jamaican Heat", diff: "facil", reward: "$200", desc: "Protección a Badman en un callejón y enfrentamiento con los albaneses.", objectives: ["Reunirse con Badman en East Hook", "Acompañarlo a limpiar el callejón de rivales"] },
+            { id: "g4_07", cat: "1. Broker & Dukes", character: "Vlad Gleasov", name: "7. Uncle Vlad", diff: "media", reward: "$500", desc: "Ajuste de cuentas final y ejecución de Vlad Gleasov en el muelle de Bohan.", objectives: ["Encontrar a Vlad en el bar Perestroika", "Perseguir su coche hasta los muelles", "Ejecutarlo por acostarse con Roman"] },
+            { id: "g4_08", cat: "1. Broker & Dukes", character: "Mikhail Faustin", name: "8. Crime and Punishment", diff: "media", reward: "$1,000", desc: "Secuestro de un camión de la mafia rusa por órdenes de Mikhail Faustin.", objectives: ["Robar el camión de reparto", "Llevarlo al almacén de Cervezas Broker con los guardaespaldas"] },
+            { id: "g4_09", cat: "1. Broker & Dukes", character: "Mikhail Faustin", name: "9. Do You Have Protection?", diff: "facil", reward: "$1,200", desc: "Intimidación a comerciantes en los distritos rusos que se niegan a pagar protección.", objectives: ["Visitar los dos locales señalados", "Disparar a los escaparates para intimidar a los dueños"] },
+            { id: "g4_10", cat: "1. Broker & Dukes", character: "Mikhail Faustin", name: "10. Shadow", diff: "facil", reward: "$1,500", desc: "Seguimiento a pie de un camello en el metro de Broker.", objectives: ["Seguir al camello por las vías y andenes del metro sin que te descubra", "Abatirlo"] },
+            { id: "g4_11", cat: "1. Broker & Dukes", character: "Mikhail Faustin", name: "11. Excavator", diff: "media", reward: "$2,000", desc: "Asalto a un cargamento de diamantes en el muelle de carga.", objectives: ["Infiltrarse en el almacén portuario", "Eliminar a la guardia coreana y robar el coche con la mercancía"] },
+            { id: "g4_12", cat: "1. Broker & Dukes", character: "Mikhail Faustin", name: "12. The Puerto Rican Connection", diff: "media", reward: "$3,000", desc: "Intercepción aérea y terrestre de un tren de los carteles en Broker.", objectives: ["Subir al tejado de la estación de metro", "Esperar al tren, perseguirlo en coche y liquidar a los fugitivos"] },
+            { id: "g4_13", cat: "1. Broker & Dukes", character: "Mikhail Faustin", name: "13. Call and Collect", diff: "facil", reward: "$2,500", desc: "Extorsión a un abogado corrupto usando llamadas anónimas en el parque.", objectives: ["Encontrar al abogado sentado en el banco de Cabbage Park", "Llamarle al móvil para ver qué se levanta y eliminarlo"] },
+            { id: "g4_14", cat: "1. Broker & Dukes", character: "Mikhail Faustin", name: "14. Intermezzo", diff: "media", reward: "$0", desc: "Advertencia a Dimitri Rascalov sobre la inestabilidad mental de Faustin.", objectives: ["Reunirse con Dimitri en el club", "Escuchar sus advertencias sobre Mikhail"] },
+            { id: "g4_15", cat: "1. Broker & Dukes", character: "Dimitri Rascalov", name: "15. Meat Capital", diff: "media", reward: "$4,000", desc: "Asesinato de Mikhail Faustin en su club nocturno por órdenes de Dimitri.", objectives: ["Entrar al Cabaret Club", "Subir a la oficina y abatir a Mikhail Faustin durante su fiesta"] },
+            { id: "g4_16", cat: "2. Bohan", character: "Manny Escuela", name: "16. Wearing It Out", diff: "media", reward: "$5,000", desc: "Trabajos para el activista comunitario Manny Escuela en Bohan.", objectives: ["Limpiar las calles de pandilleros con Manny"] },
+            { id: "g4_17", cat: "2. Bohan", character: "Manny Escuela", name: "17. Bull in a China Shop", diff: "facil", reward: "$250", desc: "Intimidación a un comerciante de Bohan con la furgoneta.", objectives: ["Aparcar la furgoneta dentro del supermercado para asustar al dueño"] },
+            { id: "g4_18", cat: "2. Bohan", character: "Manny Escuela", name: "18. Escuela of the Streets", diff: "media", reward: "$1,000", desc: "Asalto al apartamento guarida de los traficantes de Bohan.", objectives: ["Infiltrarse en el edificio y eliminar a todos los cabecillas"] },
+            { id: "g4_19", cat: "2. Bohan", character: "Elizabeta Torres", name: "19. Luck of the Irish", diff: "media", reward: "$1,500", desc: "Cobertura con rifle francotirador para un intercambio de Elizabeta con la mafia irlandesa.", objectives: ["Apostarse en la azotea", "Abatir a los atacantes que emboscan el trato"] },
+            { id: "g4_20", cat: "2. Bohan", character: "Elizabeta Torres", name: "20. Blow Your Cover", diff: "dificil", reward: "$2,500", desc: "Trato de drogas en un piso franco que termina siendo una redada de la DEA.", objectives: ["Entrar al apartamento con Playboy X", "Sobrevivir a la trampa de la DEA y escapar por los tejados"] },
+            { id: "g4_21", cat: "2. Bohan", character: "Playboy X", name: "21. Deconstruction for Beginners", diff: "media", reward: "$3,500", desc: "Asalto a una obra en construcción controlada por obreros corruptos.", objectives: ["Eliminar a los capataces en la obra en construcción de Algonquin"] },
+            { id: "g4_22", cat: "2. Bohan", character: "Playboy X", name: "22. Photo Shoot", diff: "facil", reward: "$4,000", desc: "Identificación y asesinato de un traficante infiltrado en una sesión de fotos.", objectives: ["Identificar al objetivo correcto mediante fotos y eliminarlo"] },
+            { id: "g4_23", cat: "2. Bohan", character: "Dwayne Forge", name: "23. Ruff Rider", diff: "media", reward: "$5,000", desc: "Recuperación de la exnovia de Dwayne robada por un motociclista.", objectives: ["Perseguir a Dwayne en moto, neutralizar al novio y traer a Cheryl"] },
+            { id: "g4_24", cat: "2. Bohan", character: "Playboy X", name: "24. The Holland Play", diff: "media", reward: "$10,000", desc: "Elección crucial: asesinar a Playboy X o a Dwayne Forge por sus disputas territoriales.", objectives: ["Decidir a quién eliminar de los dos gánsteres de North Holland"] },
+            { id: "g4_25", cat: "3. Algonquin", character: "Francis McReary", name: "25. Street Sweeper", diff: "facil", reward: "$6,000", desc: "Eliminación de miembros de bandas rivales por órdenes del comisario corrupto.", objectives: ["Asesinar a los pandilleros en el callejón"] },
+            { id: "g4_26", cat: "3. Algonquin", character: "Francis McReary", name: "26. Harbouring a Grudge", diff: "media", reward: "$7,000", desc: "Robo de mercancía en los muelles de Algonquin con Packie McReary.", objectives: ["Asaltar el almacén portuario junto a Packie"] },
+            { id: "g4_27", cat: "3. Algonquin", character: "Packie McReary", name: "27. Waste Not Want Kills", diff: "media", reward: "$8,000", desc: "Asalto a un escondite de drogas de la mafia en un viejo almacén.", objectives: ["Limpiar el almacén de enemigos fuertemente armados"] },
+            { id: "g4_28", cat: "3. Algonquin", character: "Packie McReary", name: "28. Three Leaf Clover", diff: "extrema", reward: "$250,000", desc: "El legendario atraco al Bank of Liberty City junto a los hermanos McReary.", objectives: ["Atracar el banco", "Sobrevivir al tiroteo de la SWAT y escapar a pie por el metro"] },
+            { id: "g4_29", cat: "3. Algonquin", character: "Ray Boccaccio", name: "29. Smackdown", diff: "media", reward: "$9,000", desc: "Asesinatos por encargo para la familia mafiosa de Pegorino.", objectives: ["Cazar a los objetivos por la ciudad"] },
+            { id: "g4_30", cat: "3. Algonquin", character: "Ray Boccaccio", name: "30. Babysitting", diff: "dificil", reward: "$10,000", desc: "Protección marítima a un carguero de armas de los Pegorino.", objectives: ["Pilotar un barco armado y destruir lanchas del Cartel"] },
+            { id: "g4_31", cat: "3. Algonquin", character: "Ray Boccaccio", name: "31. Tunnel of Death", diff: "dificil", reward: "$11,000", desc: "Emboscada y rescate de un prisionero transportado por la policía en el túnel.", objectives: ["Bloquear el túnel con un camión, rescatar al preso y huir"] },
+            { id: "g4_32", cat: "3. Algonquin", character: "Ray Boccaccio", name: "32. Blood Brothers", diff: "media", reward: "$12,000", desc: "Dilema moral: decidir entre salvar a Francis McReary o a su hermano Derrick.", objectives: ["Apostarse con rifle francotirador en el tejado y eliminar a uno de los dos hermanos"] },
+            { id: "g4_33", cat: "3. Algonquin", character: "Derrick McReary", name: "33. I'll Take Her", diff: "media", reward: "$13,000", desc: "Secuestro de la hija de un magnate en Algonquin.", objectives: ["Robar su coche deportivo y llevarla al escondite"] },
+            { id: "g4_34", cat: "3. Algonquin", character: "Derrick McReary", name: "34. Union Drive", diff: "media", reward: "$14,000", desc: "Persecución urbana contra chantajistas sindicales.", objectives: ["Perseguir y eliminar a los chantajistas por las calles de Algonquin"] },
+            { id: "g4_35", cat: "3. Algonquin", character: "Gerry McReary", name: "35. Smackdown (Gerry)", diff: "media", reward: "$15,000", desc: "Trabajos sucios encomendados desde la cárcel por Gerry.", objectives: ["Eliminar objetivos designados"] },
+            { id: "g4_36", cat: "3. Algonquin", character: "Bernie Crane", name: "36. Hating the Haters", diff: "facil", reward: "$5,000", desc: "Protección a Floydd/Bernie de acosadores homófobos en Central Park.", objectives: ["Seguir al acosador y eliminarlo discretamente"] },
+            { id: "g4_37", cat: "3. Algonquin", character: "Bernie Crane", name: "37. Union Drive (Bernie)", diff: "media", reward: "$6,000", desc: "Paseo en coche protegido por Bernie en su deportivo clásico.", objectives: ["Conducir protegiendo el coche de Bernie de los rusos"] },
+            { id: "g4_38", cat: "4. El Triunfo Final", character: "Jimmy Pegorino", name: "38. Pegorino's Pride", diff: "dificil", reward: "$16,000", desc: "Trato de drogas con los coreanos en un restaurante italiano que termina en tiroteo.", objectives: ["Proteger a Pegorino y escapar del asedio coreano"] },
+            { id: "g4_39", cat: "4. El Triunfo Final", character: "Jimmy Pegorino", name: "39. Payback", diff: "media", reward: "$17,000", desc: "Venganza contra los traidores de la familia Pegorino.", objectives: ["Localizar y eliminar a los miembros desleales"] },
+            { id: "g4_40", cat: "4. El Triunfo Final", character: "Jimmy Pegorino", name: "40. Catch the Wave", diff: "media", reward: "$18,000", desc: "Asalto a los barcos de los coreanos cargados de droga.", objectives: ["Robar un carguero en los muelles y escapar"] },
+            { id: "g4_41", cat: "4. El Triunfo Final", character: "Phil Bell", name: "41. Tres Chic", diff: "facil", reward: "$19,000", desc: "Preparación de un atentado con bomba en un club elegante.", objectives: ["Colocar explosivos discretamente"] },
+            { id: "g4_42", cat: "4. El Triunfo Final", character: "Phil Bell", name: "42. Entourage", diff: "dificil", reward: "$20,000", desc: "Rescate y escolta de un diplomático corrupto en Algonquin.", objectives: ["Despejar las emboscadas de la mafia rival y llevar al diplomático a salvo"] },
+            { id: "g4_43", cat: "4. El Triunfo Final", character: "Phil Bell", name: "43. Dining Out", diff: "dificil", reward: "$21,000", desc: "Asalto a un restaurante italiano en Little Italy para cobrar cuentas pendientes.", objectives: ["Entrar a tiros al restaurante, interrogar al dueño y huir por las cocinas"] },
+            { id: "g4_44", cat: "4. El Triunfo Final", character: "Phil Bell", name: "44. Liquidize the Assets", diff: "dificil", reward: "$22,000", desc: "Destrucción total de los camiones de contrabando de los apostadores.", objectives: ["Asaltar el depósito de camiones en Acter Industrial Park y destruirlos todos con granadas"] },
+            { id: "g4_45", cat: "4. El Triunfo Final", character: "Jon Gravelli", name: "45. That Special Someone", diff: "media", reward: "$25,000", desc: "Encuentro y decisión final sobre Darko Brevic, el traidor que delató a Niko en la guerra.", objectives: ["Recoger a Darko en el aeropuerto", "Llevarlo a un descampado y decidir si perdonarle la vida o ejecutarlo"] },
+            { id: "g4_46", cat: "4. El Triunfo Final", character: "Dimitri / Deal or Revenge", name: "46. One Last Thing (Decisión Final)", diff: "extrema", reward: "Elección de Ruta", desc: "El dilema definitivo: Aceptar hacer negocios con Dimitri (Dinero) o buscar venganza (Venganza).", objectives: ["Elegir entre el maletín de dinero de Dimitri o la venganza a sangre fría"] }
+        ];
+
+        let publicProgress = {};
+        let activeTaskId = null;
+        let currentFilter = "";
+
+        async function init() {
+            try {
+                const response = await fetch('my-progress.json?' + new Date().getTime());
+                if (response.ok) {
+                    publicProgress = await response.json();
+                }
+            } catch (e) {
+                console.log("No se encontró archivo público externo.");
+            }
+
+            if (!publicProgress[GAME_ID]) publicProgress[GAME_ID] = {};
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('taskListContainer');
+            container.innerHTML = '';
+
+            const filteredTasks = tasks.filter(t => {
+                const search = currentFilter.toLowerCase();
+                return t.name.toLowerCase().includes(search) ||
+                       t.cat.toLowerCase().includes(search) ||
+                       t.desc.toLowerCase().includes(search) ||
+                       (t.character && t.character.toLowerCase().includes(search));
+            });
+
+            const categories = [...new Set(filteredTasks.map(t => t.cat))];
+
+            categories.forEach(cat => {
+                const catTasks = filteredTasks.filter(t => t.cat === cat);
+                const catDone = catTasks.filter(t => publicProgress[GAME_ID][t.id] && publicProgress[GAME_ID][t.id].done).length;
+
+                const section = document.createElement('div');
+                section.className = 'category-section';
+
+                const headerWrap = document.createElement('div');
+                headerWrap.className = 'category-title';
+                headerWrap.innerHTML = `<span>${cat}</span><span class="category-sub">${catDone} / ${catTasks.length}</span>`;
+                section.appendChild(headerWrap);
+
+                const grid = document.createElement('div');
+                grid.className = 'tasks-grid';
+
+                catTasks.forEach(task => {
+                    const status = publicProgress[GAME_ID][task.id] || { done: false, video: null };
+                    const card = document.createElement('div');
+                    card.className = `task-card ${status.done ? 'completed' : ''}`;
+                    
+                    card.innerHTML = `
+                        <div class="task-top">
+                            <input type="checkbox" class="task-checkbox" ${status.done ? 'checked' : ''} disabled title="Progreso público de solo lectura">
+                            <div class="task-info" onclick="openModal('${task.id}')">
+                                <div class="task-name">${task.name}</div>
+                                <div class="task-character">${task.character || 'Historia'}</div>
+                            </div>
+                        </div>
+                        <div class="task-bottom">
+                            <span class="difficulty diff-${task.diff}">${task.diff}</span>
+                            <button class="btn-modal" onclick="openModal('${task.id}')">${status.video ? '📺 Ver Video' : 'ℹ️ Ficha'}</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                section.appendChild(grid);
+                container.appendChild(section);
+            });
+
+            calcProgress();
+        }
+
+        function handleSearch() {
+            currentFilter = document.getElementById('searchInput').value;
+            renderTasks();
+        }
+
+        function calcProgress() {
+            const completed = tasks.filter(t => publicProgress[GAME_ID][t.id] && publicProgress[GAME_ID][t.id].done).length;
+            const pct = Math.round((completed / tasks.length) * 100);
+
+            document.getElementById('pctDisplay').innerText = `${pct}%`;
+            document.getElementById('barDisplay').style.width = `${pct}%`;
+            document.getElementById('statsText').innerText = `${completed} de ${tasks.length} misiones de historia completadas por el creador`;
+        }
+
+        function openModal(taskId) {
+            activeTaskId = taskId;
+            const task = tasks.find(t => t.id === taskId);
+            const data = publicProgress[GAME_ID][taskId] || {};
+
+            document.getElementById('mName').innerText = task.name;
+            document.getElementById('mCharacter').innerText = `Contacto / Jefe: ${task.character}`;
+            document.getElementById('mDesc').innerText = task.desc;
+            document.getElementById('mReward').innerText = `Recompensa: ${task.reward}`;
+
+            const diffElem = document.getElementById('mDiff');
+            diffElem.className = `difficulty diff-${task.diff}`;
+            diffElem.innerText = task.diff;
+
+            const objList = document.getElementById('mObjectives');
+            objList.innerHTML = '';
+            if (task.objectives && task.objectives.length > 0) {
+                task.objectives.forEach(obj => {
+                    const li = document.createElement('li');
+                    li.innerText = obj;
+                    objList.appendChild(li);
+                });
+            } else {
+                objList.innerHTML = '<li>Completar la misión con éxito.</li>';
+            }
+
+            showVideo(data.video);
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('taskModal').style.display = 'none';
+            document.getElementById('mVideoViewer').innerHTML = '<span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>';
+        }
+
+        function showVideo(src) {
+            const box = document.getElementById('mVideoViewer');
+            if (!src) {
+                box.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-dim);">El creador aún no ha subido video para esta misión.</span>';
+                return;
+            }
+            if (src.includes('youtube.com') || src.includes('youtu.be')) {
+                let url = src.includes('watch?v=') ? src.replace('watch?v=', 'embed/') : src.replace('youtu.be/', 'www.youtube.com/embed/');
+                box.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
+            } else {
+                box.innerHTML = `<video controls src="${src}"></video>`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
