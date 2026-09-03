@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTA VI - Cuenta Regresiva Oficial</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d0614 0%, #290d2e 40%, #5a123f 70%, #d946ef 100%);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            background-attachment: fixed;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .top-bar {
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 6, 20, 0.4);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+
+        .back-link {
+            color: #fb7185;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: #fff; }
+
+        .logo-tag {
+            font-size: 1.1rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(244, 63, 94, 0.8);
+        }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .countdown-container {
+            max-width: 1100px;
+            width: 100%;
+            background: rgba(13, 6, 20, 0.65);
+            backdrop-filter: blur(16px);
+            border: 2px solid rgba(244, 63, 94, 0.5);
+            border-radius: 24px;
+            padding: 40px 20px;
+            box-shadow: 0 0 50px rgba(244, 63, 94, 0.35), inset 0 0 30px rgba(217, 70, 239, 0.15);
+        }
+
+        .game-title-glow {
+            font-size: clamp(2.2rem, 5vw, 4.2rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(180deg, #ffffff 20%, #f43f5e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+            text-shadow: 0 10px 30px rgba(244, 63, 94, 0.5);
+        }
+
+        .subtitle-location {
+            font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+            color: #fb7185;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        /* Fila Superior: MESES y SEMANAS */
+        .top-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(140px, 220px));
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        /* Fila Inferior: DÍAS, HORAS, MINUTOS y SEGUNDOS juntos en un solo bloque compacto */
+        .bottom-row-wrapper {
+            background: linear-gradient(145deg, rgba(20, 8, 30, 0.85), rgba(10, 3, 16, 0.9));
+            border: 2px solid rgba(217, 70, 239, 0.25);
+            border-radius: 18px;
+            padding: 20px 15px;
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .bottom-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+        }
+
+        .mega-box {
+            background: rgba(15, 5, 25, 0.6);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            border-radius: 12px;
+            padding: 15px 5px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .mega-box:hover {
+            border-color: #f43f5e;
+            transform: translateY(-2px);
+        }
+
+        .mega-number {
+            font-size: clamp(1.8rem, 3.8vw, 3.2rem);
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            text-shadow: 0 0 15px rgba(244, 63, 94, 0.6);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .mega-label {
+            font-size: clamp(0.65rem, 1vw, 0.8rem);
+            color: #f472b6;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 6px;
+            font-weight: 800;
+        }
+
+        footer {
+            padding: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="index.html" class="back-link">⬅ Volver al Hub</a>
+        <div class="logo-tag">Leonida Countdown</div>
+    </div>
+
+    <main>
+        <div class="countdown-container">
+            <h1 class="game-title-glow">Grand Theft Auto VI</h1>
+            <div class="subtitle-location">Vice City &bull; State of Leonida</div>
+
+            <!-- Fila Superior: MESES y SEMANAS -->
+            <div class="top-row">
+                <div class="mega-box">
+                    <div id="c-months" class="mega-number">0</div>
+                    <div class="mega-label">Meses</div>
+                </div>
+                <div class="mega-box">
+                    <div id="c-weeks" class="mega-number">0</div>
+                    <div class="mega-label">Semanas</div>
+                </div>
+            </div>
+
+            <!-- Fila Inferior Juntos: DÍAS, HORAS, MINUTOS y SEGUNDOS -->
+            <div class="bottom-row-wrapper">
+                <div class="bottom-grid">
+                    <div class="mega-box">
+                        <div id="c-days" class="mega-number">0</div>
+                        <div class="mega-label">Días</div>
+                    </div>
+                    <div class="mega-box">
+                        <div id="c-hours" class="mega-number">0</div>
+                        <div class="mega-label">Horas</div>
+                    </div>
+                    <div class="mega-box">
+                        <div id="c-mins" class="mega-number">0</div>
+                        <div class="mega-label">Minutos</div>
+                    </div>
+                    <div class="mega-box">
+                        <div id="c-secs" class="mega-number">0</div>
+                        <div class="mega-label">Segundos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; Rockstar Games / Countdown Tracker</p>
+    </footer>
+
+    <script>
+        const releaseDate = new Date("2026-11-19T00:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = releaseDate - now;
+
+            if (distance < 0) {
+                document.querySelector(".countdown-container").innerHTML = `
+                    <h1 class="game-title-glow" style="font-size: clamp(2rem, 5vw, 4rem);">¡Ya Disponible!</h1>
+                    <div class="subtitle-location">Bienvenido a Vice City</div>
+                `;
+                return;
+            }
+
+            const oneSecond = 1000;
+            const oneMinute = oneSecond * 60;
+            const oneHour = oneMinute * 60;
+            const oneDay = oneHour * 24;
+            const oneWeek = oneDay * 7;
+            const oneMonth = oneDay * 30.436875;
+
+            const months = Math.floor(distance / oneMonth);
+            const weeks = Math.floor((distance % oneMonth) / oneWeek);
+            const days = Math.floor((distance % oneWeek) / oneDay);
+            const hours = Math.floor((distance % oneDay) / oneHour);
+            const minutes = Math.floor((distance % oneHour) / oneMinute);
+            const seconds = Math.floor((distance % oneMinute) / oneSecond);
+
+            document.getElementById("c-months").innerText = months;
+            document.getElementById("c-weeks").innerText = weeks;
+            document.getElementById("c-days").innerText = days;
+            document.getElementById("c-hours").innerText = hours;
+            document.getElementById("c-mins").innerText = minutes;
+            document.getElementById("c-secs").innerText = seconds;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>
