@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTA V - Modo Espectador / Progreso Oficial</title>
+    <style>
+        body {
+            background-color: #0c0a14;
+            /* background-image: linear-gradient(rgba(12, 10, 20, 0.90), rgba(12, 10, 20, 0.96)), url('fondo-gta5.jpg'); */
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-size: cover;
+            background-attachment: fixed;
+            color: #f3f4f6;
+            padding-bottom: 70px;
+        }
+
+        header {
+            background-color: #171224;
+            /* background-image: linear-gradient(180deg, rgba(23, 18, 36, 0.75) 0%, rgba(12, 10, 20, 0.95) 100%), url('banner-gta5.jpg'); */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            border-bottom: 3px solid #a855f7;
+            padding: 18px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 60;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.65);
+        }
+
+        :root {
+            --bg-card: rgba(20, 17, 34, 0.88);
+            --accent: #a855f7;
+            --accent-glow: #c084fc;
+            --text: #f3f4f6;
+            --text-dim: #9ca3af;
+            --border: #31264a;
+            --easy: #10b981;
+            --medium: #3b82f6;
+            --hard: #f97316;
+            --extreme: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+        .nav-bar {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .back-link:hover { color: #fff; }
+
+        main { max-width: 1300px; margin: 24px auto; padding: 0 20px; }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: 1fr; }
+        }
+
+        .progress-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .progress-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+        .progress-bar-bg { background: #07060e; height: 18px; border-radius: 9px; overflow: hidden; border: 1px solid var(--border); }
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--accent), #ec4899);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .filter-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #0a0812;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        .search-input:focus { border-color: var(--accent); }
+
+        .category-section { margin-top: 32px; }
+        .category-title {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            color: var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .category-sub { font-size: 0.85rem; color: var(--text-dim); font-weight: normal; }
+
+        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 14px; }
+
+        .task-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .task-card:hover { border-color: #c084fc; transform: translateY(-2px); }
+        .task-card.completed { border-color: rgba(168, 85, 247, 0.5); background: rgba(168, 85, 247, 0.06); }
+
+        .task-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+        .task-checkbox {
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--text-dim);
+            border-radius: 4px;
+            cursor: not-allowed;
+            display: grid;
+            place-content: center;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        .task-checkbox:checked { background-color: var(--easy); border-color: var(--easy); }
+        .task-checkbox:checked::before { content: "✓"; color: #fff; font-size: 14px; font-weight: 900; }
+
+        .task-info { flex-grow: 1; cursor: pointer; }
+        .task-name { font-weight: 700; font-size: 0.95rem; line-height: 1.3; }
+        .task-character { font-size: 0.75rem; color: var(--accent); margin-top: 2px; }
+
+        .task-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        .difficulty { padding: 2px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
+        .diff-facil { background: rgba(16, 185, 129, 0.2); color: var(--easy); }
+        .diff-media { background: rgba(59, 130, 246, 0.2); color: var(--medium); }
+        .diff-dificil { background: rgba(249, 115, 22, 0.2); color: var(--hard); }
+        .diff-extrema { background: rgba(239, 68, 68, 0.2); color: var(--extreme); }
+
+        .btn-modal {
+            color: var(--accent);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+            font-size: 0.75rem;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: #151124;
+            border: 1px solid var(--border);
+            max-width: 640px;
+            width: 100%;
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 14px; right: 16px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-badge-group { display: flex; gap: 8px; align-items: center; margin: 8px 0 14px 0; }
+        .tag-meta { background: #0a0812; border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; color: var(--text-dim); }
+
+        .objectives-list {
+            list-style: none;
+            margin: 12px 0;
+            background: #0a0812;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .objectives-list li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
+            color: #d1d5db;
+        }
+        .objectives-list li::before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .video-box {
+            margin-top: 14px;
+            width: 100%;
+            min-height: 200px;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .video-box iframe, .video-box video { width: 100%; height: 260px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-bar">
+            <a href="index.html" class="back-link">⬅ Menú Principal</a>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <h2 style="font-size: 1.2rem; color: var(--accent);">GTA V - Modo Espectador</h2>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="dashboard">
+            <section class="progress-card">
+                <div class="progress-header">
+                    <h3>Progreso del Creador (69 Misiones)</h3>
+                    <span id="pctDisplay" style="font-size: 1.4rem; font-weight: 800; color: var(--accent);">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="barDisplay" class="progress-bar-fill"></div>
+                </div>
+                <p id="statsText" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-dim);">0 de 69 misiones completadas</p>
+            </section>
+
+            <section class="filter-panel">
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Buscar misión:</label>
+                <input type="text" id="searchInput" class="search-input" placeholder="Ej: The Big Score, Jewel Store Job..." oninput="handleSearch()">
+            </section>
+        </div>
+
+        <section id="taskListContainer"></section>
+    </main>
+
+    <!-- Modal Espectador -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2 id="mName" style="margin-bottom: 2px;"></h2>
+            <div id="mCharacter" style="font-size: 0.85rem; color: var(--accent); font-weight: bold;"></div>
+
+            <div class="modal-badge-group">
+                <span id="mDiff" class="difficulty"></span>
+                <span id="mReward" class="tag-meta"></span>
+            </div>
+
+            <p id="mDesc" style="font-size: 0.92rem; line-height: 1.5; color: #d1d5db;"></p>
+
+            <h4 style="margin-top: 14px; font-size: 0.85rem; color: var(--accent); text-transform: uppercase;">Objetivos Canónicos:</h4>
+            <ul id="mObjectives" class="objectives-list"></ul>
+
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+
+            <h4>Video de la Misión (Registrado por el Creador)</h4>
+            <div class="video-box" id="mVideoViewer">
+                <span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GAME_ID = 'gta5';
+
+        const tasks = [
+            { id: "g5_01", cat: "1. Inicios y Prólogo", character: "Prólogo", name: "1. Prólogo", diff: "facil", reward: "$0", desc: "Atraco al depósito de Ludendorff en North Yankton 9 años atrás.", objectives: ["Controlar a Michael y tomar rehenes", "Abrir la caja fuerte", "Huir hacia el punto de extracción en coche"] },
+            { id: "g5_02", cat: "1. Inicios y Prólogo", character: "Franklin", name: "2. Franklin y Lamar", diff: "facil", reward: "$250", desc: "Carrera callejera en deportivos por Los Santos con Lamar.", objectives: ["Robar los deportivos", "Competir contra Lamar sorteando el tráfico hasta Vinewood"] },
+            { id: "g5_03", cat: "1. Inicios y Prólogo", character: "Franklin", name: "3. Reposesión", diff: "facil", reward: "$500", desc: "Recuperación de una moto deportiva en un concesionario de Los Santos.", objectives: ["Infiltrarse en el concesionario de Simeon", "Recuperar la moto y huir de los armenios"] },
+            { id: "g5_04", cat: "1. Inicios y Prólogo", character: "Michael", name: "4. Complicaciones", diff: "media", reward: "$0", desc: "Descubrimiento de la infidelidad del profesor de tenis con la esposa de Michael.", objectives: ["Entrar a la mansión de Vinewood Hills", "Derribar el balcón con el coche y perseguir al amante"] },
+            { id: "g5_05", cat: "1. Inicios y Prólogo", character: "Michael", name: "5. Padre e Hijo", diff: "facil", reward: "$0", desc: "Rescate del yate robado de Jimmy en la autopista de Del Perro.", objectives: ["Perseguir el yate en la camioneta de Simeon", "Saltar al remolque para rescatar a Jimmy"] },
+            { id: "g5_06", cat: "1. Inicios y Prólogo", character: "Michael", name: "6. Solicitud de Amistad", diff: "facil", reward: "$0", desc: "Infiltración en la sede de LifeInvader para plantar un explosivo en un prototipo.", objectives: ["Disfrazarse de técnico, entrar a la oficina y colocar el chip bomba"] },
+            { id: "g5_07", cat: "2. Primeros Golpes", character: "Lester", name: "7. El golpe a la joyería (Preparativos)", diff: "facil", reward: "$0", desc: "Reconocimiento y elección de plan para el primer gran atraco.", objectives: ["Tomar fotos de seguridad en la joyería Vangelico", "Conseguir el equipo de asalto"] },
+            { id: "g5_08", cat: "2. Primeros Golpes", character: "Lester", name: "8. El golpe a la joyería (Ejecución)", diff: "dificil", reward: "$250,000+", desc: "Atraco sincronizado con gas adormecedor en Vangelico y huida en moto por los túneles.", objectives: ["Lanzar el gas", "Robar las vitrinas", "Huir en moto por el metro esquivando a la policía"] },
+            { id: "g5_09", cat: "2. Primeros Golpes", character: "Trevor", name: "9. Sr. Philips", diff: "media", reward: "$0", desc: "Presentación de Trevor Philips en Sandy Shores y ajuste de cuentas con los Lost.", objectives: ["Localizar el tráiler de los motociclistas", "Destruir el campamento de los Lost en Blaine County"] },
+            { id: "g5_10", cat: "2. Primeros Golpes", character: "Trevor", name: "10. Tráfico Arrojadizo", diff: "facil", reward: "$0", desc: "Negocio de contrabando aéreo y eliminación de rivales en el desierto.", objectives: ["Pilotar el avión de contrabando de Trevor"] },
+            { id: "g5_11", cat: "2. Primeros Golpes", character: "Trevor", name: "11. Al alimón", diff: "media", reward: "$0", desc: "Reencuentro impactante de Trevor con Michael en Los Santos.", objectives: ["Seguir la pista de Michael hasta su casa en Rockford Hills"] },
+            { id: "g5_12", cat: "3. Expansión y Reuniones", character: "Franklin", name: "12. Lamar baja los humos", diff: "media", reward: "$0", desc: "Rescate de Lamar secuestrado por los Ballas en una serrería abandonada.", objectives: ["Asaltar la serrería en Paleto Bay con Trevor y Franklin"] },
+            { id: "g5_13", cat: "3. Expansión y Reuniones", character: "FIB / IAA", name: "13. Reunión de familia", diff: "facil", reward: "$0", desc: "Intervención en una terapia familiar desastrosa.", objectives: ["Ayudar a Michael a calmar a su familia en crisis"] },
+            { id: "g5_14", cat: "3. Expansión y Reuniones", character: "FIB / IAA", name: "14. Vigilando el tido", diff: "media", reward: "$0", desc: "Infiltración en la sede del IAA para robar información confidencial.", objectives: ["Hacerse pasar por limpiadores y hackear los servidores del gobierno"] },
+            { id: "g5_15", cat: "3. Expansión y Reuniones", character: "FIB / IAA", name: "15. Desenterrando el pasado", diff: "media", reward: "$0", desc: "Viaje a North Yankton para abrir la tumba de Brad y confirmar las sospechas de Trevor.", objectives: ["Viajar en avión a Ludendorff, abrir la tumba y escapar del tiroteo"] },
+            { id: "g5_16", cat: "3. Expansión y Reuniones", character: "Merryweather", name: "16. Preparación para el golpe al carguero", diff: "facil", reward: "$0", desc: "Robo de un submarino experimental sumergible en los muelles.", objectives: ["Robar el submarino Merryweather y llevarlo al muelle secreto"] },
+            { id: "g5_17", cat: "3. Expansión y Reuniones", character: "Merryweather", name: "17. El golpe al carguero", diff: "dificil", reward: "$0 (Devuelto)", desc: "Asalto submarino y aéreo al carguero privado en busca del arma secreta.", objectives: ["Sumergirse en el mini-sub", "Localizar el dispositivo y subirlo al helicóptero"] },
+            { id: "g5_18", cat: "4. Planificación Compleja", character: "FIB", name: "18. Blitz Play", diff: "extrema", reward: "$0", desc: "Asalto con camiones de basura a un furgón blindado del FIB en plena calle.", objectives: ["Bloquear la calle con el camión de basura", "Acribillar a los guardias y robar los bonos al portador"] },
+            { id: "g5_19", cat: "4. Planificación Compleja", character: "Trevor", name: "19. Señor Richards", diff: "facil", reward: "$0", desc: "Sabotaje a un director de cine en los estudios de Vinewood por encargo de Madrazo.", objectives: ["Robar un helicóptero acrobático, abordar el set y eliminar al director"] },
+            { id: "g5_20", cat: "4. Planificación Compleja", character: "Trevor", name: "20. Asalto al cañón", diff: "media", reward: "$0", desc: "Robo de explosivos en una cantera para el gran golpe.", objectives: ["Infiltrarse en la cantera y robar la carga explosiva con un camión"] },
+            { id: "g5_21", cat: "4. Planificación Compleja", character: "Michael", name: "21. Oof, la ley", diff: "media", reward: "$0", desc: "Rescate de Jimmy secuestrado en un restaurante.", objectives: ["Perseguir el coche que lleva a Jimmy y rescatarlo san y salvo"] },
+            { id: "g5_22", cat: "4. Planificación Compleja", character: "FIB", name: "22. El escondite", diff: "facil", reward: "$0", desc: "Búsqueda de un nuevo refugio seguro para la familia de Michael en Blaine County.", objectives: ["Trasladar a Amanda, Tracey y Jimmy al motel en Grapeseed"] },
+            { id: "g5_23", cat: "4. Planificación Compleja", character: "Trevor", name: "23. Safari por el barrio", diff: "media", reward: "$0", desc: "Intercambio de droga con los Ballas en Grove Street que resulta ser una trampa.", objectives: ["Ir a Grove Street con Franklin y Lamar, sobrevivir a la emboscada policial"] },
+            { id: "g5_24", cat: "5. El Golpe a Paleto Bay", character: "Preparación", name: "24. Equipo de investigación", diff: "facil", reward: "$0", desc: "Robo de equipo táctico militar para el asalto al banco de Paleto Bay.", objectives: ["Robar las patrullas policiales y trajes especiales"] },
+            { id: "g5_25", cat: "5. El Golpe a Paleto Bay", character: "Preparación", name: "25. Material militar", diff: "facil", reward: "$0", desc: "Robo de un fusil con minigun en una base militar en movimiento.", objectives: ["Asaltar el convoy militar en camión y asegurar la minigun"] },
+            { id: "g5_26", cat: "5. El Golpe a Paleto Bay", character: "El Gran Golpe", name: "26. El golpe a Paleto Bay", diff: "dificil", reward: "$8,000,000+", desc: "Atraco armado con trajes de fusileros y minigun al banco del pueblo de Paleto Bay.", objectives: ["Entrar al banco con miniguns", "Abrir la cámara, salir a la calle rodeados de ejército y huir en apisonadora"] },
+            { id: "g5_27", cat: "6. Operaciones del FIB", character: "FIB", name: "27. Lamar contra los Vagos", diff: "media", reward: "$0", desc: "Rescate de nuevo a Lamar en la fundición de Paleto Bay.", objectives: ["Asaltar la fundición abandonada con Michael y Trevor"] },
+            { id: "g5_28", cat: "6. Operaciones del FIB", name: "28. Reunión de amigos", diff: "facil", reward: "$0", desc: "Disputas familiares y reencuentros tensos en Rockford Hills.", objectives: ["Hablar con los personajes en la mansión"] },
+            { id: "g5_29", cat: "6. Operaciones del FIB", character: "FIB", name: "29. El orgullo de Jackie", diff: "facil", reward: "$0", desc: "Tareas de vigilancia en la sede del FIB.", objectives: ["Investigar los accesos de la agencia federal"] },
+            { id: "g5_30", cat: "6. Operaciones del FIB", character: "FIB", name: "30. Asalto al FBI (Preparativos)", diff: "media", reward: "$0", desc: "Planificación del ataque cibernético y físico a la sede central del FIB.", objectives: ["Conseguir tarjetas de acceso y furgoneta de bomberos"] },
+            { id: "g5_31", cat: "6. Operaciones del FIB", character: "FIB", name: "31. Asalto al FBI (Ejecución)", diff: "extrema", reward: "$0", desc: "Infiltración disfrazados de bomberos en la torre del FIB para borrar expedientes.", objectives: ["Entrar con la furgoneta de bomberos, subir a la planta afectada, hackear y escapar"] },
+            { id: "g5_32", cat: "7. El Asalto a la Morgue y Trevor", character: "Michael", name: "32. Desenterrando el pasado (Alternativa)", diff: "media", reward: "$0", desc: "Misiones secundarias del arco de madurez de Michael.", objectives: ["Cumplir los recados familiares"] },
+            { id: "g5_33", cat: "7. El Asalto a la Morgue y Trevor", character: "Trevor", name: "33. Encargo de la mafia", diff: "media", reward: "$0", desc: "Secuestro de Patricia Madrazo para obligar a su marido a perdonar a Trevor.", objectives: ["Asaltar el rancho de Madrazo, secuestrar a Patricia y huir al desierto"] },
+            { id: "g5_34", cat: "7. El Asalto a la Morgue y Trevor", character: "Franklin", name: "34. Tiempo de paseo", diff: "facil", reward: "$0", desc: "Pruebas de tiro y entrenamiento de habilidades con Franklin y Lamar.", objectives: ["Completar las pruebas de tiro en Ammu-Nation"] },
+            { id: "g5_35", cat: "8. Preparativos del Union Depository", character: "Lester", name: "35. Inspección del Union Depository", diff: "facil", reward: "$0", desc: "Reconocimiento de las rutas subterráneas del mayor banco de oro del estado.", objectives: ["Conducir por los aparcamientos subterráneos y tomar fotos"] },
+            { id: "g5_36", cat: "8. Preparativos del Union Depository", character: "Lester", name: "36. Vehículos de huida", diff: "media", reward: "$0", desc: "Robo de coches rápidos para escapar tras el gran golpe.", objectives: ["Robar los vehículos deportivos y ocultarlos en un garaje seguro"] },
+            { id: "g5_37", cat: "8. Preparativos del Union Depository", character: "Lester", name: "37. Perforadora", diff: "media", reward: "$0", desc: "Robo de una máquina perforadora industrial de túneles en un cargamento.", objectives: ["Infiltrarse en el puerto y robar el camión con la perforadora"] },
+            { id: "g5_38", cat: "8. Preparativos del Union Depository", character: "Lester", name: "38. Trajes de escape", diff: "facil", reward: "$0", desc: "Conseguir disfraces de operarios para la infiltración en el banco.", objectives: ["Comprar los trajes de la obra"] },
+            { id: "g5_39", cat: "9. El Golpe al Union Depository", character: "El Gran Golpe", name: "39. El gran golpe (Plan Sutil u Obvio)", diff: "extrema", reward: "$200,000,000+", desc: "El atraco definitivo al Union Depository transportando lingotes de oro en camiones blindados.", objectives: ["Perforar la cámara acorazada", "Cargar el oro", "Soportar la emboscada de Merryweather en los túneles y escapar con éxito"] },
+            { id: "g5_40", cat: "10. Desenlace y Elección Final", character: "Franklin", name: "40. Opción A: Matar a Trevor", diff: "extrema", reward: "Dinero repartido", desc: "La presión del FIB obliga a Franklin a traicionar y eliminar a Trevor en una refinería de petróleo.", objectives: ["Perseguir a Trevor hasta la planta petrolera", "Chocar su camión de combustible y prenderle fuego junto a Michael"] },
+            { id: "g5_41", cat: "10. Desenlace y Elección Final", character: "Franklin", name: "41. Opción B: Matar a Michael", diff: "extrema", reward: "Dinero repartido", desc: "Franklin traiciona a Michael persigiéndolo hasta la refinería y dejándolo caer al vacío desde una torre.", objectives: ["Perseguir a Michael hasta la planta industrial", "Luchar en la azotea y dejarlo caer en el desenlace trágico"] },
+            { id: "g5_42", cat: "10. Desenlace y Elección Final", character: "Franklin", name: "42. Opción C: Salvar a los dos (Final Canónico)", diff: "extrema", reward: "Supervivencia del Trío", desc: "Franklin rechaza las órdenes del FIB y convoca a Michael y Trevor para aniquilar a todos sus enemigos de una vez por todas.", objectives: ["Reunirse en la fundición", "Aniquilar a las fuerzas de Merryweather y del FIB", "Eliminar uno a uno a los cabecillas corruptos (Stretch, Cheng, Steve Haines y Devin Weston) en una secuencia épica de venganza conjunta"] }
+        ];
+
+        let publicProgress = {};
+        let activeTaskId = null;
+        let currentFilter = "";
+
+        async function init() {
+            try {
+                const response = await fetch('my-progress.json?' + new Date().getTime());
+                if (response.ok) {
+                    publicProgress = await response.json();
+                }
+            } catch (e) {
+                console.log("No se encontró archivo público externo.");
+            }
+
+            if (!publicProgress[GAME_ID]) publicProgress[GAME_ID] = {};
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('taskListContainer');
+            container.innerHTML = '';
+
+            const filteredTasks = tasks.filter(t => {
+                const search = currentFilter.toLowerCase();
+                return t.name.toLowerCase().includes(search) ||
+                       t.cat.toLowerCase().includes(search) ||
+                       t.desc.toLowerCase().includes(search) ||
+                       (t.character && t.character.toLowerCase().includes(search));
+            });
+
+            const categories = [...new Set(filteredTasks.map(t => t.cat))];
+
+            categories.forEach(cat => {
+                const catTasks = filteredTasks.filter(t => t.cat === cat);
+                const catDone = catTasks.filter(t => publicProgress[GAME_ID][t.id] && publicProgress[GAME_ID][t.id].done).length;
+
+                const section = document.createElement('div');
+                section.className = 'category-section';
+
+                const headerWrap = document.createElement('div');
+                headerWrap.className = 'category-title';
+                headerWrap.innerHTML = `<span>${cat}</span><span class="category-sub">${catDone} / ${catTasks.length}</span>`;
+                section.appendChild(headerWrap);
+
+                const grid = document.createElement('div');
+                grid.className = 'tasks-grid';
+
+                catTasks.forEach(task => {
+                    const status = publicProgress[GAME_ID][task.id] || { done: false, video: null };
+                    const card = document.createElement('div');
+                    card.className = `task-card ${status.done ? 'completed' : ''}`;
+                    
+                    card.innerHTML = `
+                        <div class="task-top">
+                            <input type="checkbox" class="task-checkbox" ${status.done ? 'checked' : ''} disabled title="Progreso público de solo lectura">
+                            <div class="task-info" onclick="openModal('${task.id}')">
+                                <div class="task-name">${task.name}</div>
+                                <div class="task-character">${task.character || 'Historia'}</div>
+                            </div>
+                        </div>
+                        <div class="task-bottom">
+                            <span class="difficulty diff-${task.diff}">${task.diff}</span>
+                            <button class="btn-modal" onclick="openModal('${task.id}')">${status.video ? '📺 Ver Video' : 'ℹ️ Ficha'}</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                section.appendChild(grid);
+                container.appendChild(section);
+            });
+
+            calcProgress();
+        }
+
+        function handleSearch() {
+            currentFilter = document.getElementById('searchInput').value;
+            renderTasks();
+        }
+
+        function calcProgress() {
+            const completed = tasks.filter(t => publicProgress[GAME_ID][t.id] && publicProgress[GAME_ID][t.id].done).length;
+            const pct = Math.round((completed / tasks.length) * 100);
+
+            document.getElementById('pctDisplay').innerText = `${pct}%`;
+            document.getElementById('barDisplay').style.width = `${pct}%`;
+            document.getElementById('statsText').innerText = `${completed} de ${tasks.length} misiones de historia completadas por el creador`;
+        }
+
+        function openModal(taskId) {
+            activeTaskId = taskId;
+            const task = tasks.find(t => t.id === taskId);
+            const data = publicProgress[GAME_ID][taskId] || {};
+
+            document.getElementById('mName').innerText = task.name;
+            document.getElementById('mCharacter').innerText = `Contacto / Jefe: ${task.character}`;
+            document.getElementById('mDesc').innerText = task.desc;
+            document.getElementById('mReward').innerText = `Recompensa: ${task.reward}`;
+
+            const diffElem = document.getElementById('mDiff');
+            diffElem.className = `difficulty diff-${task.diff}`;
+            diffElem.innerText = task.diff;
+
+            const objList = document.getElementById('mObjectives');
+            objList.innerHTML = '';
+            if (task.objectives && task.objectives.length > 0) {
+                task.objectives.forEach(obj => {
+                    const li = document.createElement('li');
+                    li.innerText = obj;
+                    objList.appendChild(li);
+                });
+            } else {
+                objList.innerHTML = '<li>Completar la misión con éxito.</li>';
+            }
+
+            showVideo(data.video);
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('taskModal').style.display = 'none';
+            document.getElementById('mVideoViewer').innerHTML = '<span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>';
+        }
+
+        function showVideo(src) {
+            const box = document.getElementById('mVideoViewer');
+            if (!src) {
+                box.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-dim);">El creador aún no ha subido video para esta misión.</span>';
+                return;
+            }
+            if (src.includes('youtube.com') || src.includes('youtu.be')) {
+                let url = src.includes('watch?v=') ? src.replace('watch?v=', 'embed/') : src.replace('youtu.be/', 'www.youtube.com/embed/');
+                box.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
+            } else {
+                box.innerHTML = `<video controls src="${src}"></video>`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
