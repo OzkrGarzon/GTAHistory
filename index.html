@@ -3,47 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTA 100% Tracker | La Herramienta Definitiva</title>
-    <link rel="stylesheet" href="style.css">
+    <title>GTA 100% Tracker | Hub Principal</title>
+    <style>
+        :root {
+            --bg-main: #0c0d14;
+            --bg-card: #151824;
+            --bg-card-hover: #1e2235;
+            --accent: #f59e0b;
+            --text: #f3f4f6;
+            --text-dim: #9ca3af;
+            --border: #262b40;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(180deg, #111422 0%, var(--bg-main) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 24px 20px;
+        }
+
+        .header-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .save-tools {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .intro h2 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .intro p {
+            color: var(--text-dim);
+            font-size: 1rem;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .game-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .game-desc {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .progress-box {
+            margin-top: auto;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .progress-bar-bg {
+            background-color: #090a0f;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #f59e0b, #ef4444);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 20px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
 <body>
 
-    <header class="hero">
-        <div class="container">
-            <h1>GTA 100% Tracker</h1>
-            <p>El centro de control definitivo para exprimir cada entrega de Rockstar al máximo.</p>
-            <a href="#app" class="btn-primary">Iniciar Programa</a>
+    <header>
+        <div class="header-container">
+            <h1>GTA 100% Hub</h1>
+            <div class="save-tools">
+                <button class="btn" onclick="exportMasterData()">💾 Exportar Todo (.json)</button>
+                <button class="btn" onclick="document.getElementById('fileInput').click()">📂 Cargar Guardado</button>
+                <input type="file" id="fileInput" style="display:none" accept=".json" onchange="importMasterData(event)">
+            </div>
         </div>
     </header>
 
-    <section class="features container">
-        <h2>¿Qué encontrarás aquí?</h2>
-        <div class="grid">
-            <div class="card">
-                <h3>📊 Progreso en Tiempo Real</h3>
-                <p>Lleva la cuenta exacta de tus misiones, coleccionables y propiedades sin perderte nada.</p>
-            </div>
-            <div class="card">
-                <h3>🎮 Todos los Títulos</h3>
-                <p>Desde la era 3D clásica hasta el universo HD de Liberty City y Los Santos.</p>
-            </div>
-            <div class="card">
-                <h3>💾 Guardado Automatizado</h3>
-                <p>Marca tus logros completados y mantén tus estadísticas organizadas en un solo lugar.</p>
-            </div>
+    <main>
+        <div class="intro">
+            <h2>Selecciona una Entrega</h2>
+            <p>Elige el juego para gestionar sus tareas, misiones ocultas, logros y videos.</p>
         </div>
-    </section>
 
-    <main id="app" class="container app-section">
-        <h2>Panel de Control</h2>
-        <div class="app-placeholder">
-            <p>👉 <em>Aquí es donde insertarás o programarás la interfaz de tu herramienta interactiva.</em></p>
+        <div class="games-grid">
+            <a href="vice-city.html" class="game-card">
+                <div>
+                    <div class="game-title">GTA: Vice City</div>
+                    <p class="game-desc">Tommy Vercetti, mansiones, paquetes ocultos y el dominio de los 80s.</p>
+                </div>
+                <div class="progress-box">
+                    <div class="progress-label">
+                        <span>Progreso Total</span>
+                        <span id="pct-gtavc">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="bar-gtavc" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="san-andreas.html" class="game-card">
+                <div>
+                    <div class="game-title">GTA: San Andreas</div>
+                    <p class="game-desc">CJ, bandas de Grove Street, graffitis, herraduras y saltos únicos.</p>
+                </div>
+                <div class="progress-box">
+                    <div class="progress-label">
+                        <span>Progreso Total</span>
+                        <span id="pct-gtasa">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="bar-gtasa" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="gta3.html" class="game-card">
+                <div>
+                    <div class="game-title">GTA III</div>
+                    <p class="game-desc">Claude Speed, las 3 islas de Liberty City y las misiones de paramédico.</p>
+                </div>
+                <div class="progress-box">
+                    <div class="progress-label">
+                        <span>Progreso Total</span>
+                        <span id="pct-gta3">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="bar-gta3" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="gta4.html" class="game-card">
+                <div>
+                    <div class="game-title">GTA IV</div>
+                    <p class="game-desc">Niko Bellic, el sueño americano, palomas infectadas y acrobacias.</p>
+                </div>
+                <div class="progress-box">
+                    <div class="progress-label">
+                        <span>Progreso Total</span>
+                        <span id="pct-gta4">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="bar-gta4" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="gta5.html" class="game-card">
+                <div>
+                    <div class="game-title">GTA V</div>
+                    <p class="game-desc">Michael, Franklin y Trevor: golpes, piezas de nave y misiones Epsilon.</p>
+                </div>
+                <div class="progress-box">
+                    <div class="progress-label">
+                        <span>Progreso Total</span>
+                        <span id="pct-gta5">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="bar-gta5" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="gta6.html" class="game-card">
+                <div>
+                    <div class="game-title">GTA VI</div>
+                    <p class="game-desc">Vice Dale County, los cayos de Leonida, robos y misiones dinámicas.</p>
+                </div>
+                <div class="progress-box">
+                    <div class="progress-label">
+                        <span>Progreso Total</span>
+                        <span id="pct-gta6">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="bar-gta6" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+            </a>
         </div>
     </main>
 
     <footer>
-        <p>&copy; 2026 GTA 100% Tracker. Creado por y para completistas.</p>
+        <p>&copy; GTA 100% Complete Hub. Progreso persistente compartido vía JSON / LocalStorage.</p>
     </footer>
 
+    <script>
+        // Total aproximado de misiones para calcular las barras en el index (actualizable según cargues tus listas)
+        const expectedTotals = {
+            gtavc: 59,
+            gtasa: 137,
+            gta3: 73,
+            gta4: 90,
+            gta5: 69,
+            gta6: 50
+        };
+
+        function refreshHubStats() {
+            const raw = localStorage.getItem('gta_master_save');
+            const data = raw ? JSON.parse(raw) : {};
+
+            Object.keys(expectedTotals).forEach(gameKey => {
+                const gameData = data[gameKey] || {};
+                const completed = Object.values(gameData).filter(task => task.done).length;
+                const total = expectedTotals[gameKey];
+                const pct = Math.min(100, Math.round((completed / total) * 100));
+
+                const pctElem = document.getElementById(`pct-${gameKey}`);
+                const barElem = document.getElementById(`bar-${gameKey}`);
+                if (pctElem && barElem) {
+                    pctElem.innerText = `${pct}%`;
+                    barElem.style.width = `${pct}%`;
+                }
+            });
+        }
+
+        function exportMasterData() {
+            const raw = localStorage.getItem('gta_master_save') || "{}";
+            const blob = new Blob([raw], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `GTA_Global_100_Progress_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importMasterData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    JSON.parse(e.target.result); // Validar JSON
+                    localStorage.setItem('gta_master_save', e.target.result);
+                    refreshHubStats();
+                    alert("¡Progreso global cargado con éxito!");
+                } catch (err) {
+                    alert("El archivo subido no es un JSON válido.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        window.addEventListener('DOMContentLoaded', refreshHubStats);
+    </script>
 </body>
 </html>
