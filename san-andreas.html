@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTA San Andreas - Modo Historia Tracker</title>
+    <style>
+        /* ==========================================================================
+           ZONA DE PERSONALIZACIÓN VISUAL (SAN ANDREAS)
+           ==========================================================================
+           1. FONDO GLOBAL: Descomenta 'background-image' en body y coloca tu ruta/URL.
+           2. BANNER HEADER: Descomenta 'background-image' en header.
+           3. LOGO: Cambia .header-logo a 'display: block;' y descomenta la etiqueta <img>.
+           ========================================================================== */
+
+        body {
+            background-color: #080c09;
+            /* background-image: linear-gradient(rgba(8, 12, 9, 0.90), rgba(8, 12, 9, 0.96)), url('fondo-san-andreas.jpg'); */
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-size: cover;
+            background-attachment: fixed;
+            color: #f3f4f6;
+            padding-bottom: 70px;
+        }
+
+        header {
+            background-color: #0e1710;
+            /* background-image: linear-gradient(180deg, rgba(14, 23, 16, 0.75) 0%, rgba(8, 12, 9, 0.95) 100%), url('banner-san-andreas.jpg'); */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            border-bottom: 3px solid #22c55e;
+            padding: 18px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 60;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.65);
+        }
+
+        .header-logo {
+            max-height: 48px;
+            width: auto;
+            display: none;
+            object-fit: contain;
+        }
+
+        /* ==========================================================================
+           ESTILOS DEL TRACKER DE HISTORIA
+           ========================================================================== */
+        :root {
+            --bg-card: rgba(18, 26, 20, 0.88);
+            --accent: #22c55e;
+            --accent-gold: #eab308;
+            --text: #f3f4f6;
+            --text-dim: #9ca3af;
+            --border: #1f3323;
+            --easy: #10b981;
+            --medium: #3b82f6;
+            --hard: #f97316;
+            --extreme: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+        .nav-bar {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-link {
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .back-link:hover { color: #fff; }
+
+        main { max-width: 1300px; margin: 24px auto; padding: 0 20px; }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: 1fr; }
+        }
+
+        .progress-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .progress-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+        .progress-bar-bg { background: #050806; height: 18px; border-radius: 9px; overflow: hidden; border: 1px solid var(--border); }
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--accent), var(--accent-gold));
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .filter-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #090e0a;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        .search-input:focus { border-color: var(--accent); }
+
+        .category-section { margin-top: 32px; }
+        .category-title {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            color: var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .category-sub { font-size: 0.85rem; color: var(--text-dim); font-weight: normal; }
+
+        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 14px; }
+
+        .task-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .task-card:hover { border-color: #35533a; transform: translateY(-2px); }
+        .task-card.completed { border-color: rgba(34, 197, 94, 0.5); background: rgba(34, 197, 94, 0.06); }
+
+        .task-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+        .task-checkbox {
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--text-dim);
+            border-radius: 4px;
+            cursor: pointer;
+            display: grid;
+            place-content: center;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        .task-checkbox:checked { background-color: var(--easy); border-color: var(--easy); }
+        .task-checkbox:checked::before { content: "✓"; color: #fff; font-size: 14px; font-weight: 900; }
+
+        .task-info { flex-grow: 1; cursor: pointer; }
+        .task-name { font-weight: 700; font-size: 0.95rem; line-height: 1.3; }
+        .task-character { font-size: 0.75rem; color: var(--accent-gold); margin-top: 2px; }
+
+        .task-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        .difficulty { padding: 2px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
+        .diff-facil { background: rgba(16, 185, 129, 0.2); color: var(--easy); }
+        .diff-media { background: rgba(59, 130, 246, 0.2); color: var(--medium); }
+        .diff-dificil { background: rgba(249, 115, 22, 0.2); color: var(--hard); }
+        .diff-extrema { background: rgba(239, 68, 68, 0.2); color: var(--extreme); }
+
+        .btn-modal {
+            color: var(--accent-gold);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+            font-size: 0.75rem;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: #111a13;
+            border: 1px solid var(--border);
+            max-width: 640px;
+            width: 100%;
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 14px; right: 16px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-badge-group { display: flex; gap: 8px; align-items: center; margin: 8px 0 14px 0; }
+        .tag-meta { background: #080d09; border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; color: var(--text-dim); }
+
+        .objectives-list {
+            list-style: none;
+            margin: 12px 0;
+            background: #070c08;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .objectives-list li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
+            color: #d1d5db;
+        }
+        .objectives-list li::before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .video-box {
+            margin-top: 14px;
+            width: 100%;
+            min-height: 200px;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .video-box iframe, .video-box video { width: 100%; height: 260px; }
+
+        .input-group {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+        .input-group input {
+            background: #070d08;
+            border: 1px solid var(--border);
+            padding: 8px;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        .btn-submit {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-bar">
+            <a href="index.html" class="back-link">⬅ Menú Principal</a>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <!-- <img src="logo-san-andreas.png" alt="GTA San Andreas Logo" class="header-logo"> -->
+                <h2 style="font-size: 1.2rem; color: var(--accent);">GTA: San Andreas - Campaña Principal</h2>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="dashboard">
+            <section class="progress-card">
+                <div class="progress-header">
+                    <h3>Progreso de la Historia (100 Misiones)</h3>
+                    <span id="pctDisplay" style="font-size: 1.4rem; font-weight: 800; color: var(--accent);">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="barDisplay" class="progress-bar-fill"></div>
+                </div>
+                <p id="statsText" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-dim);">0 de 100 misiones completadas</p>
+            </section>
+
+            <section class="filter-panel">
+                <label style="font-size: 0.8rem; color: var(--text-dim);">Buscar misión o personaje:</label>
+                <input type="text" id="searchInput" class="search-input" placeholder="Ej: Wrong Side of the Tracks, Ryder, Tenpenny..." oninput="handleSearch()">
+            </section>
+        </div>
+
+        <section id="tasksContainer"></section>
+    </main>
+
+    <!-- Modal Detallado con Objetivos y Multimedia -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2 id="mName" style="margin-bottom: 2px;"></h2>
+            <div id="mCharacter" style="font-size: 0.85rem; color: var(--accent-gold); font-weight: bold;"></div>
+
+            <div class="modal-badge-group">
+                <span id="mDiff" class="difficulty"></span>
+                <span id="mReward" class="tag-meta"></span>
+            </div>
+
+            <p id="mDesc" style="font-size: 0.92rem; line-height: 1.5; color: #d1d5db;"></p>
+
+            <h4 style="margin-top: 14px; font-size: 0.85rem; color: var(--accent); text-transform: uppercase;">Objetivos Canónicos:</h4>
+            <ul id="mObjectives" class="objectives-list"></ul>
+
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+
+            <h4>Registro Multimedia / Evidencia</h4>
+            <div class="input-group">
+                <label>Enlace Web o YouTube:</label>
+                <input type="text" id="mUrl" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+            <div class="input-group">
+                <label>O cargar archivo local (mp4, webm):</label>
+                <input type="file" id="mFile" accept="video/*" onchange="handleFile(event)">
+            </div>
+            <div class="video-box" id="mVideoViewer">
+                <span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>
+            </div>
+            <button class="btn-submit" onclick="saveTaskMedia()">Guardar Registro</button>
+        </div>
+    </div>
+
+    <script>
+        const GAME_ID = 'gtasa';
+
+        // Las 100 misiones canónicas cronológicas de la historia de GTA San Andreas
+        const tasks = [
+            // --- 1. Los Santos: Introducción y Primeros Pasos ---
+            { id: "sa_01", cat: "1. Los Santos - Inicios", character: "Prólogo", name: "1. In the Beginning", diff: "facil", reward: "$0", desc: "Regreso de Carl Johnson a Los Santos tras cinco años en Liberty City y extorsión del C.R.A.S.H.", objectives: ["Ver la cinemática en el callejón de Jefferson", "Montar en la bicicleta BMX señalada", "Pedalear hasta la casa de los Johnson en Grove Street"] },
+            { id: "sa_02", cat: "1. Los Santos - Inicios", character: "Big Smoke", name: "2. Big Smoke", diff: "facil", reward: "Respeto +", desc: "Reencuentro familiar con Sweet, Kendl y Big Smoke antes de la emboscada en el cementerio.", objectives: ["Entrar a la casa materna", "Conducir con Sweet, Smoke y Ryder al cementerio", "Escapar en bicicleta del coche de los Ballas"] },
+            { id: "sa_03", cat: "1. Los Santos - Inicios", character: "Sweet", name: "3. Ryder", diff: "facil", reward: "Respeto +", desc: "Visita al barbero local y robo frustrado en la pizzería con Ryder.", objectives: ["Conducir con Ryder a Idlewood", "Cambiarse el corte de pelo en la barbería de Old Reece", "Comer en Well Stacked Pizza", "Escapar de la escopeta del dependiente"] },
+            { id: "sa_04", cat: "1. Los Santos - Inicios", character: "Sweet", name: "4. Tagging Up Turf", diff: "facil", reward: "$200 / Respeto +", desc: "Marcado de graffitis de Grove Street Families sobre las marcas de los Ballas.", objectives: ["Pintar los dos graffitis en Idlewood", "Pintar los graffitis en territorio de los Ballas", "Escapar por los tejados y volver a Grove Street"] },
+            { id: "sa_05", cat: "1. Los Santos - Inicios", character: "Sweet", name: "5. Cleaning the Hood", diff: "facil", reward: "Respeto +", desc: "Limpieza de camellos de crack en el barrio y visita a B-Dup.", objectives: ["Ir a la casa de B-Dup con Ryder", "Golpear al camello con el bate de béisbol", "Asaltar el picadero de crack y liquidar a los adictos armados"] },
+            { id: "sa_06", cat: "1. Los Santos - Inicios", character: "Sweet", name: "6. Drive-Thru", diff: "facil", reward: "$200 / Respeto +", desc: "Almuerzo en Cluckin' Bell interrumpido por un coche de ataque de los Ballas.", objectives: ["Conducir al Cluckin' Bell de Willowfield", "Perseguir el Voodoo de los Ballas mientras los chicos disparan", "Destruir el vehículo rival antes de que lleguen a Grove Street"] },
+            { id: "sa_07", cat: "1. Los Santos - Inicios", character: "Sweet", name: "7. Nines and AK's", diff: "facil", reward: "Respeto +", desc: "Práctica de tiro con Emmet y compra de ropa verde de la banda.", objectives: ["Ir al almacén de Emmet con Big Smoke", "Disparar a las botellas y al depósito del coche", "Llevar a Smoke a su casa", "Comprar ropa verde en Binco"] },
+            { id: "sa_08", cat: "1. Los Santos - Inicios", character: "Sweet", name: "8. Drive-By", diff: "media", reward: "$500 / Respeto +", desc: "Ataques en movimiento en territorio de los Ballas con el Greenwood.", objectives: ["Conducir con Sweet, Smoke y Ryder al territorio enemigo", "Eliminar a cuatro grupos de Ballas en tiroteo desde el coche", "Perder las 2 estrellas en el Pay 'n' Spray"] },
+            { id: "sa_09", cat: "1. Los Santos - Inicios", character: "Sweet", name: "9. Sweet's Girl", diff: "media", reward: "Respeto +", desc: "Rescate de Sweet acorralado en la casa de su novia por los Seville Boulevard Families.", objectives: ["Conducir urgentemente antes de que baje la barra de salud de Sweet", "Atropellar o abatir a los pandilleros en la entrada", "Recoger a Sweet y a su chica y escapar"] },
+            { id: "sa_10", cat: "1. Los Santos - Inicios", character: "Sweet", name: "10. Cesar Vialpando", diff: "media", reward: "Apuesta monetaria", desc: "Concurso de suspensión hidráulica Lowrider para conocer al novio de Kendl.", objectives: ["Modificar un Blade en Loco Low Co.", "Ir a la estación de Unity Station", "Seguir el ritmo de las flechas con la suspensión hidráulica y superar la puntuación"] },
+
+            // --- 2. Los Santos: C.R.A.S.H., Ryder & Smoke ---
+            { id: "sa_11", cat: "2. Los Santos - Consolidación", character: "Ryder", name: "11. Home Invasion", diff: "facil", desc: "Robo sigiloso nocturno de cajas de munición en casa del veterano Coronel Fuhrberger.", objectives: ["Conducir la furgoneta Boxville antes del amanecer", "Caminar agachado sin hacer ruido", "Robar al menos tres cajas de armas y guardarlas en el garaje"] },
+            { id: "sa_12", cat: "2. Los Santos - Consolidación", character: "Ryder", name: "12. Catalyst", diff: "media", reward: "Respeto +", desc: "Asalto armado a un tren de municiones de los Vagos y tiroteo contra los Ballas.", objectives: ["Eliminar a los Vagos que rodean el tren", "Subir al vagón y lanzar las cajas a Ryder en la camioneta", "Pintar la furgoneta para evadir a la policía"] },
+            { id: "sa_13", cat: "2. Los Santos - Consolidación", character: "Ryder", name: "13. Robbing Uncle Sam", diff: "dificil", reward: "Respeto +", desc: "Incursión armada a los muelles de Ocean Docks para asaltar el depósito de la Guardia Nacional.", objectives: ["Disparar a los soldados militares", "Accionar la carretilla elevadora para cargar las cajas en el camión", "Defender a Ryder de los soldados y escapar a Willowfield"] },
+            { id: "sa_14", cat: "2. Los Santos - Consolidación", character: "Big Smoke", name: "14. OG Loc", diff: "facil", reward: "Respeto +", desc: "Recogida de Jeffrey de prisión y persecución en moto a Freddy por Los Santos.", objectives: ["Recoger a Jeffrey Cross de la comisaría", "Ir a la casa de Freddy en East Los Santos", "Perseguir a Freddy en la moto PCJ-600 y liquidarlo con Loc"] },
+            { id: "sa_15", cat: "2. Los Santos - Consolidación", character: "Big Smoke", name: "15. Running Dog", diff: "facil", reward: "Respeto +", desc: "Reunión con los primos mexicanos de Smoke que termina en persecución a pie.", objectives: ["Conducir con Smoke a la reunión en East Los Santos", "Perseguir al camello de los Vagos por los patios traseros", "Liquidar al objetivo antes de que escape"] },
+            { id: "sa_16", cat: "2. Los Santos - Consolidación", character: "Big Smoke", name: "16. Wrong Side of the Tracks", diff: "dificil", reward: "Respeto +", desc: "Persecución en la Sánchez junto a Smoke a lo largo de las vías tras los Vagos sobre el tren.", objectives: ["Subir a la moto Sánchez con Big Smoke", "Mantener la distancia al lado derecho de las vías para que Smoke dispare", "Eliminar a los 4 miembros de los Vagos antes de cruzar a Las Venturas"] },
+            { id: "sa_17", cat: "2. Los Santos - Consolidación", character: "Big Smoke", name: "17. Just Business", diff: "dificil", reward: "Respeto +", desc: "Tiroteo masivo contra la mafia rusa en el Atrio seguido de huida cinematográfica en moto.", objectives: ["Despejar el Atrio de matones rusos", "Acribillar a los perseguidores en moto, camión y coches mientras Smoke conduce", "Destruir las barricadas en el canal de desagüe"] },
+
+            // --- 3. Los Santos: Cesar Vialpando & OG Loc ---
+            { id: "sa_18", cat: "3. Los Santos - Aliados", character: "Cesar Vialpando", name: "18. High Stakes, Low-Rider", diff: "media", reward: "$1,000", desc: "Carrera callejera clandestina en Lowrider por las calles de Los Santos.", objectives: ["Conseguir un Lowrider rápido", "Seguir a Cesar hasta Commerce", "Ganar la carrera atravesando los puntos de control hasta Santa Maria Beach"] },
+            { id: "sa_19", cat: "3. Los Santos - Aliados", character: "OG Loc", name: "19. Life's a Beach", diff: "media", reward: "Respeto +", desc: "Robo de la furgoneta con equipo de sonido participando en el baile de la playa.", objectives: ["Ir a la fiesta en Santa Maria Beach", "Hablar con la DJ y superar el minijuego de baile rítmico (4000+ pts)", "Subir a la furgoneta de sonido y llevarla al garaje"] },
+            { id: "sa_20", cat: "3. Los Santos - Aliados", character: "OG Loc", name: "20. Madd Dogg's Rhymes", diff: "media", reward: "Respeto +", desc: "Robo sigiloso del cuaderno de rimas en la mansión de Madd Dogg con cuchillo.", objectives: ["Entrar desarmado a la mansión de Mulholland", "Asesinar por la espalda a los guardias con el cuchillo", "Robar el cuaderno de rimas en el estudio", "Llevar el libro a OG Loc en Burger Shot"] },
+            { id: "sa_21", cat: "3. Los Santos - Aliados", character: "OG Loc", name: "21. Management Issues", diff: "media", reward: "Respeto +", desc: "Secuestro de la limusina del representante de Madd Dogg para arrojarlo al océano.", objectives: ["Robar la limusina de la escolta", "Pintar el coche y aparcarlo entre los dos escoltas", "Recoger al mánager y conducir a toda velocidad hacia el muelle para lanzarlo al mar"] },
+            { id: "sa_22", cat: "3. Los Santos - Aliados", character: "OG Loc", name: "22. House Party", diff: "media", reward: "Respeto +", desc: "Fiesta de despedida de Loc interrumpida por un asalto frontal masivo de los Ballas.", objectives: ["Cambiarse de ropa y corte de pelo", "Asistir a la fiesta en casa de Loc en Grove Street", "Defender el callejón de las oleadas de Ballas desde la calle y el puente"] },
+
+            // --- 4. Los Santos: C.R.A.S.H. y La Caída de Grove Street ---
+            { id: "sa_23", cat: "4. Los Santos - Traición", character: "C.R.A.S.H.", name: "23. Burning Desire", diff: "media", desc: "Atentado incendiario contra una casa de los Vagos y rescate de Denise Robinson.", objectives: ["Recoger los cócteles molotov", "Arrojar los cócteles en las 5 ventanas de la casa", "Entrar a la casa en llamas con el extintor", "Romper la puerta y rescatar a Denise"] },
+            { id: "sa_24", cat: "4. Los Santos - Traición", character: "C.R.A.S.H.", name: "24. Gray Imports", diff: "dificil", desc: "Incursión en los almacenes portuarios para frenar un envío de armas entre rusos y Ballas.", objectives: ["Infiltrarse en el almacén de Ocean Docks", "Destruir la carretilla para reventar las puertas", "Acribillar a los guardias rusos", "Perseguir al traficante ruso y eliminarlo antes de que huya"] },
+            { id: "sa_25", cat: "4. Los Santos - Traición", character: "Sweet", name: "25. Doberman", diff: "media", reward: "Respeto +", desc: "Primera guerra territorial en Glen Park para arrebatarle el control a los Ballas.", objectives: ["Comprar armas en Ammu-Nation", "Iniciar la guerra territorial disparando a 3 Ballas a pie", "Sobrevivir a las 3 oleadas enemigas para conquistar el barrio"] },
+            { id: "sa_26", cat: "4. Los Santos - Traición", character: "Sweet", name: "26. Los Sepulcros", diff: "media", reward: "Respeto +", desc: "Asalto al funeral de Little Weasel en el cementerio para eliminar a Kane.", objectives: ["Reclutar a dos miembros de Grove Street", "Ir con Sweet al cementerio antes de 4 minutos", "Saltar el muro y liquidar a Kane y su escolta con blindaje"] },
+            { id: "sa_27", cat: "4. Los Santos - Traición", character: "Sweet", name: "27. Reuniting the Families", diff: "dificil", reward: "Respeto +", desc: "Reunión de todas las facciones de las Familias en el motel atacada por escuadrones SWAT.", objectives: ["Entrar al Jefferson Motel", "Rescatar a Sweet abatiendo a los agentes SWAT en las habitaciones", "Derribar el helicóptero policial en la azotea", "Tiroteo a alta velocidad en el coche"] },
+            { id: "sa_28", cat: "4. Los Santos - Traición", character: "Sweet", name: "28. The Green Sabre", diff: "extrema", reward: "Caída de Grove Street", desc: "Descubrimiento de la traición de Big Smoke y Ryder y emboscada final a Sweet.", objectives: ["Reunirse con Cesar bajo el puente de la autopista y ver el Sabre Verde", "Conducir desesperadamente hasta Mulholland Intersection", "Defender a Sweet herido contra decenas de oleadas de Ballas", "Cinemática de arresto"] },
+
+            // --- 5. Badlands y Territorio Rural ---
+            { id: "sa_29", cat: "5. Badlands y Campo", character: "C.R.A.S.H.", name: "29. Badlands", diff: "media", desc: "Eliminación de un testigo protegido del FBI en la cima del Monte Chiliad.", objectives: ["Comprar un rifle de francotirador", "Subir en moto o camioneta al Monte Chiliad", "Abatir al testigo en la cabaña protegida por federales", "Fotografiar su cadáver y llevar la foto al contenedor de Angel Pine"] },
+            { id: "sa_30", cat: "5. Badlands y Campo", character: "Catalina", name: "30. First Date", diff: "facil", desc: "Primer encuentro violento con Catalina en el bar de Fern Ridge.", objectives: ["Conducir con Catalina para elegir uno de los 4 atracos del condado", "Seleccionar el atraco a la gasolinera de Dillimore"] },
+            { id: "sa_31", cat: "5. Badlands y Campo", character: "Catalina", name: "31. Tanker Commander", diff: "media", reward: "$5,000", desc: "Robo de una cisterna de gasolina en Dillimore perseguidos por el dueño armado.", objectives: ["Acoplar el camión cisterna", "Conducir hasta el depósito de RS Haul sin destruir la carga", "Evadir las embestidas del Sabre que intenta volcarte"] },
+            { id: "sa_32", cat: "5. Badlands y Campo", character: "The Truth", name: "32. Body Harvest", diff: "media", reward: "Respeto +", desc: "Robo de una cosechadora agrícola en una granja de fanáticos armados.", objectives: ["Ir a la granja de culto en Flint County", "Arrollar a los granjeros armados con rifles", "Robar la cosechadora y conducirla hasta la granja de The Truth esquivando camionetas"] },
+            { id: "sa_33", cat: "5. Badlands y Campo", character: "Cesar Vialpando", name: "33. King in Exile", diff: "facil", desc: "Reunión con Cesar y Kendl en Angel Pine descubriendo la red de tráfico de Smoke.", objectives: ["Ir a la caravana de Angel Pine", "Hablar con Cesar sobre las rutas de camiones de droga desde Los Santos"] },
+            { id: "sa_34", cat: "5. Badlands y Campo", character: "Catalina", name: "34. First Base", diff: "facil", desc: "Segunda reunión con Catalina para coordinar otro robo en el condado.", objectives: ["Visitar el escondite de Catalina en Fern Ridge", "Seleccionar el siguiente objetivo de atraco"] },
+            { id: "sa_35", cat: "5. Badlands y Campo", character: "Catalina", name: "35. Local Liquor Store", diff: "media", reward: "$1,000", desc: "Atraco frustrado en Blueberry por vaqueros en quads que se llevan el botín.", objectives: ["Perseguir a los 3 bandidos en el Quad", "Acribillarlos mientras Catalina dispara desde atrás", "Recoger los tres maletines de dinero y volver a la cabaña"] },
+            { id: "sa_36", cat: "5. Badlands y Campo", character: "Catalina", name: "36. Gone Courting", diff: "facil", desc: "Tercer encuentro sentimental con Catalina.", objectives: ["Llegar a la cabaña", "Elegir el siguiente atraco de la lista"] },
+            { id: "sa_37", cat: "5. Badlands y Campo", character: "Catalina", name: "37. Against All Odds", diff: "facil", reward: "$2,000", desc: "Atraco con explosivos plásticos C4 a la casa de apuestas hípicas en Montgomery.", objectives: ["Colocar el explosivo plástico en la puerta blindada", "Detonar la caja fuerte", "Perder las 4 estrellas de búsqueda inmediata en un Pay 'n' Spray"] },
+            { id: "sa_38", cat: "5. Badlands y Campo", character: "Catalina", name: "38. Made in Heaven", diff: "facil", desc: "Último atraco conjunto con Catalina en el condado.", objectives: ["Visitar a Catalina en su refugio", "Aceptar el último asalto"] },
+            { id: "sa_39", cat: "5. Badlands y Campo", character: "Catalina", name: "39. Small Town Bank", diff: "dificil", reward: "$10,000", desc: "Atraco al banco rural de Palomino Creek y huida en motos policiales.", objectives: ["Apuntar a los cajeros en el banco", "Reventar los cajeros automáticos", "Abrirse paso a tiros contra la policía por los callejones", "Seguir a Catalina en las motos policiales"] },
+            { id: "sa_40", cat: "5. Badlands y Campo", character: "Cesar Vialpando", name: "40. Wu Zi Mu", diff: "media", reward: "$5,000", desc: "Carrera todoterreno campo a través donde CJ conoce a Wu Zi Mu (Woozie).", objectives: ["Conseguir un coche de carreras o todoterreno veloz", "Completar la exigente carrera por caminos de tierra en Red County", "Llegar en 1.er lugar superando a Woozie"] },
+            { id: "sa_41", cat: "5. Badlands y Campo", character: "Cesar Vialpando", name: "41. Farewell, My Love...", diff: "media", reward: "Escritura del Garaje", desc: "Carrera campestre en sentido inverso contra el nuevo novio mudo de Catalina (Claude Speed).", objectives: ["Conducir el ZR-350 por los trazados sinuosos de tierra", "Ganar la carrera en 1.er lugar", "Recibir la escritura del taller abandonado de Doherty, San Fierro"] },
+            { id: "sa_42", cat: "5. Badlands y Campo", character: "The Truth", name: "42. Are You Going to San Fierro?", diff: "media", reward: "Respeto +", desc: "Quema de campos de marihuana con lanzallamas y huida en la furgoneta Mothership.", objectives: ["Quemar las 5 parcelas de marihuana antes de que llegue la policía", "Derribar el helicóptero policial con el lanzacohetes", "Conducir la furgoneta Mothership con The Truth hasta San Fierro"] },
+
+            // --- 6. San Fierro: El Taller y El Sindicato Loco ---
+            { id: "sa_43", cat: "6. San Fierro", character: "Taller Doherty", name: "43. Wear Flowers in Your Hair", diff: "facil", desc: "Búsqueda y reclutamiento de mecánicos y electrónicos por San Fierro.", objectives: ["Conducir con The Truth por la ciudad", "Reclutar a Jethro en la gasolinera", "Reclutar a Dwaine en el puesto de perritos", "Reclutar a Zero en su tienda de radiocontrol"] },
+            { id: "sa_44", cat: "6. San Fierro", character: "C.R.A.S.H.", name: "44. 555 We Tip", diff: "facil", desc: "Inculpación de un fiscal enemigo plantando drogas en su coche mediante el servicio de aparcacoches.", objectives: ["Ir al Vank Hoff Hotel", "Seguir a un aparcacoches al garaje y robar su uniforme", "Tomar el coche del fiscal, llevarlo al taller a meter la droga y devolverlo sin rasguños", "Llamar a la policía"] },
+            { id: "sa_45", cat: "6. San Fierro", character: "Taller Doherty", name: "46. Deconstruction", diff: "media", desc: "Destrucción de las casetas de obras vecinas tras un insulto machista a Kendl.", objectives: ["Subir a la excavadora bulldozer", "Demoler las 6 casetas portátiles con obreros dentro", "Empujar el baño portátil con el capataz dentro al pozo y cubrirlo con cemento fresco"] },
+            { id: "sa_46", cat: "6. San Fierro", character: "Triadas", name: "46. Photo Opportunity", diff: "facil", desc: "Fotografía de espionaje en Angel Pine identificando a los capos del Loco Syndicate.", objectives: ["Reunirse con Cesar en Blueberry", "Conducir a Angel Pine", "Subir al tejado y fotografiar las caras de Ryder, Jizzy B, T-Bone Mendez y Mike Toreno"] },
+            { id: "sa_47", cat: "6. San Fierro", character: "Jizzy B", name: "47. Jizzy", diff: "media", reward: "$1,000 / Respeto +", desc: "Trabajos de chófer para el proxeneta Jizzy B para ganarse su confianza.", objectives: ["Llevar a la chica al hotel", "Eliminar al proxeneta rival en Hashbury", "Rescatar a la chica golpeada en el motel", "Destruir la limusina del predicador y su escolta"] },
+            { id: "sa_48", cat: "6. San Fierro", character: "Jizzy B", name: "48. T-Bone Mendez", diff: "media", reward: "$5,000 / Respeto +", desc: "Recuperación de paquetes robados a T-Bone Mendez por motoristas.", objectives: ["Ir a la emboscada bajo el puente", "Perseguir a los cuatro motoristas en la FCR-900", "Acercarse para arrebatar los paquetes en marcha", "Llevar la mercancía al Pleasure Domes Club"] },
+            { id: "sa_49", cat: "6. San Fierro", character: "Jizzy B", name: "49. Mike Toreno", diff: "dificil", reward: "$7,000 / Respeto +", desc: "Búsqueda por triangulación del furgón secuestrado con Mike Toreno dentro.", objectives: ["Seguir las pistas auditivas de Toreno por la radio", "Buscar en Doherty, los muelles y el Aeropuerto Easter Bay", "Localizar la furgoneta en las pistas del aeropuerto", "Eliminar a los secuestradores y destruir el camión"] },
+            { id: "sa_50", cat: "6. San Fierro", character: "Triadas (Woozie)", name: "50. Mountain Cloud Boys", diff: "media", reward: "$5,000 / Respeto +", desc: "Inspección de una sede aliada masacrada por la banda vietnamita Da Nang Boys.", objectives: ["Acompañar a Woozie al callejón", "Descubrir la matanza", "Proteger a Woozie ciego en un tiroteo masivo contra los Da Nang Boys", "Destruir los coches que bloquean el callejón"] },
+            { id: "sa_51", cat: "6. San Fierro", character: "Triadas (Woozie)", name: "51. Ran Fa Li", diff: "media", reward: "$6,000 / Respeto +", desc: "Recuperación de un coche cargado de mercancía en el aparcamiento del aeropuerto.", objectives: ["Recoger el Manana en el estacionamiento subterráneo", "Esquivar la emboscada de los Da Nang Boys", "Llevar el coche intacto al garaje de Esplanade North"] },
+            { id: "sa_52", cat: "6. San Fierro", character: "Triadas (Woozie)", name: "52. Lure", diff: "media", reward: "$8,000 / Respeto +", desc: "Misión de señuelo conduciendo un 4x4 con cristales tintados por el campo.", objectives: ["Conducir el Rancher por el campo en Whetstone", "Mantener a los asesinos en moto pegados detrás sin dejar que vean el interior", "Guiarlos hasta la trampa en la gasolinera"] },
+            { id: "sa_53", cat: "6. San Fierro", character: "Triadas (Woozie)", name: "53. Amphibious Assault", diff: "media", reward: "$11,000 / Respeto +", desc: "Infiltración acuática nocturna en un carguero de los Da Nang Boys (requiere capacidad pulmonar).", objectives: ["Nadar y bucear sorteando los reflectores de las patrulleras", "Subir al carguero armado con cuchillo", "Colocar el micrófono en la bodega sin activar alarmas", "Escapar a nado"] },
+            { id: "sa_54", cat: "6. San Fierro", character: "Triadas (Woozie)", name: "54. The Da Nang Thang", diff: "dificil", reward: "$15,000 / Respeto +", desc: "Asalto definitivo en helicóptero y tiroteo en el buque insignia de los Da Nang Boys.", objectives: ["Sobrevivir al derribo del helicóptero", "Abordar el carguero desarmado y conseguir armas", "Liberar a los refugiados en la bodega", "Vencer en duelo a katana contra el líder Snakehead"] },
+            { id: "sa_55", cat: "6. San Fierro", character: "Zero", name: "55. Air Raid", diff: "media", reward: "$3,000", desc: "Defensa con torreta minigun en el tejado de Zero ante el ataque de aviones RC de Berkley.", objectives: ["Controlar la ametralladora fija", "Derribar las oleadas de aviones teledirigidos antes de que bombardeen las antenas de transmisión"] },
+            { id: "sa_56", cat: "6. San Fierro", character: "Zero", name: "56. Supply Lines...", diff: "dificil", reward: "$5,000", desc: "Ataque aéreo pilotando el avión RC Baron para abatir a los repartidores de Berkley.", objectives: ["Despegar el RC Baron con combustible limitado", "Destruir las 5 furgonetas y motos de reparto por San Fierro", "Aterrizar el aeromodelo en el tejado de Zero antes de agotar la gasolina"] },
+            { id: "sa_57", cat: "6. San Fierro", character: "Zero", name: "57. New Model Army", diff: "media", reward: "$7,000", desc: "Guerra táctica de radiocontrol guiando al coche teledirigido de Zero con un helicóptero RC.", objectives: ["Pilotar el RC Goblin con electroimán", "Retirar los barriles que bloquean el paso", "Colocar tablas sobre los ríos para que el coche cruce", "Destruir los tanques de Berkley arrojándoles bombas"] },
+            { id: "sa_58", cat: "6. San Fierro", character: "Golpe al Sindicato", name: "58. Outrider", diff: "media", reward: "$9,000 / Respeto +", desc: "Escolta táctica con rifle francotirador y lanzacohetes para una furgoneta de droga.", objectives: ["Reunirse con T-Bone Mendez", "Despejar las barricadas de coches antes de que pase la furgoneta", "Eliminar a los francotiradores en los edificios", "Escoltar el vehículo al almacén"] },
+            { id: "sa_59", cat: "6. San Fierro", character: "C.R.A.S.H.", name: "59. Snail Trail", diff: "media", desc: "Seguimiento en moto de un periodista desde la estación de tren hasta el muelle.", objectives: ["Recoger el rifle de francotirador de la obra", "Seguir al tren hasta la estación de Market en Los Santos", "Seguir al periodista sin alertar su barra de sospecha", "Abatir al periodista y a su informante"] },
+            { id: "sa_60", cat: "6. San Fierro", character: "Golpe al Sindicato", name: "60. Ice Cold Killa", diff: "media", reward: "$12,000 / Respeto +", desc: "Asalto al Pleasure Domes Club para liquidar a Jizzy B y robar su teléfono.", objectives: ["Infiltrarse por el tragaluz del tejado", "Enfrentar a los guardias en el club", "Perseguir a Jizzy en su Broadway tuneado", "Destruir su coche, matarlo y recuperar el teléfono con los números del cartel"] },
+            { id: "sa_61", cat: "6. San Fierro", character: "Golpe al Sindicato", name: "61. Pier 69", diff: "dificil", reward: "$15,000 / Respeto +", desc: "Operación francotirador en el muelle: asesinato de T-Bone Mendez y muerte de Ryder.", objectives: ["Subir al tejado con los hombres de Woozie", "Abatir a los Ballas con el rifle de francotirador", "Eliminar a T-Bone Mendez en el muelle", "Saltar al agua y perseguir a Ryder en lancha hasta destruirlo"] },
+            { id: "sa_62", cat: "6. San Fierro", character: "Golpe al Sindicato", name: "62. Toreno's Last Flight", diff: "dificil", reward: "$18,000 / Respeto +", desc: "Derribo del helicóptero de Mike Toreno en la autopista con lanzacohetes.", objectives: ["Llegar al helipuerto del centro", "Liquidar a los hombres de Toreno en la azotea", "Perseguir el helicóptero en moto a lo largo de la autopista", "Derribarlo con el lanzamisiles"] },
+            { id: "sa_63", cat: "6. San Fierro", character: "Golpe al Sindicato", name: "63. Yay Ka-Boom-Boom", diff: "dificil", reward: "$25,000 / Respeto +", desc: "Destrucción total de la mayor fábrica de droga del Loco Syndicate con un coche bomba.", objectives: ["Recoger el coche cargado de explosivos en el taller", "Entrar a la fábrica de drogas arrollando a los guardias", "Aparcar el coche cerca de los tanques químicos e iniciar el cronómetro", "Escapar saltando la valla con un coche rival"] },
+
+            // --- 7. El Desierto (Tierra Robada y Bone County) ---
+            { id: "sa_64", cat: "7. El Desierto", character: "Mike Toreno (Agente)", name: "64. Monster", diff: "facil", reward: "$1,000 a $5,000", desc: "Prueba de conducción extrema en el desierto a bordo de un Monster Truck gigante.", objectives: ["Conducir el camión Monster", "Atravesar los 35 puntos de control por el terreno montañoso en menos de 6:30 minutos"] },
+            { id: "sa_65", cat: "7. El Desierto", character: "Mike Toreno (Agente)", name: "65. Highjack", diff: "media", reward: "$7,000", desc: "Abordaje en marcha de un camión cisterna en el puente con Cesar Vialpando.", objectives: ["Conducir la moto al lado de la cabina del camión cisterna", "Mantener la moto estable para que Cesar salte a la puerta", "Tomar el control del camión y llevarlo al taller de Doherty"] },
+            { id: "sa_66", cat: "7. El Desierto", character: "Mike Toreno (Agente)", name: "66. Interdiction", diff: "media", reward: "$1,000", desc: "Protección de un helicóptero de contrabando militar en las ruinas de El Castillo del Diablo.", objectives: ["Subir a la montaña con el lanzacohetes", "Proteger al helicóptero aliado de las lanchas y cazas federales", "Recuperar el paquete arrojado en el desierto y entregarlo"] },
+            { id: "sa_67", cat: "7. El Desierto", character: "Mike Toreno (Agente)", name: "67. Verdant Meadows", diff: "facil", desc: "Compra del aeródromo abandonado en el desierto para establecer la base aérea secreta.", objectives: ["Comprar la pista de aterrizaje abandonada de Verdant Meadows por $80,000"] },
+            { id: "sa_68", cat: "7. El Desierto", character: "Escuela de Aviación", name: "68. Learning to Fly", diff: "dificil", reward: "Licencia de Piloto", desc: "Superación obligatoria de las pruebas de vuelo en avioneta, helicóptero y paracaídas.", objectives: ["Despegue y aterrizaje", "Circuitos aéreos y giros", "Destrucción de dianas con el helicóptero Hunter", "Salto en paracaídas y caída precisa en el círculo"] },
+            { id: "sa_69", cat: "7. El Desierto", character: "Mike Toreno (Agente)", name: "69. N.O.E.", diff: "dificil", reward: "$15,000", desc: "Vuelo rasante en avioneta Rustler bajo la cobertura de radar hasta Angel Pine.", objectives: ["Despegar en el Rustler", "Volar por debajo de la altura de radar sobre el agua y cañones", "Lanzar el paquete en Angel Pine", "Regresar y aterrizar en la pista del desierto"] },
+            { id: "sa_70", cat: "7. El Desierto", character: "Mike Toreno (Agente)", name: "70. Stowaway", diff: "dificil", reward: "$20,000", desc: "Incursión en moto por la rampa de un avión de carga militar en pleno despegue.", objectives: ["Acelerar la moto y subir por la rampa antes de que despegue", "Luchar cuerpo a cuerpo dentro de la bodega esquivando barriles", "Robar un paracaídas al agente", "Plantar la bomba de plástico y saltar al vacío en caída libre"] },
+            { id: "sa_71", cat: "7. El Desierto", character: "The Truth", name: "71. Black Project", diff: "extrema", desc: "Infiltración nocturna en el Área 69 militar para robar el prototipo del Jetpack.", objectives: ["Infiltrarse en el complejo militar evitando los reflectores", "Entrar por las rejillas de ventilación", "Desactivar las defensas SAM", "Descender a los laboratorios subterráneos", "Robar el Jetpack y escapar volando hasta The Truth"] },
+            { id: "sa_72", cat: "7. El Desierto", character: "The Truth", name: "72. Green Goo", diff: "media", reward: "$20,000", desc: "Asalto con el Jetpack a un tren militar fuertemente custodiado en busca del frasco verde.", objectives: ["Volar con el Jetpack sobre el tren en movimiento", "Eliminar a los soldados sobre los vagones", "Disparar a las cajas para encontrar la sustancia verde 'Green Goo'", "Llevar el frasco a Verdant Meadows"] },
+
+            // --- 8. Las Venturas: El Casino Four Dragons ---
+            { id: "sa_73", cat: "8. Las Venturas - El Casino", character: "Woozie (Triadas)", name: "73. Fender Ketchup", diff: "facil", reward: "$5,000 / Respeto +", desc: "Intimidación a un matón de la mafia atado al capó de un coche a toda velocidad.", objectives: ["Conducir rápido por la autopista y en sentido contrario", "Hacer derrapes y saltos para llenar la barra de terror del matón", "Obtener el nombre de la familia Sindacco"] },
+            { id: "sa_74", cat: "8. Las Venturas - El Casino", character: "Woozie (Triadas)", name: "74. Explosive Situation", diff: "media", reward: "$7,000 / Respeto +", desc: "Robo de dinamita en una mina a cielo abierto para preparar el golpe al Casino Caligula.", objectives: ["Bajar al fondo de la cantera de Hunter Quarry", "Destruir las cajas con el dumper antes de la detonación", "Recoger los 4 cartuchos de dinamita", "Escapar en la moto Sánchez por las rampas"] },
+            { id: "sa_75", cat: "8. Las Venturas - El Casino", character: "Woozie (Triadas)", name: "75. You've Had Your Chips", diff: "dificil", reward: "$10,000 / Respeto +", desc: "Destrucción de la fábrica clandestina de fichas falsas de la familia Sindacco.", objectives: ["Infiltrarse en la fábrica plástica", "Destruir las máquinas prensadoras de fichas usando explosivos", "Eliminar a los mafiosos armados con escopetas de combate y huir"] },
+            { id: "sa_76", cat: "8. Las Venturas - El Casino", character: "C.R.A.S.H.", name: "76. Misappropriation", diff: "media", desc: "Robo de un dossier del FBI en las ruinas del desierto en Aldea Malvada.", objectives: ["Llegar a la ciudad fantasma", "Abatir al agente federal antes de que suba al helicóptero", "Perseguirlo por el aire si despega, liquidarlo y recuperar el maletín"] },
+            { id: "sa_77", cat: "8. Las Venturas - El Casino", character: "Triadas", name: "77. The Meat Business", diff: "media", reward: "$8,000 / Respeto +", desc: "Tiroteo masivo y escape del matadero de carne congelada junto a Ken Rosenberg.", objectives: ["Acompañar a Rosenberg al matadero", "Provocar el infarto a Johnny Sindacco", "Eliminar a decenas de mafiosos abriéndose paso por las cámaras frigoríficas", "Llevar a Ken a salvo al Casino Caligula"] },
+            { id: "sa_78", cat: "8. Las Venturas - El Casino", character: "Madd Dogg", name: "78. Madd Dogg", diff: "media", reward: "Respeto +", desc: "Rescate de Madd Dogg intentando suicidarse arrojándose desde el tejado del casino.", objectives: ["Robar la furgoneta Walton con cajas de cartón en la parte trasera", "Aparcar bajo la azotea y mover la camioneta para atrapar a Madd Dogg en la caída", "Conducirlo con cuidado al hospital"] },
+
+            // --- 9. Las Venturas: El Gran Golpe al Casino Caligula ---
+            { id: "sa_79", cat: "9. Las Venturas - El Golpe", character: "Preparación Golpe", name: "79. Architectural Espionage", diff: "media", desc: "Robo de los planos arquitectónicos del Casino Caligula en el departamento de urbanismo.", objectives: ["Quitarle la cámara a un turista", "Entrar desarmado a las oficinas municipales", "Provocar un incendio en los archivadores para distraer a los guardias", "Fotografiar los planos de la cámara acorazada y huir"] },
+            { id: "sa_80", cat: "9. Las Venturas - El Golpe", character: "Preparación Golpe", name: "80. Key to Her Heart", diff: "facil", desc: "Seducción de la cajera Millie Perkins para obtener la tarjeta de seguridad.", objectives: ["Seguir el coche de Millie desde el casino", "Comprar el traje de látex en la sex shop", "Entrar a su casa para conseguir su afecto hasta que te entregue la tarjeta del casino"] },
+            { id: "sa_81", cat: "9. Las Venturas - El Golpe", character: "Preparación Golpe", name: "81. Dam and Blast", diff: "media", desc: "Sabotaje de los generadores de la Presa Sherman para cortar la electricidad del casino.", objectives: ["Volar en avioneta y saltar en paracaídas sobre la presa", "Eliminar a los guardias con cuchillo", "Colocar las cargas en los 5 generadores hidroeléctricos", "Saltar desde la presa al agua para escapar"] },
+            { id: "sa_82", cat: "9. Las Venturas - El Golpe", character: "Preparación Golpe", name: "82. Cop Wheels", diff: "media", desc: "Robo de 4 motocicletas policiales HPV-1000 en 12 minutos cargándolas en el camión.", objectives: ["Localizar las 4 motos patrulla por Las Venturas", "Subir cada una al camión Packers en movimiento en la autopista antes de que finalice el tiempo"] },
+            { id: "sa_83", cat: "9. Las Venturas - El Golpe", character: "Preparación Golpe", name: "83. Up, Up and Away!", diff: "dificil", desc: "Robo de un helicóptero militar Leviathan con electroimán en el depósito militar.", objectives: ["Infiltrarse en el depósito de combustible fuertemente custodiado", "Abatir a los soldados con la ametralladora fija", "Robar el Leviathan, enganchar el furgón blindado de caudales y transportarlo a Verdant Meadows"] },
+            { id: "sa_84", cat: "9. Las Venturas - El Golpe", character: "Ken Rosenberg", name: "84. Don Peyote", diff: "facil", desc: "Búsqueda y rescate en el desierto de Paul y Maccer tras un viaje lisérgico.", objectives: ["Buscar a Kent Paul y a Maccer junto a las vacas en el desierto", "Llevarlos a la granja de serpientes", "Conducir al Casino Caligula para reunirlos con Rosie"] },
+            { id: "sa_85", cat: "9. Las Venturas - El Golpe", character: "Salvatore Leone", name: "85. Intensive Care", diff: "media", reward: "$5,000", desc: "Rescate de Johnny Sindacco secuestrado en una ambulancia falsa de la mafia Forelli.", objectives: ["Ir al hospital de Las Venturas", "Embestir a las ambulancias para identificar la que tiene a Johnny", "Liquidar a los mafiosos, robar la ambulancia y llevar a Johnny al matadero"] },
+            { id: "sa_86", cat: "9. Las Venturas - El Golpe", character: "Salvatore Leone", name: "86. The Meat Business", diff: "media", desc: "Misión narrativa del arco de Salvatore Leone completando la caída de los Sindacco.", objectives: ["Asegurar el control de la familia Leone sobre Caligula's"] },
+            { id: "sa_87", cat: "9. Las Venturas - El Golpe", character: "Salvatore Leone", name: "87. Freefall", diff: "dificil", reward: "$15,000", desc: "Intercepción acrobática en pleno vuelo de un avión de sicarios Forelli.", objectives: ["Volar en el Dodo hacia el avión comercial Shamal en alta mar", "Atravesar el anillo situado detrás del Shamal para abordar en el aire", "Acribillar a los 4 sicarios en la cabina y al piloto", "Aterrizar el Shamal en el aeropuerto"] },
+            { id: "sa_88", cat: "9. Las Venturas - El Golpe", character: "C.R.A.S.H.", name: "88. High Noon", diff: "media", desc: "Ajuste de cuentas final y ejecución del oficial Eddie Pulaski en el cementerio de El Castillo del Diablo.", objectives: ["Cavar la fosa de Hernandez", "Perseguir a Pulaski en su Buffalo por el desierto mientras te insulta", "Hacer explotar su coche y ejecutarlo a tiros"] },
+            { id: "sa_89", cat: "9. Las Venturas - El Golpe", character: "Salvatore Leone", name: "89. Saint Mark's Bistro", diff: "dificil", reward: "$20,000", desc: "Vuelo transcontinental a Liberty City para liquidar a la cúpula de los Forelli en su restaurante.", objectives: ["Volar el avión de Salvatore hacia el este de Liberty City", "Asaltar el Saint Mark's Bistro en medio de la nieve", "Eliminar a Marco Forelli y sus guardaespaldas", "Volar de vuelta a Las Venturas"] },
+            { id: "sa_90", cat: "9. Las Venturas - El Golpe", character: "El Gran Golpe", name: "90. Breaking the Bank at Caligula's", diff: "extrema", reward: "$100,000", desc: "El gran atraco a la bóveda acorazada del Casino Caligula con el equipo de Woozie.", objectives: ["Entrar disfrazado de empleado", "Lanzar gas lacrimógeno por el conducto", "Levantar la persiana de carga con la carretilla elevadora", "Dinamitar la caja fuerte", "Subir a la azotea con paracaídas y escapar a Verdant Meadows"] },
+
+            // --- 10. Regreso a Los Santos y Rebelión Final ---
+            { id: "sa_91", cat: "10. Regreso a Los Santos", character: "Mike Toreno (Agente)", name: "91. A Home in the Hills", diff: "dificil", reward: "Mansión de Madd Dogg", desc: "Recuperación de la mansión de Madd Dogg asaltada por el narcotraficante Big Poppa.", objectives: ["Saltar en paracaídas al tejado de la mansión con las Triadas", "Limpiar los pasillos y salas de narcos armados", "Perseguir a Big Poppa en su coche deportivo por Mulholland y liquidarlo"] },
+            { id: "sa_92", cat: "10. Regreso a Los Santos", character: "Mike Toreno (Agente)", name: "92. Vertical Bird", diff: "extrema", reward: "$50,000", desc: "Infiltración en un portaaviones militar para robar el caza de combate Hydra.", objectives: ["Nadar al interior del buque portaaviones militar", "Desactivar los sistemas antiaéreos", "Robar el avión de caza Hydra", "Derribar a los tres cazas enemigos en combate aéreo", "Destruir las lanchas espía espías en El Quebrados"] },
+            { id: "sa_93", cat: "10. Regreso a Los Santos", character: "Sweet", name: "93. Home Coming", diff: "media", reward: "Respeto +", desc: "Liberación de Sweet de prisión y reconquista inicial de Grove Street tomada por los camellos.", objectives: ["Recoger a Sweet en la estación de policía", "Volver a Grove Street infestada de crack y prostitutas", "Eliminar a los camellos y recuperar el control del callejón en una guerra de bandas"] },
+            { id: "sa_94", cat: "10. Regreso a Los Santos", character: "Sweet", name: "94. Beat Down on B Dup", diff: "media", reward: "Respeto +", desc: "Ataque frontal a Glen Park para ajustar cuentas con el camello B-Dup.", objectives: ["Iniciar una guerra territorial para conquistar Glen Park", "Asaltar el apartamento custodiado por miembros armados de los Ballas", "Someter a B-Dup y liberar a Big Bear de su adicción"] },
+            { id: "sa_95", cat: "10. Regreso a Los Santos", character: "Sweet", name: "95. Grove 4 Life", diff: "media", reward: "$10,000 / Respeto +", desc: "Reconquista territorial masiva en Idlewood para devolver el orgullo a las Familias.", objectives: ["Ir con Sweet a Idlewood", "Conquistar dos territorios completos de los Ballas superando todas las oleadas", "Llevar a Sweet de regreso a Grove Street"] },
+            { id: "sa_96", cat: "10. Regreso a Los Santos", character: "C.R.A.S.H. / Disturbios", name: "96. Riot", diff: "facil", desc: "Absolución judicial de Tenpenny y estallido del caos y disturbios civiles en Los Santos.", objectives: ["Ver la noticia del veredicto injusto de Tenpenny en la mansión", "Conducir con Sweet a través de Los Santos en llamas esquivando peatones con televisores y cócteles molotov"] },
+            { id: "sa_97", cat: "10. Regreso a Los Santos", character: "Madd Dogg / CJ", name: "97. Cut Throat Business", diff: "media", reward: "Respeto +", desc: "Persecución en aerodeslizadores Vortex y karts a OG Loc para recuperar las rimas.", objectives: ["Perseguir a OG Loc por el mar en el Vortex", "Continuar la persecución en karts por las calles de Los Santos", "Acorralar a Loc en los estudios de grabación"] },
+            { id: "sa_98", cat: "10. Regreso a Los Santos", character: "Cesar Vialpando", name: "98. Los Desperados", diff: "dificil", reward: "Respeto +", desc: "Reconquista del barrio de El Corona con Cesar Vialpando y los Varrios Los Aztecas.", objectives: ["Reclutar a miembros de la banda", "Asaltar la estación de Unity Station", "Avanzar por los callejones eliminando a los Vagos armados con lanzacohetes", "Recuperar la casa de Cesar"] },
+            { id: "sa_99", cat: "10. Regreso a Los Santos", character: "Reconquista Final", name: "99. Territorios de Banda (Previo al Clímax)", diff: "media", desc: "Requisito obligatorio: poseer al menos el 35% de los territorios de bandas en Los Santos.", objectives: ["Iniciar guerras territoriales y asegurar suficientes barrios en verde para habilitar la misión final"] },
+            { id: "sa_100", cat: "10. Regreso a Los Santos", character: "Clímax de la Campaña", name: "100. End of the Line", diff: "extrema", reward: "$250,000 / Máximo Respeto", desc: "El gran asalto final a la fortaleza de crack de Big Smoke y persecución mortal a Tenpenny.", objectives: ["Embestir la pared de la fortaleza con el tanque SWAT", "Subir los 4 pisos eliminando a Ballas, Vagos y rusos", "Acribillar a Big Smoke a oscuras", "Escapar del edificio en llamas con gafas de visión nocturna antes del colapso", "Perseguir el camión de bomberos de Tenpenny con Sweet colgado de la escalera", "Tiroteo final por la autopista hasta el puente de Grove Street"] }
+        ];
+
+        let masterStore = {};
+        let activeTaskId = null;
+        let localVideoBlob = null;
+        let currentFilter = "";
+
+        function init() {
+            const raw = localStorage.getItem('gta_master_save');
+            if (raw) {
+                try { masterStore = JSON.parse(raw); } catch(e) { masterStore = {}; }
+            }
+            if (!masterStore[GAME_ID]) masterStore[GAME_ID] = {};
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasksContainer');
+            container.innerHTML = '';
+
+            const filteredTasks = tasks.filter(t => {
+                const search = currentFilter.toLowerCase();
+                return t.name.toLowerCase().includes(search) ||
+                       t.cat.toLowerCase().includes(search) ||
+                       t.desc.toLowerCase().includes(search) ||
+                       (t.character && t.character.toLowerCase().includes(search));
+            });
+
+            const categories = [...new Set(filteredTasks.map(t => t.cat))];
+
+            categories.forEach(cat => {
+                const catTasks = filteredTasks.filter(t => t.cat === cat);
+                const catDone = catTasks.filter(t => masterStore[GAME_ID][t.id] && masterStore[GAME_ID][t.id].done).length;
+
+                const section = document.createElement('div');
+                section.className = 'category-section';
+
+                const headerWrap = document.createElement('div');
+                headerWrap.className = 'category-title';
+                headerWrap.innerHTML = `<span>${cat}</span><span class="category-sub">${catDone} / ${catTasks.length}</span>`;
+                section.appendChild(headerWrap);
+
+                const grid = document.createElement('div');
+                grid.className = 'tasks-grid';
+
+                catTasks.forEach(task => {
+                    const status = masterStore[GAME_ID][task.id] || { done: false, video: null };
+                    const card = document.createElement('div');
+                    card.className = `task-card ${status.done ? 'completed' : ''}`;
+                    card.innerHTML = `
+                        <div class="task-top">
+                            <input type="checkbox" class="task-checkbox" ${status.done ? 'checked' : ''} onchange="toggleDone('${task.id}', this.checked)">
+                            <div class="task-info" onclick="openModal('${task.id}')">
+                                <div class="task-name">${task.name}</div>
+                                <div class="task-character">${task.character || 'Historia'}</div>
+                            </div>
+                        </div>
+                        <div class="task-bottom">
+                            <span class="difficulty diff-${task.diff}">${task.diff}</span>
+                            <button class="btn-modal" onclick="openModal('${task.id}')">${status.video ? '📺 Ver Video' : '➕ Ficha / Video'}</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                section.appendChild(grid);
+                container.appendChild(section);
+            });
+
+            calcProgress();
+        }
+
+        function handleSearch() {
+            currentFilter = document.getElementById('searchInput').value;
+            renderTasks();
+        }
+
+        function toggleDone(taskId, isChecked) {
+            if (!masterStore[GAME_ID][taskId]) masterStore[GAME_ID][taskId] = {};
+            masterStore[GAME_ID][taskId].done = isChecked;
+            saveMaster();
+            renderTasks();
+        }
+
+        function calcProgress() {
+            const completed = tasks.filter(t => masterStore[GAME_ID][t.id] && masterStore[GAME_ID][t.id].done).length;
+            const pct = Math.round((completed / tasks.length) * 100);
+
+            document.getElementById('pctDisplay').innerText = `${pct}%`;
+            document.getElementById('barDisplay').style.width = `${pct}%`;
+            document.getElementById('statsText').innerText = `${completed} de ${tasks.length} misiones de historia completadas`;
+        }
+
+        function openModal(taskId) {
+            activeTaskId = taskId;
+            const task = tasks.find(t => t.id === taskId);
+            const data = masterStore[GAME_ID][taskId] || {};
+
+            document.getElementById('mName').innerText = task.name;
+            document.getElementById('mCharacter').innerText = `Dador / Tipo: ${task.character}`;
+            document.getElementById('mDesc').innerText = task.desc;
+            document.getElementById('mReward').innerText = `Recompensa: ${task.reward || '$0'}`;
+
+            const diffElem = document.getElementById('mDiff');
+            diffElem.className = `difficulty diff-${task.diff}`;
+            diffElem.innerText = task.diff;
+
+            const objList = document.getElementById('mObjectives');
+            objList.innerHTML = '';
+            if (task.objectives && task.objectives.length > 0) {
+                task.objectives.forEach(obj => {
+                    const li = document.createElement('li');
+                    li.innerText = obj;
+                    objList.appendChild(li);
+                });
+            } else {
+                objList.innerHTML = '<li>Completar la misión con éxito.</li>';
+            }
+
+            document.getElementById('mUrl').value = (data.video && !data.video.startsWith('data:')) ? data.video : '';
+            showVideo(data.video);
+
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('taskModal').style.display = 'none';
+            document.getElementById('mVideoViewer').innerHTML = '<span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>';
+            localVideoBlob = null;
+        }
+
+        function handleFile(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    localVideoBlob = evt.target.result;
+                    showVideo(localVideoBlob);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function showVideo(src) {
+            const box = document.getElementById('mVideoViewer');
+            if (!src) {
+                box.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>';
+                return;
+            }
+            if (src.includes('youtube.com') || src.includes('youtu.be')) {
+                let url = src.includes('watch?v=') ? src.replace('watch?v=', 'embed/') : src.replace('youtu.be/', 'www.youtube.com/embed/');
+                box.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
+            } else {
+                box.innerHTML = `<video controls src="${src}"></video>`;
+            }
+        }
+
+        function saveTaskMedia() {
+            if (!masterStore[GAME_ID][activeTaskId]) masterStore[GAME_ID][activeTaskId] = { done: false };
+            const inputUrl = document.getElementById('mUrl').value.trim();
+            masterStore[GAME_ID][activeTaskId].video = localVideoBlob || inputUrl || null;
+
+            saveMaster();
+            closeModal();
+            renderTasks();
+        }
+
+        function saveMaster() {
+            localStorage.setItem('gta_master_save', JSON.stringify(masterStore));
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
