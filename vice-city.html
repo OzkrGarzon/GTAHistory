@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTA Vice City - 100% Tracker</title>
+    <style>
+        :root {
+            --bg-main: #0c0d14;
+            --bg-card: #151824;
+            --accent: #ff49db;
+            --accent-cyan: #00f0ff;
+            --text: #f3f4f6;
+            --text-dim: #9ca3af;
+            --border: #262b40;
+            --easy: #10b981;
+            --medium: #3b82f6;
+            --hard: #f97316;
+            --extreme: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text); padding-bottom: 60px; }
+
+        header {
+            background: #111422;
+            border-bottom: 2px solid var(--accent);
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-bar {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover { color: #fff; }
+
+        main { max-width: 1200px; margin: 24px auto; padding: 0 20px; }
+
+        .progress-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .progress-bar-bg { background: #090a0f; height: 18px; border-radius: 9px; overflow: hidden; border: 1px solid var(--border); }
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--accent), var(--accent-cyan));
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .category-title {
+            font-size: 1.25rem;
+            margin: 32px 0 14px 0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            color: var(--accent-cyan);
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .category-sub { font-size: 0.85rem; color: var(--text-dim); font-weight: normal; }
+
+        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+
+        .task-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+
+        .task-card:hover { border-color: #3f4769; transform: translateY(-2px); }
+        .task-card.completed { border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.04); }
+
+        .task-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+        .task-checkbox {
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--text-dim);
+            border-radius: 4px;
+            cursor: pointer;
+            display: grid;
+            place-content: center;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .task-checkbox:checked {
+            background-color: var(--easy);
+            border-color: var(--easy);
+        }
+
+        .task-checkbox:checked::before {
+            content: "✓";
+            color: #fff;
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .task-info { flex-grow: 1; cursor: pointer; }
+        .task-name { font-weight: 700; font-size: 0.95rem; line-height: 1.3; }
+
+        .task-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        .difficulty { padding: 2px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
+        .diff-facil { background: rgba(16, 185, 129, 0.2); color: var(--easy); }
+        .diff-media { background: rgba(59, 130, 246, 0.2); color: var(--medium); }
+        .diff-dificil { background: rgba(249, 115, 22, 0.2); color: var(--hard); }
+        .diff-extrema { background: rgba(239, 68, 68, 0.2); color: var(--extreme); }
+
+        .btn-modal {
+            color: var(--accent);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+            font-size: 0.75rem;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            max-width: 600px;
+            width: 100%;
+            border-radius: 10px;
+            padding: 24px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 14px; right: 16px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .video-box {
+            margin-top: 14px;
+            width: 100%;
+            min-height: 200px;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .video-box iframe, .video-box video { width: 100%; height: 260px; }
+
+        .input-group {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .input-group input {
+            background: #08090e;
+            border: 1px solid var(--border);
+            padding: 8px;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        .btn-submit {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 16px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-submit:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-bar">
+            <a href="index.html" class="back-link">⬅ Volver al Menú Principal</a>
+            <h2 style="font-size: 1.2rem; color: var(--accent);">GTA: Vice City - Checklist Oficial 100%</h2>
+        </div>
+    </header>
+
+    <main>
+        <section class="progress-card">
+            <div class="progress-header">
+                <h3>Progreso General de Vice City</h3>
+                <span id="pctDisplay" style="font-size: 1.4rem; font-weight: 800; color: var(--accent);">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div id="barDisplay" class="progress-bar-fill"></div>
+            </div>
+            <p id="statsText" style="margin-top: 8px; font-size: 0.85rem; color: var(--text-dim);">0 de 0 misiones completadas</p>
+        </section>
+
+        <section id="tasksContainer"></section>
+    </main>
+
+    <!-- Modal Detalle / Multimedia -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2 id="mName" style="margin-bottom: 6px;"></h2>
+            <span id="mDiff" class="difficulty"></span>
+            <p id="mDesc" style="margin-top: 14px; font-size: 0.95rem; line-height: 1.5; color: #d1d5db;"></p>
+
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+
+            <h4>Video o Clip de la Misión</h4>
+            <div class="input-group">
+                <label>Enlace Web o YouTube:</label>
+                <input type="text" id="mUrl" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+            <div class="input-group">
+                <label>O cargar archivo local (mp4, webm):</label>
+                <input type="file" id="mFile" accept="video/*" onchange="handleFile(event)">
+            </div>
+            <div class="video-box" id="mVideoViewer">
+                <span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>
+            </div>
+            <button class="btn-submit" onclick="saveTaskMedia()">Guardar Evidencia</button>
+        </div>
+    </div>
+
+    <script>
+        const GAME_ID = 'gtavc';
+
+        // Base de datos completa oficial para el 100% de GTA Vice City
+        const tasks = [
+            // 1. Ken Rosenberg
+            { id: "vc_m01", cat: "Misiones Principales", name: "La fiesta (The Party)", diff: "facil", desc: "Ve a Rafael's para comprar un traje formal y dirígete al yate del Coronel Cortez para relacionarte con los peces gordos de Vice City." },
+            { id: "vc_m02", cat: "Misiones Principales", name: "Pelea en el callejón trasero (Back Alley Brawl)", diff: "facil", desc: "Encuentra a Kent Paul en el Malibu Club, dirígete al callejón de Ocean Beach, acaba con el chef Leo Teal y escapa con Lance Vance." },
+            { id: "vc_m03", cat: "Misiones Principales", name: "Furia en el jurado (Jury Fury)", diff: "facil", desc: "Intimida a dos jurados destruyendo sus coches usando un martillo sin llamar excesivamente la atención de la policía." },
+            { id: "vc_m04", cat: "Misiones Principales", name: "Disturbios (Riot)", diff: "facil", desc: "Cámbiate de ropa de obrero, inicia una pelea multitudinaria entre los trabajadores en huelga y destruye las tres furgonetas de Spand Express." },
+
+            // 2. Coronel Cortez
+            { id: "vc_m05", cat: "Misiones Principales", name: "Cerdo traidor (Treacherous Swine)", diff: "facil", desc: "Ve al ático de González y elimínalo con una motosierra antes de perder las dos estrellas de nivel de búsqueda mediante un Pay 'n' Spray." },
+            { id: "vc_m06", cat: "Misiones Principales", name: "Tiroteo en el centro comercial (Mall Shootout)", diff: "media", desc: "Reúnete con el mensajero francés en Washington Mall. Cuando te tienda una emboscada, persíguelo en motocicleta y recupera los chips militares de guía." },
+            { id: "vc_m07", cat: "Misiones Principales", name: "Ángeles guardianes (Guardian Angels)", diff: "media", desc: "Recoge el rifle Ruger en el garaje y cubre el intercambio entre Díaz y los cubanos en el callejón eliminando a los haitianos desde las alturas." },
+            { id: "vc_m08", cat: "Misiones Principales", name: "¡Todos con las manos arriba! (All Hands on Deck!)", diff: "dificil", desc: "Defiende el yate del Coronel Cortez mientras zarpa de Vice City. Elimina barcos franceses, helicópteros de asalto y un helicóptero Apache." },
+
+            // 3. Ricardo Díaz
+            { id: "vc_m09", cat: "Misiones Principales", name: "La persecución (The Chase)", diff: "facil", desc: "Sigue al ladrón de Díaz hasta su escondite en Prawn Island sin ser detectado ni dispararle para descubrir su guarida." },
+            { id: "vc_m10", cat: "Misiones Principales", name: "Franja de Phnom Penh (Phnom Penh '86)", diff: "media", desc: "Dispara con la ametralladora fija desde el helicóptero de Lance diezmando a los matones en Prawn Island y recupera el maletín del tejado." },
+            { id: "vc_m11", cat: "Misiones Principales", name: "El barco más rápido (The Fastest Boat)", diff: "dificil", desc: "Infíltrate en el astillero naval de Viceport, acciona el interruptor dentro del taller y roba la lancha Squalo antes de llevarla a la mansión." },
+            { id: "vc_m12", cat: "Misiones Principales", name: "Oferta y demanda (Supply & Demand)", diff: "dificil", desc: "Pilota la Squalo compitiendo contra tres lanchas rivales hasta llegar al carguero en el río y defiende la popa de las emboscadas mientras Lance pilota de vuelta." },
+
+            // 4. Avery Carrington
+            { id: "vc_m13", cat: "Misiones Principales", name: "Hierro, a fondo (Four Iron)", diff: "facil", desc: "Ponte ropa de golfista, entra al Leaf Links Golf Club sin armas de fuego y acaba con el promotor inmobiliario usando un palo de golf o arrollándolo con el carrito." },
+            { id: "vc_m14", cat: "Misiones Principales", name: "Demolición (Demolition Man)", diff: "dificil", desc: "Pilota el helicóptero a control remoto RC Goblin recogiendo 4 bombas e introduciéndolas en 4 plantas del edificio en construcción antes de 7 minutos." },
+            { id: "vc_m15", cat: "Misiones Principales", name: "Dos golpes leves (Two Bit Hit)", diff: "media", desc: "Vístete de cubano y asesina a un capo haitiano en Little Haiti durante un funeral para provocar una guerra entre ambas bandas." },
+
+            // 5. Tommy Vercetti & Lance Vance (Conquista de la Mansión)
+            { id: "vc_m16", cat: "Misiones Principales", name: "Valedera de amenazas (Death Row)", diff: "dificil", desc: "Conduce rápidamente hasta el basurero de Little Haiti antes de que la vida de Lance se agote, elimina a los matones de Díaz y escapa al hospital." },
+            { id: "vc_m17", cat: "Misiones Principales", name: "Frotar (Rub Out)", diff: "dificil", desc: "Asalta la mansión de Ricardo Díaz en Starfish Island junto con Lance y ejecuta a Díaz en su oficina para apoderarte de su imperio y propiedades." },
+
+            // 6. Misiones de la Mansión Vercetti
+            { id: "vc_m18", cat: "Misiones Principales", name: "Extorsión (Shakedown)", diff: "media", desc: "Tienes 5 minutos para ir al North Point Mall y disparar a las vidrieras de las tiendas designadas para intimidar a los dueños y cobrar protección." },
+            { id: "vc_m19", cat: "Misiones Principales", name: "Pelea en el bar (Bar Brawl)", diff: "media", desc: "Llega con dos guardaespaldas al bar en Ocean Beach, liquida a los matones de seguridad, destruye su base en Front Page Bar y elimina a los dos que huyen en moto." },
+            { id: "vc_m20", cat: "Misiones Principales", name: "Tierra de policías (Cop Land)", diff: "dificil", desc: "Atrae a dos policías a un garaje para robar sus uniformes, entra al centro comercial, planta una bomba en el café y escapa con 5 estrellas de búsqueda." },
+
+            // 7. Banda Cubana (Umberto Robina)
+            { id: "vc_m21", cat: "Misiones de Bandas", name: "Truco del especialista (Stunt Boat Challenge)", diff: "facil", desc: "Completa la carrera en lancha por los canales de Vice City atravesando los 26 puntos de control en menos de 3 minutos." },
+            { id: "vc_m22", cat: "Misiones de Bandas", name: "Cañón (Cannon Fodder)", diff: "media", desc: "Asalta el complejo de los haitianos junto a los cubanos en Little Haiti, despeja la zona de francotiradores y roba la furgoneta cargada de droga." },
+            { id: "vc_m23", cat: "Misiones de Bandas", name: "Encuentro naval (Naval Engagement)", diff: "dificil", desc: "Reúnete con Rico en el muelle, embosca a los haitianos que comercian en una mansión costera, elimina a todos los guardias y huye con el dinero." },
+            { id: "vc_m24", cat: "Misiones de Bandas", name: "Carne de Troya (Trojan Voodoo)", diff: "dificil", desc: "Consigue un Voodoo haitiano con Pepe, infíltrate en su fábrica de drogas, planta tres bombas cronometradas y huye antes de la gran explosión." },
+
+            // 8. Banda Haitiana (Tía Poulet)
+            { id: "vc_m25", cat: "Misiones de Bandas", name: "Poción mágica (Juju Scramble)", diff: "media", desc: "Recoge 3 maletines de droga colocados en tejados antes de que la SWAT y la policía los incauten, sorteando el nivel de búsqueda creciente." },
+            { id: "vc_m26", cat: "Misiones de Bandas", name: "Bombas fuera (Bombs Away!)", diff: "dificil", desc: "Pilota el aeromodelo RC Baron desde la furgoneta Top Fun y lanza bombas sobre los botes de los cubanos antes de que escapen por el agua." },
+            { id: "vc_m27", cat: "Misiones de Bandas", name: "Guerra sucia (Dirty Lickin's)", diff: "media", desc: "Usa un rifle de francotirador desde el tejado opuesto para abatir a los pandilleros cubanos en un callejón sin permitir que eliminen a los haitianos." },
+
+            // 9. Love Fist
+            { id: "vc_m28", cat: "Misiones de Contactos", name: "El zumo del amor (Love Juice)", diff: "facil", desc: "Compra la sustancia para la banda, persigue al camello que te roba la cartera en moto, recoge a Mercedes Cortez y llévala al estudio antes de que empiece la gira." },
+            { id: "vc_m29", cat: "Misiones de Contactos", name: "Asesino psicópata (Psycho Killer)", diff: "media", desc: "Conduce la limusina al club de firmas de Love Fist, persigue al acosador psicópata que huye en coche y hazlo explotar antes de que escape." },
+            { id: "vc_m30", cat: "Misiones de Contactos", name: "Gira publicitaria (Publicity Tour)", diff: "dificil", desc: "Conduce la limusina manteniendo una velocidad constante por encima del umbral crítico para evitar que detone la bomba mientras la banda la desactiva." },
+
+            // 10. Los Moteros (Mitch Baker)
+            { id: "vc_m31", cat: "Misiones de Contactos", name: "Ruedas de acero (Alloy Wheels of Steel)", diff: "media", desc: "Gana la carrera urbana en moto Freeway por Downtown contra tres moteros profesionales sin caerte de la montura." },
+            { id: "vc_m32", cat: "Misiones de Contactos", name: "Caos en la ciudad (Messing with the Man)", diff: "facil", desc: "Llena el 'medidor de caos' en 2 minutos destruyendo coches, disparando peatones y haciendo explotar todo lo que encuentres a tu paso." },
+            { id: "vc_m33", cat: "Misiones de Contactos", name: "Puntada de pistola (Hog Tied)", diff: "dificil", desc: "Usa una PCJ-600 para saltar por los tejados de Downtown, infíltrate en el complejo de matones callejeros, recupera la moto robada de Mitch y llévala de vuelta." },
+
+            // 11. Misiones de Cabina Telefónica (Sr. Black)
+            { id: "vc_m34", cat: "Contratos de Asesinato", name: "El mensajero de la muerte (Road Kill)", diff: "facil", desc: "Atropella o destruye al repartidor de pizza en motocicleta antes de que complete sus 5 entregas en la ciudad." },
+            { id: "vc_m35", cat: "Contratos de Asesinato", name: "Eliminación de residuos (Waste the Wife)", diff: "media", desc: "Embestir repetidamente el coche de la esposa del cliente con tu vehículo hasta que explote simulando un accidente de tráfico sin usar armas." },
+            { id: "vc_m36", cat: "Contratos de Asesinato", name: "Autocidio (Autocide)", diff: "dificil", desc: "Asesina a los 6 miembros de una banda de atracadores en 9 minutos por toda la ciudad usando rifles, francotiradores y lanzacohetes." },
+            { id: "vc_m37", cat: "Contratos de Asesinato", name: "Comprobar (Check Out at the Check In)", diff: "media", desc: "Sigue al objetivo en el Aeropuerto Escobar, francotíralo cuando baje por la escalera mecánica, roba su maletín y llévalo a Downtown." },
+            { id: "vc_m38", cat: "Contratos de Asesinato", name: "Cabos sueltos (Loose Ends)", diff: "dificil", desc: "Asalta el tejado de la fábrica de helados Cherry Popper, liquida a todos los agentes federales fuertemente armados y roba el maletín del helicóptero." },
+
+            // 12. Activos Comerciales (Misiones de Negocios)
+            { id: "vc_m39", cat: "Activos y Negocios", name: "Astillero naval (Boatyard)", diff: "media", desc: "Supera la prueba contrarreloj 'Punto de control Charlie' usando cualquiera de las dos lanchas rápidas del muelle para generar $2,000/día." },
+            { id: "vc_m40", cat: "Activos y Negocios", name: "Cherry Popper (Vendedora de Helados)", diff: "media", desc: "Haz 50 repartos de droga seguidos con la furgoneta Mr. Whoopee sin ser arrestado ni bajarte de ella para generar $3,000/día." },
+            { id: "vc_m41", cat: "Activos y Negocios", name: "Club Pole Position (Sala VIP)", diff: "facil", desc: "Entra a la sala VIP trasera del club de striptease y gasta al menos $300 viendo el baile privado para generar $4,000/día." },
+            { id: "vc_m42", cat: "Activos y Negocios", name: "Kaufman Cabs: VIP", diff: "facil", desc: "Recoge al cliente VIP en Starfish Island antes que el taxi rival y condúcelo al aeropuerto tras destruir el vehículo de la competencia." },
+            { id: "vc_m43", cat: "Activos y Negocios", name: "Kaufman Cabs: Competición amistosa", diff: "facil", desc: "Destruye 3 taxis de la compañía rival VC Cabs que circulan por la ciudad para arrebatarles la cuota de clientes." },
+            { id: "vc_m44", cat: "Activos y Negocios", name: "Kaufman Cabs: Taxiageddon", diff: "media", desc: "Sobrevive a la trampa en Viceport donde múltiples taxis te embisten para destruirte y acaba con el taxi líder Zebra Cab para generar $5,000/día." },
+            { id: "vc_m45", cat: "Activos y Negocios", name: "Estudio Cinematográfico: Campaña de reclutamiento", diff: "facil", desc: "Recluta a Candy Suxxx en Downtown, elimina a su proxeneta en su coche deportivo y convence a Mercedes en la pizzería." },
+            { id: "vc_m46", cat: "Activos y Negocios", name: "Estudio Cinematográfico: Consolador Dodo", diff: "dificil", desc: "Vuela en el hidroavión Skimmer pasando por los puntos de control aéreos sobre Vice City para repartir folletos promocionales." },
+            { id: "vc_m47", cat: "Activos y Negocios", name: "Estudio Cinematográfico: La foto policial de Martha", diff: "media", desc: "Sigue la limusina de Alex Shrub en el Sparrow, toma fotos comprometedoras con Candy Suxxx desde el tejado y escapa con 5 estrellas." },
+            { id: "vc_m48", cat: "Activos y Negocios", name: "Estudio Cinematográfico: Punto G", diff: "dificil", desc: "Salta de tejado en tejado por los rascacielos de Downtown con una PCJ-600 para enfocar el foco gigante hacia la fachada del edificio ($7,000/día)." },
+            { id: "vc_m49", cat: "Activos y Negocios", name: "Imprenta: Descubriendo el pastel", diff: "facil", desc: "Dirígete a Vice City Beach, interroga a Kent Paul en el Malibu Club y vuela en helicóptero a los muelles para obtener información." },
+            { id: "vc_m50", cat: "Activos y Negocios", name: "Imprenta: Golpea al mensajero", diff: "dificil", desc: "Embosca al mensajero femenino que desembarca en helicóptero en los muelles, elimina a su escolta y roba las placas de billetes falsos ($8,000/día)." },
+            { id: "vc_m51", cat: "Activos y Negocios", name: "Malibu Club: ¿Sin escapatoria?", diff: "media", desc: "Entra en la comisaría de Washington Beach, libera a Cam Jones de la celda y escoltalo a salvo esquivando a las fuerzas policiales." },
+            { id: "vc_m52", cat: "Activos y Negocios", name: "Malibu Club: El tirador", diff: "media", desc: "Consigue al menos 60 puntos en las 3 fases de tiro del campo de tiro de Ammu-Nation para convencer a Phil Cassidy de unirse." },
+            { id: "vc_m53", cat: "Activos y Negocios", name: "Malibu Club: Conductor", diff: "dificil", desc: "Vence a Hilary King en una carrera urbana callejera conduciendo un Sentinel contra su veloz Sabre Turbo." },
+            { id: "vc_m54", cat: "Activos y Negocios", name: "Malibu Club: El atraco (The Job)", diff: "extrema", desc: "Atraca el banco El Corrupto de Little Havana, entra a la cámara acorazada, sobrevive al asalto SWAT y escapa al garaje de Cam ($10,000/día)." },
+            { id: "vc_m55", cat: "Activos y Negocios", name: "Autos Sunshine: Listas de Vehículos 1 al 4", diff: "dificil", desc: "Roba y entrega las 24 variedades de coches y todoterrenos solicitados en los garajes de Sunshine Autos ($9,000/día)." },
+            { id: "vc_m56", cat: "Activos y Negocios", name: "Phil Cassidy: Traficante de armas", diff: "media", desc: "Recoge las cajas de munición que caen de los camiones de los matones mexicanos y liquida a los rezagados antes de que huyan." },
+            { id: "vc_m57", cat: "Activos y Negocios", name: "Phil Cassidy: Boomshine Saigon", diff: "media", desc: "Conduce la furgoneta Patriot llevando a Phil gravemente herido y mutilado al cirujano bajo el efecto psicodélico del Boomshine." },
+
+            // 13. Misiones Finales
+            { id: "vc_m58", cat: "Misiones Finales", name: "El cobrador de impuestos (Cap the Collector)", diff: "dificil", desc: "Intercepta y liquida a las parejas de mafiosos de Sonny Forelli en motocicleta antes de que cobren el dinero de tus negocios en la ciudad." },
+            { id: "vc_m59", cat: "Misiones Finales", name: "Mantén cerca a tus amigos... (Keep Your Friends Close...)", diff: "extrema", desc: "Defiende la caja fuerte de tu mansión, persigue y mata al traidor de Lance Vance en el tejado, y abate finalmente a Sonny Forelli en el vestíbulo principal." },
+
+            // 14. Vehículos de Servicio (R3)
+            { id: "vc_s01", cat: "Vehículos de Emergencia y Servicio", name: "Paramédico - Nivel 12", diff: "dificil", desc: "Completa 12 niveles consecutivos de recogida y traslado de pacientes al hospital en la ambulancia (Otorga carrera infinita)." },
+            { id: "vc_s02", cat: "Vehículos de Emergencia y Servicio", name: "Bombero - Nivel 12", diff: "media", desc: "Apaga 12 incendios consecutivos de vehículos y peatones en llamas usando el camión de bomberos (Otorga inmunidad al fuego)." },
+            { id: "vc_s03", cat: "Vehículos de Emergencia y Servicio", name: "Vigilante (Policía) - Nivel 12", diff: "dificil", desc: "Neutraliza criminales en 12 niveles consecutivos usando un coche de policía, Hunter o Rhino (Otorga 150 de blindaje)." },
+            { id: "vc_s04", cat: "Vehículos de Emergencia y Servicio", name: "Taxista - 100 Carreras", diff: "facil", desc: "Transporta a 100 pasajeros en taxi de forma acumulativa (Desbloquea el salto hidráulico en todos los taxis)." },
+            { id: "vc_s05", cat: "Vehículos de Emergencia y Servicio", name: "Repartidor de Pizza - Nivel 10", diff: "facil", desc: "Entrega pedidos de pizza consecutivamente con la moto Pizza Boy hasta completar el nivel 10 (Otorga 150 de salud máxima)." },
+
+            // 15. Desafíos Off-Road y Contrarreloj
+            { id: "vc_c01", cat: "Desafíos y Contrarrelojes", name: "Carreras de Sunshine Autos (1 a 6)", diff: "media", desc: "Gana las 6 carreras callejeras del mapa de la pared del garaje: Terminal, Ocean Drive, Capital Cruise, etc." },
+            { id: "vc_c02", cat: "Desafíos y Contrarrelojes", name: "Desafío PCJ Playground", diff: "media", desc: "Recoge 24 puntos de control en menos de 2 minutos sobre la PCJ-600 en Ocean Beach realizando saltos sobre azoteas." },
+            { id: "vc_c03", cat: "Desafíos y Contrarrelojes", name: "Cone Crazy", diff: "facil", desc: "Recoge los 5 puntos de control en el aparcamiento de Ocean Beach con un Stallion sin volcar ni derribar conos." },
+            { id: "vc_c04", cat: "Desafíos y Contrarrelojes", name: "Trial by Dirt", diff: "media", desc: "Supera el circuito todoterreno de tierra en Downtown con la moto Sánchez mientras esquivas a matones armados." },
+            { id: "vc_c05", cat: "Desafíos y Contrarrelojes", name: "Test Track", diff: "media", desc: "Completa el circuito de tierra de Downtown a bordo de un Landstalker sin volcar ni destruir el todoterreno." },
+            { id: "vc_c06", cat: "Desafíos y Contrarrelojes", name: "Desafíos Chopper Checkpoint (4)", diff: "media", desc: "Completa los 4 circuitos de helicóptero Sparrow situados en Ocean Beach, Vice Point, Little Haiti y Downtown." },
+            { id: "vc_c07", cat: "Desafíos y Contrarrelojes", name: "Misiones RC Top Fun (3)", diff: "media", desc: "Supera las tres pruebas de vehículos teledirigidos: RC Bandit Race, RC Baron Race y RC Raider Pickup." },
+            { id: "vc_c08", cat: "Desafíos y Contrarrelojes", name: "Hyman Memorial Stadium (3 Eventos)", diff: "dificil", desc: "Supera los eventos nocturnos del estadio entre las 20:00 y las 00:00: Hotring, Bloodring y Dirtring." },
+            { id: "vc_c09", cat: "Desafíos y Contrarrelojes", name: "Puntuación de Galería Ammu-Nation (45 pts)", diff: "facil", desc: "Obtén al menos 45 puntos en la galería de tiro de Ammu-Nation de Downtown para obtener recarga rápida de armas." },
+
+            // 16. Coleccionables, Saltos y Propiedades
+            { id: "vc_s01b", cat: "Coleccionables y Secretos (100%)", name: "100 Paquetes Ocultos", diff: "extrema", desc: "Recoge las 100 figuras de estatua tiki repartidas por toda la urbe para desbloquear el Hunter, Rhino y armas gratuitas." },
+            { id: "vc_s02b", cat: "Coleccionables y Secretos (100%)", name: "36 Saltos Únicos", diff: "dificil", desc: "Ejecuta con éxito los 36 saltos acrobáticos con vehículos por rampas y accesos repartidos por la ciudad." },
+            { id: "vc_s03b", cat: "Coleccionables y Secretos (100%)", name: "35 Masacres (Rampages)", diff: "dificil", desc: "Supera los 35 iconos de calavera eliminando las cuotas exigidas de miembros de bandas con armas concretas." },
+            { id: "vc_s04b", cat: "Coleccionables y Secretos (100%)", name: "15 Tiendas Atracadas", diff: "facil", desc: "Apunta con un arma a los dependientes de las 15 tiendas de conveniencia, joyerías y farmacias hasta obtener el botín." },
+            { id: "vc_s05b", cat: "Coleccionables y Secretos (100%)", name: "Compra de los 7 Pisos Francos", diff: "facil", desc: "Adquiere todas las casas y áticos residenciales: 1102 Washington St, Ocean Heights, Links View, El Swanko, etc." }
+        ];
+
+        let masterStore = {};
+        let activeTaskId = null;
+        let localVideoBlob = null;
+
+        function init() {
+            const raw = localStorage.getItem('gta_master_save');
+            if (raw) {
+                try { masterStore = JSON.parse(raw); } catch(e) { masterStore = {}; }
+            }
+            if (!masterStore[GAME_ID]) masterStore[GAME_ID] = {};
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasksContainer');
+            container.innerHTML = '';
+            const categories = [...new Set(tasks.map(t => t.cat))];
+
+            categories.forEach(cat => {
+                const catTasks = tasks.filter(t => t.cat === cat);
+                const catDone = catTasks.filter(t => masterStore[GAME_ID][t.id] && masterStore[GAME_ID][t.id].done).length;
+
+                const headerWrap = document.createElement('div');
+                headerWrap.className = 'category-title';
+                headerWrap.innerHTML = `<span>${cat}</span><span class="category-sub">${catDone} / ${catTasks.length}</span>`;
+                container.appendChild(headerWrap);
+
+                const grid = document.createElement('div');
+                grid.className = 'tasks-grid';
+
+                catTasks.forEach(task => {
+                    const status = masterStore[GAME_ID][task.id] || { done: false, video: null };
+                    const card = document.createElement('div');
+                    card.className = `task-card ${status.done ? 'completed' : ''}`;
+                    card.innerHTML = `
+                        <div class="task-top">
+                            <input type="checkbox" class="task-checkbox" ${status.done ? 'checked' : ''} onchange="toggleDone('${task.id}', this.checked)">
+                            <div class="task-info" onclick="openModal('${task.id}')">
+                                <div class="task-name">${task.name}</div>
+                            </div>
+                        </div>
+                        <div class="task-bottom">
+                            <span class="difficulty diff-${task.diff}">${task.diff}</span>
+                            <button class="btn-modal" onclick="openModal('${task.id}')">${status.video ? '📺 Ver Video' : '➕ Video / Info'}</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                container.appendChild(grid);
+            });
+
+            calcProgress();
+        }
+
+        function toggleDone(taskId, isChecked) {
+            if (!masterStore[GAME_ID][taskId]) masterStore[GAME_ID][taskId] = {};
+            masterStore[GAME_ID][taskId].done = isChecked;
+            saveMaster();
+            renderTasks();
+        }
+
+        function calcProgress() {
+            const completed = tasks.filter(t => masterStore[GAME_ID][t.id] && masterStore[GAME_ID][t.id].done).length;
+            const pct = Math.round((completed / tasks.length) * 100);
+
+            document.getElementById('pctDisplay').innerText = `${pct}%`;
+            document.getElementById('barDisplay').style.width = `${pct}%`;
+            document.getElementById('statsText').innerText = `${completed} de ${tasks.length} misiones completadas`;
+        }
+
+        function openModal(taskId) {
+            activeTaskId = taskId;
+            const task = tasks.find(t => t.id === taskId);
+            const data = masterStore[GAME_ID][taskId] || {};
+
+            document.getElementById('mName').innerText = task.name;
+            document.getElementById('mDesc').innerText = task.desc;
+            
+            const diffElem = document.getElementById('mDiff');
+            diffElem.className = `difficulty diff-${task.diff}`;
+            diffElem.innerText = task.diff;
+
+            document.getElementById('mUrl').value = (data.video && !data.video.startsWith('data:')) ? data.video : '';
+            showVideo(data.video);
+
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('taskModal').style.display = 'none';
+            document.getElementById('mVideoViewer').innerHTML = '<span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>';
+            localVideoBlob = null;
+        }
+
+        function handleFile(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    localVideoBlob = evt.target.result;
+                    showVideo(localVideoBlob);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function showVideo(src) {
+            const box = document.getElementById('mVideoViewer');
+            if (!src) {
+                box.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-dim);">Sin video adjunto</span>';
+                return;
+            }
+            if (src.includes('youtube.com') || src.includes('youtu.be')) {
+                let url = src.includes('watch?v=') ? src.replace('watch?v=', 'embed/') : src.replace('youtu.be/', 'www.youtube.com/embed/');
+                box.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
+            } else {
+                box.innerHTML = `<video controls src="${src}"></video>`;
+            }
+        }
+
+        function saveTaskMedia() {
+            if (!masterStore[GAME_ID][activeTaskId]) masterStore[GAME_ID][activeTaskId] = { done: false };
+            const inputUrl = document.getElementById('mUrl').value.trim();
+            masterStore[GAME_ID][activeTaskId].video = localVideoBlob || inputUrl || null;
+
+            saveMaster();
+            closeModal();
+            renderTasks();
+        }
+
+        function saveMaster() {
+            localStorage.setItem('gta_master_save', JSON.stringify(masterStore));
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
