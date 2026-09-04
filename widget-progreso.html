@@ -7,8 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&family=Teko:wght@700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        /* Fondo transparente para OBS / TikTok Studio */
         body {
             background: transparent;
             font-family: 'Montserrat', sans-serif;
@@ -19,39 +17,34 @@
             height: 100vh;
             overflow: hidden;
         }
-
         .widget-container {
-            width: 500px;
-            background: rgba(18, 14, 28, 0.88);
+            width: 520px;
+            background: rgba(18, 14, 28, 0.9);
             backdrop-filter: blur(10px);
             border: 2px solid #f5a623;
             border-radius: 12px;
             padding: 16px 20px;
-            box-shadow: 0 0 25px rgba(245, 166, 35, 0.4);
+            box-shadow: 0 0 30px rgba(245, 166, 35, 0.35);
             clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
         }
-
         .widget-header {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
             margin-bottom: 8px;
         }
-
         .widget-header h3 {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-style: italic;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: #fff;
         }
-
         #globalPctDisplay {
             font-size: 1.3rem;
             font-weight: 900;
             color: #f5a623;
         }
-
         .global-bar-bg {
             background-color: #050408;
             height: 14px;
@@ -60,7 +53,6 @@
             border: 1px solid rgba(245, 166, 35, 0.5);
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
         }
-
         .global-bar-fill {
             height: 100%;
             width: 0%;
@@ -68,15 +60,17 @@
             transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 0 10px #f5a623;
         }
-
         #globalStatsText {
-            margin-top: 6px;
-            font-size: 0.75rem;
-            color: #9ca3af;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #fb7185;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: 'Teko', sans-serif;
             letter-spacing: 1.5px;
+            font-family: 'Teko', sans-serif;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 </head>
@@ -90,37 +84,63 @@
         <div class="global-bar-bg">
             <div id="globalBarFill" class="global-bar-fill"></div>
         </div>
-        <p id="globalStatsText">Cargando progreso...</p>
+        <p id="globalStatsText">Cargando...</p>
     </div>
 
     <script>
         const expectedStoryTotals = { gtavc: 48, gtasa: 100, gta3: 51, gta4: 46, gta5: 42 };
         const absoluteTotalMissions = 287;
+        
+        const gameNamesMap = {
+            gtavc: "Vice City",
+            gtasa: "San Andreas",
+            gta3: "GTA III",
+            gta4: "GTA IV",
+            gta5: "GTA V"
+        };
 
         async function fetchWidgetProgress() {
             let publicData = {};
+            
+            // Intenta leer primero de la caché local para respuesta instantánea en el directo
+            const localCache = localStorage.getItem('gta_progress_cache');
+            if (localCache) {
+                try { publicData = JSON.parse(localCache); } catch(e){}
+            }
+
             try {
                 const response = await fetch('my-progress.json?' + new Date().getTime());
-                if (response.ok) publicData = await response.json();
+                if (response.ok) {
+                    publicData = await response.json();
+                }
             } catch (e) {}
 
             let totalCompletedAllGames = 0;
+            let currentMissionActiveText = "Ninguna misión en curso";
+
             Object.keys(expectedStoryTotals).forEach(gameKey => {
                 const gameData = publicData[gameKey] || {};
-                const completed = Object.values(gameData).filter(task => task.done).length;
-                totalCompletedAllGames += completed;
+                
+                Object.keys(gameData).forEach(taskId => {
+                    const taskInfo = gameData[taskId];
+                    if (taskInfo.done) {
+                        totalCompletedAllGames++;
+                    }
+                    if (taskInfo.inProgress) {
+                        currentMissionActiveText = `Misión en curso: ${taskId.toUpperCase()} (${gameNamesMap[gameKey]})`;
+                    }
+                });
             });
 
             const globalPct = Math.min(100, Math.round((totalCompletedAllGames / absoluteTotalMissions) * 100));
             
             document.getElementById('globalPctDisplay').innerText = `${globalPct}%`;
             document.getElementById('globalBarFill').style.width = `${globalPct}%`;
-            document.getElementById('globalStatsText').innerText = `${totalCompletedAllGames} / ${absoluteTotalMissions} Misiones completadas`;
+            document.getElementById('globalStatsText').innerText = currentMissionActiveText;
         }
 
-        // Se actualiza automáticamente cada 10 segundos por si editas el JSON mientras transmites
         fetchWidgetProgress();
-        setInterval(fetchWidgetProgress, 10000);
+        setInterval(fetchWidgetProgress, 5000); // Se actualiza cada 5 segundos en directo
     </script>
 </body>
 </html>
