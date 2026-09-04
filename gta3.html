@@ -7,7 +7,6 @@
     <style>
         body {
             background-color: #0a0d14;
-            /* background-image: linear-gradient(rgba(10, 13, 20, 0.90), rgba(10, 13, 20, 0.96)), url('fondo-gta3.jpg'); */
             background-repeat: no-repeat;
             background-position: center top;
             background-size: cover;
@@ -18,7 +17,6 @@
 
         header {
             background-color: #101624;
-            /* background-image: linear-gradient(180deg, rgba(16, 22, 36, 0.75) 0%, rgba(10, 13, 20, 0.95) 100%), url('banner-gta3.jpg'); */
             background-repeat: no-repeat;
             background-position: center;
             background-size: cover;
@@ -193,7 +191,6 @@
             font-size: 0.75rem;
         }
 
-        /* Modal */
         .modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -267,7 +264,6 @@
         }
         .video-box iframe, .video-box video { width: 100%; height: 260px; }
 
-        /* Reproductor de Música Flotante */
         .music-player-widget {
             position: fixed;
             bottom: 20px;
@@ -368,7 +364,7 @@
         </div>
     </div>
 
-    <!-- Reproductor Flotante de Música Persistente -->
+    <!-- Reproductor Flotante -->
     <div class="music-player-widget">
         <audio id="bgMusic" loop preload="auto" src="https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/gtasong.mp3"></audio>
         <button id="musicToggleBtn" class="music-btn" onclick="togglePlayMusic()">▶</button>
@@ -381,13 +377,14 @@
     <script>
         const GAME_ID = 'gta3';
 
-        // Sonido de selección/interacción al pasar el mouse por los elementos
         const hoverSound = new Audio('https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/gtaiii.mp3');
         hoverSound.volume = 0.25;
 
         function playMenuHover() {
-            hoverSound.currentTime = 0;
-            hoverSound.play().catch(() => {});
+            try {
+                hoverSound.currentTime = 0;
+                hoverSound.play().catch(() => {});
+            } catch (e) {}
         }
 
         function attachMenuSounds() {
@@ -407,7 +404,7 @@
             { id: "g3_06", cat: "1. Isla de Portland", character: "Luigi Goterelli", name: "6. The Fuzz Ball", diff: "media", reward: "$2,000 - $4,000", desc: "Recogida contrarreloj de chicas de compañía por toda la isla para llevarlas a la fiesta policial.", objectives: ["Conseguir un coche de 4 plazas rápido", "Recoger al menos a 4 chicas repartidas por Portland", "Llevarlas a la fiesta antes de que se agote el tiempo"] },
             { id: "g3_07", cat: "1. Isla de Portland", character: "Joey Leone", name: "7. Mike Lips Won't Go", diff: "media", reward: "$10,000", desc: "Colocación de un coche bomba en el vehículo del matón Mike Lips de la familia Forelli.", objectives: ["Ir al bistró de Saint Mark's", "Robar el Idaho de Mike Lips sin rayarlo", "Llevarlo al taller de 8-Ball para armar el explosivo", "Devolverlo al mismo sitio de aparcamiento"] },
             { id: "g3_08", cat: "1. Isla de Portland", character: "Joey Leone", name: "8. Farewell 'Chunky' Lee Chong", diff: "facil", reward: "$10,000", desc: "Asesinato del vendedor ambulante de SPANK Chunky Lee Chong en Chinatown.", objectives: ["Comprar una pistola", "Entrar a pie a la zona peatonal de Chinatown", "Eliminar a los matones de las Tríadas", "Abatir a Lee Chong"] },
-            { id: "g3_09", cat: "1. Isla de Portland", character: "Joey Leone", name: "9. Van Heist", diff: "media", reward: "$20,000", desc: "Asalton a un furgón blindado Securicar embistiéndolo para forzar a la tripulación a huir.", objectives: ["Conseguir un vehículo pesado", "Embestir reiteradamente el furgón Securicar hasta llenar la barra de daño", "Subir al furgón y llevarlo al garaje de Joey"] },
+            { id: "g3_09", cat: "1. Isla de Portland", character: "Joey Leone", name: "9. Van Heist", diff: "media", reward: "$20,000", desc: "Asalto a un furgón blindado Securicar embistiéndolo para forzar a la tripulación a huir.", objectives: ["Conseguir un vehículo pesado", "Embestir reiteradamente el furgón Securicar hasta llenar la barra de daño", "Subir al furgón y llevarlo al garaje de Joey"] },
             { id: "g3_10", cat: "1. Isla de Portland", character: "Joey Leone", name: "10. Cipriani's Chauffeur", diff: "facil", reward: "$2,000", desc: "Servicio de chófer para Toni Cipriani atacado por las Tríadas en la lavandería.", objectives: ["Llevar a Toni a la lavandería del Sr. Wong", "Esperar en el coche y sobrevivir a la emboscada con Uzi", "Llevar a Toni al restaurante de su madre"] },
             { id: "g3_11", cat: "1. Isla de Portland", character: "Joey Leone", name: "11. Dead Skunk in the Trunk", diff: "media", reward: "$10,000", desc: "Destrucción de un coche con un cadáver dentro en la trituradora de Harwood.", objectives: ["Localizar el coche frente al café", "Esquivar la emboscada de dos coches rivales", "Conducir el coche a la trituradora de chatarra"] },
             { id: "g3_12", cat: "1. Isla de Portland", character: "Joey Leone", name: "12. The Getaway", diff: "media", reward: "$10,000", desc: "Conducción de huida para un atraco a un banco en Chinatown.", objectives: ["Conseguir un coche de 4 plazas rápido antes de las 17:00", "Recoger a los atracadores y llevarlos al banco", "Despistar el nivel de 3 estrellas y dejarlos en su piso franco"] },
@@ -456,23 +453,6 @@
         let activeTaskId = null;
         let currentFilter = "";
 
-        // Sonido de interacción del menú de GTA III
-        const hoverSound = new Audio('https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/gtaiii.mp3');
-        hoverSound.volume = 0.25;
-
-        function playMenuHover() {
-            hoverSound.currentTime = 0;
-            hoverSound.play().catch(() => {});
-        }
-
-        function attachMenuSounds() {
-            const targets = document.querySelectorAll('.task-card, .btn-modal, .back-link, .music-btn, .modal-close');
-            targets.forEach(el => {
-                el.removeEventListener('mouseenter', playMenuHover);
-                el.addEventListener('mouseenter', playMenuHover);
-            });
-        }
-
         async function init() {
             try {
                 const response = await fetch('my-progress.json?' + new Date().getTime());
@@ -490,10 +470,11 @@
 
         function renderTasks() {
             const container = document.getElementById('tasksContainer');
+            if (!container) return;
             container.innerHTML = '';
 
             const filteredTasks = tasks.filter(t => {
-                const search = currentFilter.toLowerCase();
+                const search = (currentFilter || "").toLowerCase();
                 return t.name.toLowerCase().includes(search) ||
                        t.cat.toLowerCase().includes(search) ||
                        t.desc.toLowerCase().includes(search) ||
@@ -586,9 +567,8 @@
                 objList.innerHTML = '<li>Completar la misión con éxito.</li>';
             }
 
-            // Pausar música si hay video
             const bgMusic = document.getElementById('bgMusic');
-            if (data.video && !bgMusic.paused) {
+            if (data.video && bgMusic && !bgMusic.paused) {
                 pauseMusic();
             }
 
@@ -615,12 +595,12 @@
             }
         }
 
-        // Manejo de la Música Persistente
         const audio = document.getElementById('bgMusic');
         const btn = document.getElementById('musicToggleBtn');
         const status = document.getElementById('musicStatus');
 
         function setupMusicPersistence() {
+            if (!audio) return;
             const savedTime = localStorage.getItem('gta_music_time');
             const isPlaying = localStorage.getItem('gta_music_playing') === 'true';
 
@@ -629,11 +609,11 @@
             if (isPlaying) {
                 audio.volume = 0.35;
                 audio.play().then(() => {
-                    btn.innerText = "⏸";
-                    status.innerText = "Reproduciendo";
+                    if (btn) btn.innerText = "⏸";
+                    if (status) status.innerText = "Reproduciendo";
                 }).catch(() => {
-                    btn.innerText = "▶";
-                    status.innerText = "Pausado";
+                    if (btn) btn.innerText = "▶";
+                    if (status) status.innerText = "Pausado";
                 });
             }
 
@@ -643,6 +623,7 @@
         }
 
         function togglePlayMusic() {
+            if (!audio) return;
             if (audio.paused) {
                 audio.volume = 0.35;
                 audio.play().then(() => {
@@ -658,9 +639,10 @@
         }
 
         function pauseMusic() {
+            if (!audio) return;
             audio.pause();
-            btn.innerText = "▶";
-            status.innerText = "Pausado";
+            if (btn) btn.innerText = "▶";
+            if (status) status.innerText = "Pausado";
             localStorage.setItem('gta_music_playing', 'false');
         }
 
