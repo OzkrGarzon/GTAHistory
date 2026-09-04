@@ -13,7 +13,7 @@
             background-size: cover;
             background-attachment: fixed;
             color: #f3f4f6;
-            padding-bottom: 70px;
+            padding-bottom: 90px;
         }
 
         header {
@@ -62,6 +62,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            transition: color 0.2s ease;
         }
         .back-link:hover { color: #fff; }
 
@@ -144,7 +145,7 @@
             justify-content: space-between;
             transition: transform 0.15s, border-color 0.15s;
         }
-        .task-card:hover { border-color: #434c70; transform: translateY(-2px); }
+        .task-card:hover { border-color: #ff49db; transform: translateY(-2px); }
         .task-card.completed { border-color: rgba(16, 185, 129, 0.5); background: rgba(16, 185, 129, 0.06); }
 
         .task-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
@@ -266,6 +267,47 @@
             overflow: hidden;
         }
         .video-box iframe, .video-box video { width: 100%; height: 260px; }
+
+        /* Reproductor de Música Flotante */
+        .music-player-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(17, 20, 36, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .music-btn {
+            background: var(--accent);
+            border: none;
+            color: #000;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .music-btn:hover { transform: scale(1.08); }
+
+        .music-info {
+            font-size: 0.78rem;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+        }
+        .music-info span:first-child { font-weight: bold; }
+        .music-info span:last-child { color: var(--text-dim); font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -289,7 +331,7 @@
                 <div class="progress-bar-bg">
                     <div id="barDisplay" class="progress-bar-fill"></div>
                 </div>
-                <p id="statsText" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-dim);">0 de 0 misiones completadas</p>
+                <p id="statsText" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-dim);">Cargando misiones...</p>
             </section>
 
             <section class="filter-panel">
@@ -301,7 +343,7 @@
         <section id="tasksContainer"></section>
     </main>
 
-    <!-- Modal Espectador (Solo lectura con reproductor de video) -->
+    <!-- Modal Espectador -->
     <div id="taskModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">&times;</button>
@@ -327,8 +369,35 @@
         </div>
     </div>
 
+    <!-- Reproductor Flotante de Música Persistente -->
+    <div class="music-player-widget">
+        <audio id="bgMusic" loop preload="auto" src="https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/gtasong.mp3"></audio>
+        <button id="musicToggleBtn" class="music-btn" onclick="togglePlayMusic()">▶</button>
+        <div class="music-info">
+            <span>Banda Sonora</span>
+            <span id="musicStatus">Pausado</span>
+        </div>
+    </div>
+
     <script>
         const GAME_ID = 'gtavc';
+
+        // Sonido de selección/interacción al pasar el mouse por los elementos
+        const hoverSound = new Audio('https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/vicecity.mp3');
+        hoverSound.volume = 0.25;
+
+        function playMenuHover() {
+            hoverSound.currentTime = 0;
+            hoverSound.play().catch(() => {});
+        }
+
+        function attachMenuSounds() {
+            const targets = document.querySelectorAll('.task-card, .btn-modal, .back-link, .music-btn, .modal-close');
+            targets.forEach(el => {
+                el.removeEventListener('mouseenter', playMenuHover);
+                el.addEventListener('mouseenter', playMenuHover);
+            });
+        }
 
         const tasks = [
             { id: "vc_01", cat: "1. Inicio", character: "Prólogo", name: "1. In The Beginning...", diff: "facil", reward: "$0", desc: "Secuencia inicial del intercambio fallido de drogas en los muelles de Viceport.", objectives: ["Sobrevivir a la emboscada", "Entrar al coche con Ken Rosenberg", "Conducir hasta el Ocean View Hotel siguiendo el radar"] },
@@ -401,6 +470,7 @@
 
             if (!publicProgress[GAME_ID]) publicProgress[GAME_ID] = {};
             renderTasks();
+            setupMusicPersistence();
         }
 
         function renderTasks() {
@@ -465,6 +535,7 @@
             });
 
             calcProgress();
+            attachMenuSounds();
         }
 
         function handleSearch() {
@@ -507,6 +578,12 @@
                 objList.innerHTML = '<li>Completar la misión con éxito.</li>';
             }
 
+            // Si hay video y la música está sonando, pausamos la música de fondo temporalmente
+            const bgMusic = document.getElementById('bgMusic');
+            if (data.video && !bgMusic.paused) {
+                pauseMusic();
+            }
+
             showVideo(data.video);
             document.getElementById('taskModal').style.display = 'flex';
         }
@@ -524,10 +601,59 @@
             }
             if (src.includes('youtube.com') || src.includes('youtu.be')) {
                 let url = src.includes('watch?v=') ? src.replace('watch?v=', 'embed/') : src.replace('youtu.be/', 'www.youtube.com/embed/');
-                box.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
+                box.innerHTML = `<iframe src="${url}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
             } else {
-                box.innerHTML = `<video controls src="${src}"></video>`;
+                box.innerHTML = `<video controls autoplay src="${src}"></video>`;
             }
+        }
+
+        // Manejo de la Música Persistente
+        const audio = document.getElementById('bgMusic');
+        const btn = document.getElementById('musicToggleBtn');
+        const status = document.getElementById('musicStatus');
+
+        function setupMusicPersistence() {
+            const savedTime = localStorage.getItem('gta_music_time');
+            const isPlaying = localStorage.getItem('gta_music_playing') === 'true';
+
+            if (savedTime) audio.currentTime = parseFloat(savedTime);
+
+            if (isPlaying) {
+                audio.volume = 0.35;
+                audio.play().then(() => {
+                    btn.innerText = "⏸";
+                    status.innerText = "Reproduciendo";
+                }).catch(() => {
+                    btn.innerText = "▶";
+                    status.innerText = "Pausado";
+                });
+            }
+
+            audio.addEventListener('timeupdate', () => {
+                localStorage.setItem('gta_music_time', audio.currentTime);
+            });
+        }
+
+        function togglePlayMusic() {
+            if (audio.paused) {
+                audio.volume = 0.35;
+                audio.play().then(() => {
+                    btn.innerText = "⏸";
+                    status.innerText = "Reproduciendo";
+                    localStorage.setItem('gta_music_playing', 'true');
+                }).catch(() => {
+                    alert("Haz clic en la página para permitir la reproducción de audio.");
+                });
+            } else {
+                pauseMusic();
+            }
+        }
+
+        function pauseMusic() {
+            audio.pause();
+            btn.innerText = "▶";
+            status.innerText = "Pausado";
+            localStorage.setItem('gta_music_playing', 'false');
         }
 
         window.addEventListener('DOMContentLoaded', init);
