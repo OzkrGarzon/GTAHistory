@@ -13,7 +13,7 @@
             background-size: cover;
             background-attachment: fixed;
             color: #f3f4f6;
-            padding-bottom: 70px;
+            padding-bottom: 90px;
         }
 
         header {
@@ -62,6 +62,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            transition: color 0.2s ease;
         }
         .back-link:hover { color: #fff; }
 
@@ -143,7 +144,7 @@
             justify-content: space-between;
             transition: transform 0.15s, border-color 0.15s;
         }
-        .task-card:hover { border-color: #3b82f6; transform: translateY(-2px); }
+        .task-card:hover { border-color: #38bdf8; transform: translateY(-2px); }
         .task-card.completed { border-color: rgba(56, 189, 248, 0.5); background: rgba(56, 189, 248, 0.06); }
 
         .task-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
@@ -265,6 +266,47 @@
             overflow: hidden;
         }
         .video-box iframe, .video-box video { width: 100%; height: 260px; }
+
+        /* Reproductor de Música Flotante */
+        .music-player-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(16, 22, 36, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .music-btn {
+            background: var(--accent);
+            border: none;
+            color: #000;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .music-btn:hover { transform: scale(1.08); }
+
+        .music-info {
+            font-size: 0.78rem;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+        }
+        .music-info span:first-child { font-weight: bold; }
+        .music-info span:last-child { color: var(--text-dim); font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -288,7 +330,7 @@
                 <div class="progress-bar-bg">
                     <div id="barDisplay" class="progress-bar-fill"></div>
                 </div>
-                <p id="statsText" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-dim);">0 de 51 misiones completadas</p>
+                <p id="statsText" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-dim);">Cargando misiones...</p>
             </section>
 
             <section class="filter-panel">
@@ -326,8 +368,35 @@
         </div>
     </div>
 
+    <!-- Reproductor Flotante de Música Persistente -->
+    <div class="music-player-widget">
+        <audio id="bgMusic" loop preload="auto" src="https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/gtasong.mp3"></audio>
+        <button id="musicToggleBtn" class="music-btn" onclick="togglePlayMusic()">▶</button>
+        <div class="music-info">
+            <span>Banda Sonora</span>
+            <span id="musicStatus">Pausado</span>
+        </div>
+    </div>
+
     <script>
         const GAME_ID = 'gta3';
+
+        // Sonido de selección/interacción al pasar el mouse por los elementos
+        const hoverSound = new Audio('https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/gtaiii.mp3');
+        hoverSound.volume = 0.25;
+
+        function playMenuHover() {
+            hoverSound.currentTime = 0;
+            hoverSound.play().catch(() => {});
+        }
+
+        function attachMenuSounds() {
+            const targets = document.querySelectorAll('.task-card, .btn-modal, .back-link, .music-btn, .modal-close');
+            targets.forEach(el => {
+                el.removeEventListener('mouseenter', playMenuHover);
+                el.addEventListener('mouseenter', playMenuHover);
+            });
+        }
 
         const tasks = [
             { id: "g3_01", cat: "1. Isla de Portland", character: "8-Ball / Prólogo", name: "1. Give Me Liberty", diff: "facil", reward: "$0", desc: "Huida del furgón penitenciario volado en el Puente Callahan y llegada al primer piso franco.", objectives: ["Ver la cinemática de fuga en el puente", "Subir al Kuruma con 8-Ball", "Conducir hasta el piso franco en Red Light District", "Cambiar de ropa"] },
@@ -338,7 +407,7 @@
             { id: "g3_06", cat: "1. Isla de Portland", character: "Luigi Goterelli", name: "6. The Fuzz Ball", diff: "media", reward: "$2,000 - $4,000", desc: "Recogida contrarreloj de chicas de compañía por toda la isla para llevarlas a la fiesta policial.", objectives: ["Conseguir un coche de 4 plazas rápido", "Recoger al menos a 4 chicas repartidas por Portland", "Llevarlas a la fiesta antes de que se agote el tiempo"] },
             { id: "g3_07", cat: "1. Isla de Portland", character: "Joey Leone", name: "7. Mike Lips Won't Go", diff: "media", reward: "$10,000", desc: "Colocación de un coche bomba en el vehículo del matón Mike Lips de la familia Forelli.", objectives: ["Ir al bistró de Saint Mark's", "Robar el Idaho de Mike Lips sin rayarlo", "Llevarlo al taller de 8-Ball para armar el explosivo", "Devolverlo al mismo sitio de aparcamiento"] },
             { id: "g3_08", cat: "1. Isla de Portland", character: "Joey Leone", name: "8. Farewell 'Chunky' Lee Chong", diff: "facil", reward: "$10,000", desc: "Asesinato del vendedor ambulante de SPANK Chunky Lee Chong en Chinatown.", objectives: ["Comprar una pistola", "Entrar a pie a la zona peatonal de Chinatown", "Eliminar a los matones de las Tríadas", "Abatir a Lee Chong"] },
-            { id: "g3_09", cat: "1. Isla de Portland", character: "Joey Leone", name: "9. Van Heist", diff: "media", reward: "$20,000", desc: "Asalto a un furgón blindado Securicar embistiéndolo para forzar a la tripulación a huir.", objectives: ["Conseguir un vehículo pesado", "Embestir reiteradamente el furgón Securicar hasta llenar la barra de daño", "Subir al furgón y llevarlo al garaje de Joey"] },
+            { id: "g3_09", cat: "1. Isla de Portland", character: "Joey Leone", name: "9. Van Heist", diff: "media", reward: "$20,000", desc: "Asalton a un furgón blindado Securicar embistiéndolo para forzar a la tripulación a huir.", objectives: ["Conseguir un vehículo pesado", "Embestir reiteradamente el furgón Securicar hasta llenar la barra de daño", "Subir al furgón y llevarlo al garaje de Joey"] },
             { id: "g3_10", cat: "1. Isla de Portland", character: "Joey Leone", name: "10. Cipriani's Chauffeur", diff: "facil", reward: "$2,000", desc: "Servicio de chófer para Toni Cipriani atacado por las Tríadas en la lavandería.", objectives: ["Llevar a Toni a la lavandería del Sr. Wong", "Esperar en el coche y sobrevivir a la emboscada con Uzi", "Llevar a Toni al restaurante de su madre"] },
             { id: "g3_11", cat: "1. Isla de Portland", character: "Joey Leone", name: "11. Dead Skunk in the Trunk", diff: "media", reward: "$10,000", desc: "Destrucción de un coche con un cadáver dentro en la trituradora de Harwood.", objectives: ["Localizar el coche frente al café", "Esquivar la emboscada de dos coches rivales", "Conducir el coche a la trituradora de chatarra"] },
             { id: "g3_12", cat: "1. Isla de Portland", character: "Joey Leone", name: "12. The Getaway", diff: "media", reward: "$10,000", desc: "Conducción de huida para un atraco a un banco en Chinatown.", objectives: ["Conseguir un coche de 4 plazas rápido antes de las 17:00", "Recoger a los atracadores y llevarlos al banco", "Despistar el nivel de 3 estrellas y dejarlos en su piso franco"] },
@@ -379,13 +448,30 @@
             { id: "g3_47", cat: "3. Shoreside Vale", character: "Asuka Kasen", name: "47. Espresso-2-Go!", diff: "dificil", reward: "$40,000", desc: "Destrucción contrarreloj de los 9 puestos de café tapadera de SPANK.", objectives: ["Destruir todos los puestos de café repartidos por las tres islas a contrarreloj"] },
             { id: "g3_48", cat: "3. Shoreside Vale", character: "Asuka Kasen", name: "48. S.A.M.", diff: "dificil", reward: "$45,000", desc: "Derribo del avión comercial del Cartel con lanzamisiles y recogida de paquetes.", objectives: ["Derribar el Dodo con bazuca desde una lancha y recoger los paquetes en la pista"] },
             { id: "g3_49", cat: "3. Shoreside Vale", character: "Asuka Kasen", name: "49. Ransom", diff: "facil", reward: "$0", desc: "Descubrimiento del asesinato de Asuka y la carta de rescate de Catalina.", objectives: ["Encontrar los cadáveres en la obra y leer la nota exigiendo $500,000 en la presa"] },
-            { id: "g3_50", cat: "3. Shoreside Vale", character: "Catalina / Clímax", name: "50. The Exchange (Parte 1)", diff: "dificil", reward: "$0", desc: "Llegada a la mansión del Cartel con el dinero y emboscada de Catalina.", objectives: ["Llevar $500,000, sobrevivir a la trición y despejar la entrada de la villa"] },
+            { id: "g3_50", cat: "3. Shoreside Vale", character: "Catalina / Clímax", name: "50. The Exchange (Parte 1)", diff: "dificil", reward: "$0", desc: "Llegada a la mansión del Cartel con el dinero y emboscada de Catalina.", objectives: ["Llevar $500,000, sobrevivir a la traición y despejar la entrada de la villa"] },
             { id: "g3_51", cat: "3. Shoreside Vale", character: "Catalina / Clímax", name: "51. The Exchange (Parte 2 - Final)", diff: "extrema", reward: "$1,000,000", desc: "Asalto a la Presa Cochrane, rescate de Maria y derribo del helicóptero de Catalina.", objectives: ["Asaltar la base de la presa contra mercenarios, tomar el bazuca y derribar el helicóptero final"] }
         ];
 
         let publicProgress = {};
         let activeTaskId = null;
         let currentFilter = "";
+
+        // Sonido de interacción del menú de GTA III
+        const hoverSound = new Audio('https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/gtaiii.mp3');
+        hoverSound.volume = 0.25;
+
+        function playMenuHover() {
+            hoverSound.currentTime = 0;
+            hoverSound.play().catch(() => {});
+        }
+
+        function attachMenuSounds() {
+            const targets = document.querySelectorAll('.task-card, .btn-modal, .back-link, .music-btn, .modal-close');
+            targets.forEach(el => {
+                el.removeEventListener('mouseenter', playMenuHover);
+                el.addEventListener('mouseenter', playMenuHover);
+            });
+        }
 
         async function init() {
             try {
@@ -399,6 +485,7 @@
 
             if (!publicProgress[GAME_ID]) publicProgress[GAME_ID] = {};
             renderTasks();
+            setupMusicPersistence();
         }
 
         function renderTasks() {
@@ -456,6 +543,7 @@
             });
 
             calcProgress();
+            attachMenuSounds();
         }
 
         function handleSearch() {
@@ -498,6 +586,12 @@
                 objList.innerHTML = '<li>Completar la misión con éxito.</li>';
             }
 
+            // Pausar música si hay video
+            const bgMusic = document.getElementById('bgMusic');
+            if (data.video && !bgMusic.paused) {
+                pauseMusic();
+            }
+
             showVideo(data.video);
             document.getElementById('taskModal').style.display = 'flex';
         }
@@ -515,10 +609,59 @@
             }
             if (src.includes('youtube.com') || src.includes('youtu.be')) {
                 let url = src.includes('watch?v=') ? src.replace('watch?v=', 'embed/') : src.replace('youtu.be/', 'www.youtube.com/embed/');
-                box.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
+                box.innerHTML = `<iframe src="${url}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
             } else {
-                box.innerHTML = `<video controls src="${src}"></video>`;
+                box.innerHTML = `<video controls autoplay src="${src}"></video>`;
             }
+        }
+
+        // Manejo de la Música Persistente
+        const audio = document.getElementById('bgMusic');
+        const btn = document.getElementById('musicToggleBtn');
+        const status = document.getElementById('musicStatus');
+
+        function setupMusicPersistence() {
+            const savedTime = localStorage.getItem('gta_music_time');
+            const isPlaying = localStorage.getItem('gta_music_playing') === 'true';
+
+            if (savedTime) audio.currentTime = parseFloat(savedTime);
+
+            if (isPlaying) {
+                audio.volume = 0.35;
+                audio.play().then(() => {
+                    btn.innerText = "⏸";
+                    status.innerText = "Reproduciendo";
+                }).catch(() => {
+                    btn.innerText = "▶";
+                    status.innerText = "Pausado";
+                });
+            }
+
+            audio.addEventListener('timeupdate', () => {
+                localStorage.setItem('gta_music_time', audio.currentTime);
+            });
+        }
+
+        function togglePlayMusic() {
+            if (audio.paused) {
+                audio.volume = 0.35;
+                audio.play().then(() => {
+                    btn.innerText = "⏸";
+                    status.innerText = "Reproduciendo";
+                    localStorage.setItem('gta_music_playing', 'true');
+                }).catch(() => {
+                    alert("Haz clic en la página para permitir la reproducción de audio.");
+                });
+            } else {
+                pauseMusic();
+            }
+        }
+
+        function pauseMusic() {
+            audio.pause();
+            btn.innerText = "▶";
+            status.innerText = "Pausado";
+            localStorage.setItem('gta_music_playing', 'false');
         }
 
         window.addEventListener('DOMContentLoaded', init);
