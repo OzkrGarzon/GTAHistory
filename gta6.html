@@ -11,10 +11,22 @@
             padding: 0;
         }
 
+        :root {
+            --neon-pink: #f43f5e;
+            --neon-magenta: #e11d48;
+            --neon-purple: #a855f7;
+            --neon-gold: #fbbf24;
+            --glass-bg: rgba(18, 10, 28, 0.72);
+            --border-glow: rgba(244, 63, 94, 0.55);
+        }
+
         body {
-            background: linear-gradient(135deg, #0d0614 0%, #290d2e 40%, #5a123f 70%, #d946ef 100%);
+            background-color: #0d0614;
+            background-image: 
+                linear-gradient(180deg, rgba(13, 6, 20, 0.7) 0%, rgba(20, 8, 30, 0.85) 60%, rgba(13, 6, 20, 0.95) 100%),
+                url('https://cloudfront-eu-central-1.images.arcpublishing.com/diarioas/I6CXYTTBXBCQBASHTUNJIIDWLI.jpg');
             background-repeat: no-repeat;
-            background-position: center;
+            background-position: center center;
             background-size: cover;
             background-attachment: fixed;
             color: #fff;
@@ -22,40 +34,73 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Montserrat', 'Segoe UI', system-ui, -apple-system, sans-serif;
             overflow-x: hidden;
         }
 
         .top-bar {
             width: 100%;
-            padding: 20px 40px;
+            padding: 18px 36px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(13, 6, 20, 0.4);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(13, 6, 20, 0.65);
+            backdrop-filter: blur(14px);
+            border-bottom: 2px solid rgba(244, 63, 94, 0.35);
             z-index: 10;
         }
 
         .back-link {
             color: #fb7185;
             text-decoration: none;
-            font-weight: 800;
-            font-size: 1rem;
-            letter-spacing: 1px;
+            font-weight: 900;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            transition: color 0.2s;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .back-link:hover { color: #fff; }
+        .back-link:hover {
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-pink);
+            transform: translateX(-3px);
+        }
+
+        .top-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .tick-toggle-btn {
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid var(--border-glow);
+            color: #fb7185;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+        .tick-toggle-btn:hover {
+            background: var(--neon-pink);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-pink);
+        }
 
         .logo-tag {
             font-size: 1.1rem;
             font-weight: 900;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             color: #fff;
             text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(244, 63, 94, 0.8);
+            text-shadow: 0 0 18px var(--neon-pink), 0 0 35px var(--neon-purple);
+            font-style: italic;
         }
 
         main {
@@ -64,113 +109,185 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 30px 20px;
             text-align: center;
         }
 
         .countdown-container {
-            max-width: 1100px;
+            max-width: 1050px;
             width: 100%;
-            background: rgba(13, 6, 20, 0.65);
-            backdrop-filter: blur(16px);
-            border: 2px solid rgba(244, 63, 94, 0.5);
-            border-radius: 24px;
-            padding: 40px 20px;
-            box-shadow: 0 0 50px rgba(244, 63, 94, 0.35), inset 0 0 30px rgba(217, 70, 239, 0.15);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--border-glow);
+            border-radius: 28px;
+            padding: 44px 28px;
+            box-shadow: 
+                0 0 60px rgba(244, 63, 94, 0.35),
+                0 25px 50px rgba(0, 0, 0, 0.7),
+                inset 0 0 35px rgba(225, 29, 72, 0.2);
+            position: relative;
         }
 
         .game-title-glow {
-            font-size: clamp(2.2rem, 5vw, 4.2rem);
+            font-size: clamp(2.6rem, 6vw, 4.8rem);
             font-weight: 900;
+            font-style: italic;
             text-transform: uppercase;
-            letter-spacing: 4px;
-            background: linear-gradient(180deg, #ffffff 20%, #f43f5e 100%);
+            letter-spacing: 6px;
+            background: linear-gradient(180deg, #ffffff 15%, #ffd1dc 45%, #f43f5e 80%, #9f1239 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 6px;
-            text-shadow: 0 10px 30px rgba(244, 63, 94, 0.5);
+            line-height: 1.05;
+            filter: drop-shadow(0 6px 25px rgba(244, 63, 94, 0.7));
         }
 
         .subtitle-location {
-            font-size: clamp(0.9rem, 1.8vw, 1.2rem);
-            color: #fb7185;
+            font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+            color: var(--neon-gold);
             text-transform: uppercase;
-            letter-spacing: 5px;
-            margin-bottom: 30px;
-            font-weight: 700;
+            letter-spacing: 7px;
+            margin-top: 10px;
+            margin-bottom: 34px;
+            font-weight: 900;
+            text-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
         }
 
         /* Fila Superior: MESES y SEMANAS */
         .top-row {
             display: grid;
-            grid-template-columns: repeat(2, minmax(140px, 220px));
-            gap: 20px;
+            grid-template-columns: repeat(2, minmax(150px, 240px));
+            gap: 22px;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
 
-        /* Fila Inferior: DÍAS, HORAS, MINUTOS y SEGUNDOS juntos en un solo bloque compacto */
+        /* Fila Inferior: DÍAS, HORAS, MINUTOS y SEGUNDOS juntos */
         .bottom-row-wrapper {
-            background: linear-gradient(145deg, rgba(20, 8, 30, 0.85), rgba(10, 3, 16, 0.9));
-            border: 2px solid rgba(217, 70, 239, 0.25);
-            border-radius: 18px;
-            padding: 20px 15px;
+            background: linear-gradient(160deg, rgba(28, 12, 40, 0.9), rgba(12, 4, 18, 0.95));
+            border: 2px solid rgba(244, 63, 94, 0.4);
+            border-radius: 20px;
+            padding: 22px 18px;
             max-width: 900px;
             margin: 0 auto;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(168, 85, 247, 0.15);
         }
 
         .bottom-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 12px;
         }
 
         @media (max-width: 768px) {
             .bottom-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
+                gap: 14px;
             }
         }
 
         .mega-box {
-            background: rgba(15, 5, 25, 0.6);
-            border: 1px solid rgba(244, 63, 94, 0.2);
-            border-radius: 12px;
-            padding: 15px 5px;
-            transition: transform 0.2s, border-color 0.2s;
+            background: linear-gradient(180deg, rgba(25, 10, 38, 0.8) 0%, rgba(10, 3, 16, 0.95) 100%);
+            border: 1px solid rgba(251, 113, 133, 0.3);
+            border-radius: 14px;
+            padding: 18px 8px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.25s ease;
         }
         
+        .mega-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
+        }
+
         .mega-box:hover {
-            border-color: #f43f5e;
-            transform: translateY(-2px);
+            border-color: var(--neon-pink);
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.4);
         }
 
         .mega-number {
-            font-size: clamp(1.8rem, 3.8vw, 3.2rem);
+            font-size: clamp(2.2rem, 4.5vw, 3.8rem);
             font-weight: 900;
+            font-style: italic;
             color: #fff;
             line-height: 1;
-            text-shadow: 0 0 15px rgba(244, 63, 94, 0.6);
+            text-shadow: 0 0 25px rgba(244, 63, 94, 0.85), 0 0 45px rgba(168, 85, 247, 0.4);
             font-variant-numeric: tabular-nums;
         }
 
         .mega-label {
-            font-size: clamp(0.65rem, 1vw, 0.8rem);
-            color: #f472b6;
+            font-size: clamp(0.7rem, 1vw, 0.85rem);
+            color: #fca5a5;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 6px;
+            letter-spacing: 3px;
+            margin-top: 8px;
             font-weight: 800;
         }
+
+        /* Destello sutil en el pulso de segundos */
+        .pulse-sec {
+            animation: secBeat 1s infinite;
+        }
+
+        @keyframes secBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); text-shadow: 0 0 35px var(--neon-pink), 0 0 55px var(--neon-gold); }
+        }
+
+        /* Reproductor de Música Flotante Persistente */
+        .music-player-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(18, 10, 28, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-glow);
+            border-radius: 30px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 25px rgba(244, 63, 94, 0.35);
+            z-index: 100;
+        }
+
+        .music-btn {
+            background: var(--neon-pink);
+            border: none;
+            color: #fff;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .music-btn:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--neon-pink); }
+
+        .music-info {
+            font-size: 0.78rem;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .music-info span:first-child { font-weight: bold; }
+        .music-info span:last-child { color: var(--text-dim); font-size: 0.7rem; }
 
         footer {
             padding: 20px;
             text-align: center;
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.5);
             font-size: 0.8rem;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             text-transform: uppercase;
+            font-weight: 700;
         }
     </style>
 </head>
@@ -178,7 +295,10 @@
 
     <div class="top-bar">
         <a href="index.html" class="back-link">⬅ Volver al Hub</a>
-        <div class="logo-tag">Leonida Countdown</div>
+        <div class="top-controls">
+            <button id="tickBtn" class="tick-toggle-btn" onclick="toggleTickSound()">Tic-Tac: ON</button>
+            <div class="logo-tag">Leonida Countdown</div>
+        </div>
     </div>
 
     <main>
@@ -198,7 +318,7 @@
                 </div>
             </div>
 
-            <!-- Fila Inferior Juntos: DÍAS, HORAS, MINUTOS y SEGUNDOS -->
+            <!-- Fila Inferior: DÍAS, HORAS, MINUTOS y SEGUNDOS -->
             <div class="bottom-row-wrapper">
                 <div class="bottom-grid">
                     <div class="mega-box">
@@ -214,7 +334,7 @@
                         <div class="mega-label">Minutos</div>
                     </div>
                     <div class="mega-box">
-                        <div id="c-secs" class="mega-number">0</div>
+                        <div id="c-secs" class="mega-number pulse-sec">0</div>
                         <div class="mega-label">Segundos</div>
                     </div>
                 </div>
@@ -222,12 +342,69 @@
         </div>
     </main>
 
+    <!-- Reproductor Flotante de Música Persistente -->
+    <div class="music-player-widget">
+        <audio id="bgMusic" loop preload="auto" src="https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/gtasong.mp3"></audio>
+        <button id="musicToggleBtn" class="music-btn" onclick="togglePlayMusic()">▶</button>
+        <div class="music-info">
+            <span>Banda Sonora</span>
+            <span id="musicStatus">Pausado</span>
+        </div>
+    </div>
+
     <footer>
-        <p>&copy; Rockstar Games / Countdown Tracker</p>
+        <p>&copy; Rockstar Games &bull; Vice City / Leonida Official Tracker</p>
     </footer>
 
     <script>
+        // Fecha oficial de lanzamiento de GTA VI: 19 de Noviembre de 2026
         const releaseDate = new Date("2026-11-19T00:00:00").getTime();
+
+        // Generador de Tic-Tac Mecánico con Web Audio API
+        let audioCtx = null;
+        let tickEnabled = true;
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) audioCtx = new AudioContextClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playMechanicalTick(isHigh = false) {
+            if (!tickEnabled || !audioCtx) return;
+
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(isHigh ? 950 : 700, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.035);
+
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.035);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.04);
+            } catch (e) {}
+        }
+
+        function toggleTickSound() {
+            initAudioContext();
+            tickEnabled = !tickEnabled;
+            const btn = document.getElementById('tickBtn');
+            btn.innerText = `Tic-Tac: ${tickEnabled ? 'ON' : 'OFF'}`;
+            btn.style.opacity = tickEnabled ? '1' : '0.6';
+        }
+
+        let tickAlternator = false;
 
         function updateCountdown() {
             const now = new Date().getTime();
@@ -235,8 +412,8 @@
 
             if (distance < 0) {
                 document.querySelector(".countdown-container").innerHTML = `
-                    <h1 class="game-title-glow" style="font-size: clamp(2rem, 5vw, 4rem);">¡Ya Disponible!</h1>
-                    <div class="subtitle-location">Bienvenido a Vice City</div>
+                    <h1 class="game-title-glow" style="font-size: clamp(2.4rem, 5vw, 4.5rem);">¡Ya Disponible!</h1>
+                    <div class="subtitle-location">Bienvenido a Vice City &bull; Leonida</div>
                 `;
                 return;
             }
@@ -261,10 +438,65 @@
             document.getElementById("c-hours").innerText = hours;
             document.getElementById("c-mins").innerText = minutes;
             document.getElementById("c-secs").innerText = seconds;
+
+            // Suena el clic mecánico
+            tickAlternator = !tickAlternator;
+            playMechanicalTick(tickAlternator);
         }
 
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
+        // Manejo de la Música Persistente
+        const audio = document.getElementById('bgMusic');
+        const btn = document.getElementById('musicToggleBtn');
+        const status = document.getElementById('musicStatus');
+
+        function setupMusicPersistence() {
+            const savedTime = localStorage.getItem('gta_music_time');
+            const isPlaying = localStorage.getItem('gta_music_playing') === 'true';
+
+            if (savedTime) audio.currentTime = parseFloat(savedTime);
+
+            if (isPlaying) {
+                audio.volume = 0.35;
+                audio.play().then(() => {
+                    btn.innerText = "⏸";
+                    status.innerText = "Reproduciendo";
+                }).catch(() => {
+                    btn.innerText = "▶";
+                    status.innerText = "Pausado";
+                });
+            }
+
+            audio.addEventListener('timeupdate', () => {
+                localStorage.setItem('gta_music_time', audio.currentTime);
+            });
+        }
+
+        function togglePlayMusic() {
+            initAudioContext();
+            if (audio.paused) {
+                audio.volume = 0.35;
+                audio.play().then(() => {
+                    btn.innerText = "⏸";
+                    status.innerText = "Reproduciendo";
+                    localStorage.setItem('gta_music_playing', 'true');
+                }).catch(() => {
+                    alert("Haz clic en la página para permitir la reproducción de audio.");
+                });
+            } else {
+                audio.pause();
+                btn.innerText = "▶";
+                status.innerText = "Pausado";
+                localStorage.setItem('gta_music_playing', 'false');
+            }
+        }
+
+        // Al interactuar con cualquier parte de la pantalla se inicializa el contexto de sonido
+        window.addEventListener('click', initAudioContext, { once: true });
+        window.addEventListener('DOMContentLoaded', () => {
+            setupMusicPersistence();
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        });
     </script>
 </body>
 </html>
