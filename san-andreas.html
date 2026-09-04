@@ -7,7 +7,6 @@
     <style>
         body {
             background-color: #080c09;
-            /* background-image: linear-gradient(rgba(8, 12, 9, 0.90), rgba(8, 12, 9, 0.96)), url('fondo-san-andreas.jpg'); */
             background-repeat: no-repeat;
             background-position: center top;
             background-size: cover;
@@ -18,7 +17,6 @@
 
         header {
             background-color: #0e1710;
-            /* background-image: linear-gradient(180deg, rgba(14, 23, 16, 0.75) 0%, rgba(8, 12, 9, 0.95) 100%), url('banner-san-andreas.jpg'); */
             background-repeat: no-repeat;
             background-position: center;
             background-size: cover;
@@ -193,7 +191,6 @@
             font-size: 0.75rem;
         }
 
-        /* Modal */
         .modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -267,7 +264,6 @@
         }
         .video-box iframe, .video-box video { width: 100%; height: 260px; }
 
-        /* Reproductor de Música Flotante */
         .music-player-widget {
             position: fixed;
             bottom: 20px;
@@ -330,7 +326,7 @@
                 <div class="progress-bar-bg">
                     <div id="barDisplay" class="progress-bar-fill"></div>
                 </div>
-                <p id="statsText" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-dim);">0 de 100 misiones completadas</p>
+                <p id="statsText" style="margin-top: 10px; font-size: 0.85rem; color: var(--text-dim);">Cargando misiones...</p>
             </section>
 
             <section class="filter-panel">
@@ -368,7 +364,7 @@
         </div>
     </div>
 
-    <!-- Reproductor Flotante de Música Persistente -->
+    <!-- Reproductor Flotante -->
     <div class="music-player-widget">
         <audio id="bgMusic" loop preload="auto" src="https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/gtasong.mp3"></audio>
         <button id="musicToggleBtn" class="music-btn" onclick="togglePlayMusic()">▶</button>
@@ -381,13 +377,14 @@
     <script>
         const GAME_ID = 'gtasa';
 
-        // Sonido de selección/interacción al pasar el mouse por los elementos
         const hoverSound = new Audio('https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/sonidomenu.mp3');
         hoverSound.volume = 0.25;
 
         function playMenuHover() {
-            hoverSound.currentTime = 0;
-            hoverSound.play().catch(() => {});
+            try {
+                hoverSound.currentTime = 0;
+                hoverSound.play().catch(() => {});
+            } catch (e) {}
         }
 
         function attachMenuSounds() {
@@ -505,23 +502,6 @@
         let activeTaskId = null;
         let currentFilter = "";
 
-        // Sonido de interacción del menú GTA
-        const hoverSound = new Audio('https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/sonidomenu.mp3');
-        hoverSound.volume = 0.25;
-
-        function playMenuHover() {
-            hoverSound.currentTime = 0;
-            hoverSound.play().catch(() => {});
-        }
-
-        function attachMenuSounds() {
-            const targets = document.querySelectorAll('.task-card, .btn-modal, .back-link, .music-btn, .modal-close');
-            targets.forEach(el => {
-                el.removeEventListener('mouseenter', playMenuHover);
-                el.addEventListener('mouseenter', playMenuHover);
-            });
-        }
-
         async function init() {
             try {
                 const response = await fetch('my-progress.json?' + new Date().getTime());
@@ -539,10 +519,11 @@
 
         function renderTasks() {
             const container = document.getElementById('tasksContainer');
+            if (!container) return;
             container.innerHTML = '';
 
             const filteredTasks = tasks.filter(t => {
-                const search = currentFilter.toLowerCase();
+                const search = (currentFilter || "").toLowerCase();
                 return t.name.toLowerCase().includes(search) ||
                        t.cat.toLowerCase().includes(search) ||
                        t.desc.toLowerCase().includes(search) ||
@@ -635,9 +616,8 @@
                 objList.innerHTML = '<li>Completar la misión con éxito.</li>';
             }
 
-            // Pausar música si hay video
             const bgMusic = document.getElementById('bgMusic');
-            if (data.video && !bgMusic.paused) {
+            if (data.video && bgMusic && !bgMusic.paused) {
                 pauseMusic();
             }
 
@@ -664,12 +644,12 @@
             }
         }
 
-        // Manejo de la Música Persistente
         const audio = document.getElementById('bgMusic');
         const btn = document.getElementById('musicToggleBtn');
         const status = document.getElementById('musicStatus');
 
         function setupMusicPersistence() {
+            if (!audio) return;
             const savedTime = localStorage.getItem('gta_music_time');
             const isPlaying = localStorage.getItem('gta_music_playing') === 'true';
 
@@ -678,11 +658,11 @@
             if (isPlaying) {
                 audio.volume = 0.35;
                 audio.play().then(() => {
-                    btn.innerText = "⏸";
-                    status.innerText = "Reproduciendo";
+                    if (btn) btn.innerText = "⏸";
+                    if (status) status.innerText = "Reproduciendo";
                 }).catch(() => {
-                    btn.innerText = "▶";
-                    status.innerText = "Pausado";
+                    if (btn) btn.innerText = "▶";
+                    if (status) status.innerText = "Pausado";
                 });
             }
 
@@ -692,6 +672,7 @@
         }
 
         function togglePlayMusic() {
+            if (!audio) return;
             if (audio.paused) {
                 audio.volume = 0.35;
                 audio.play().then(() => {
@@ -707,9 +688,10 @@
         }
 
         function pauseMusic() {
+            if (!audio) return;
             audio.pause();
-            btn.innerText = "▶";
-            status.innerText = "Pausado";
+            if (btn) btn.innerText = "▶";
+            if (status) status.innerText = "Pausado";
             localStorage.setItem('gta_music_playing', 'false');
         }
 
