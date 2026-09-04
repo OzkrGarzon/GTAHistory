@@ -1,105 +1,246 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,800;1,900&family=Teko:wght@600;700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+:root {
+    --gta-gold: #f5a623;
+    --gta-pink: #f43f5e;
+    --gta-cyan: #00f0ff;
+    --gta-purple: #a855f7;
+    --gta-dark: #09080e;
+    --card-bg: rgba(18, 14, 26, 0.88);
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #121212;
-    color: #e0e0e0;
+    font-family: 'Montserrat', system-ui, sans-serif;
+    background-color: var(--gta-dark);
+    color: #e5e7eb;
     line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Efecto Scanline / Trama de monitor CRT ochentero */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    z-index: 99;
 }
 
 .container {
     width: 90%;
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 0;
+    padding: 3rem 0;
 }
 
-/* Estilos del Hero / Portada */
+/* ========================================================
+   HERO / PORTADA CON VIBRA GTA
+   ======================================================== */
 .hero {
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('fondo-gta.jpg') no-repeat center center/cover;
+    position: relative;
+    background: linear-gradient(180deg, rgba(9, 8, 14, 0.6) 0%, rgba(20, 10, 30, 0.88) 75%, var(--gta-dark) 100%), 
+                url('fondo-gta.jpg') no-repeat center center/cover;
     text-align: center;
-    padding: 5rem 1rem;
-    border-bottom: 4px solid #f39c12;
+    padding: 7rem 1.5rem 6rem;
+    border-bottom: 3px solid var(--gta-pink);
+    box-shadow: 0 10px 30px rgba(244, 63, 94, 0.25);
+    overflow: hidden;
+}
+
+/* Borde inferior LED luminoso */
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gta-pink), var(--gta-gold), var(--gta-cyan), transparent);
+    box-shadow: 0 0 20px var(--gta-pink);
 }
 
 .hero h1 {
-    font-size: 3rem;
-    color: #f39c12;
-    margin-bottom: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 900;
+    font-style: italic;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 4px;
+    line-height: 1;
+    margin-bottom: 1.2rem;
+    background: linear-gradient(180deg, #ffffff 20%, #ffc0cb 55%, var(--gta-pink) 85%, #881337 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 6px 18px rgba(244, 63, 94, 0.7));
+    animation: neonFlicker 4s infinite alternate;
 }
 
 .hero p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-    color: #ccc;
+    font-family: 'Teko', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+    color: var(--gta-gold);
+    text-shadow: 0 0 12px rgba(245, 166, 35, 0.6);
 }
 
+/* Botón estilo Rockstar UI con corte diagonal y destello láser */
 .btn-primary {
-    background-color: #f39c12;
-    color: #121212;
-    padding: 0.8rem 2rem;
+    display: inline-block;
+    position: relative;
+    background: linear-gradient(135deg, var(--gta-pink), #e11d48);
+    color: #fff;
+    padding: 1rem 3rem;
     text-decoration: none;
-    font-weight: bold;
-    border-radius: 4px;
-    transition: background 0.3s ease;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 1.1rem;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    box-shadow: 0 0 25px rgba(244, 63, 94, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.3);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
 }
 
 .btn-primary:hover {
-    background-color: #d35400;
+    background: linear-gradient(135deg, #fb7185, var(--gta-pink));
     color: #fff;
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 0 40px rgba(244, 63, 94, 0.9), inset 0 0 15px rgba(255, 255, 255, 0.6);
 }
 
-/* Características */
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    transform: skewX(-25deg);
+    transition: left 0.6s ease;
+}
+
+.btn-primary:hover::before {
+    left: 150%;
+}
+
+/* ========================================================
+   CARACTERÍSTICAS / GRID CON CAJAS ESTILO MENÚ GTA
+   ======================================================== */
 .features h2 {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    font-size: 2.5rem;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 3px;
     color: #fff;
+    text-shadow: 0 0 15px var(--gta-cyan);
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
 }
 
 .card {
-    background-color: #1e1e1e;
-    padding: 1.5rem;
-    border-radius: 8px;
-    border-left: 4px solid #f39c12;
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    padding: 2rem;
+    border-radius: 0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 6px solid var(--gta-gold);
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    border-left-color: var(--gta-pink);
+    border-top: 1px solid rgba(244, 63, 94, 0.4);
+    box-shadow: 0 15px 35px rgba(244, 63, 94, 0.25);
 }
 
 .card h3 {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
     color: #fff;
+    font-size: 1.4rem;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-/* Sección de la Aplicación */
+.card p {
+    color: #9ca3af;
+    font-size: 0.95rem;
+}
+
+/* ========================================================
+   SECCIÓN DE APLICACIÓN / RADAR PLACEHOLDER
+   ======================================================== */
 .app-section {
     text-align: center;
+    margin-top: 4rem;
 }
 
 .app-placeholder {
-    background-color: #1e1e1e;
-    border: 2px dashed #444;
+    background: rgba(14, 10, 20, 0.75);
+    border: 2px solid var(--gta-purple);
     padding: 4rem 2rem;
-    border-radius: 8px;
-    margin-top: 1rem;
-    color: #777;
+    border-radius: 12px;
+    margin-top: 1.5rem;
+    color: #a78bfa;
+    text-transform: uppercase;
+    font-family: 'Teko', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.2), inset 0 0 20px rgba(168, 85, 247, 0.1);
+    position: relative;
 }
 
-/* Footer */
+/* ========================================================
+   FOOTER
+   ======================================================== */
 footer {
     text-align: center;
-    padding: 2rem;
-    background-color: #0a0a0a;
-    color: #777;
-    font-size: 0.9rem;
-    border-top: 1px solid #222;
+    padding: 2.5rem 1rem;
+    background-color: #050408;
+    color: #6b7280;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-top: 1px solid rgba(244, 63, 94, 0.2);
+}
+
+/* ========================================================
+   ANIMACIÓN PARPADEO NEÓN (Flicker)
+   ======================================================== */
+@keyframes neonFlicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        filter: drop-shadow(0 6px 18px rgba(244, 63, 94, 0.7));
+        opacity: 1;
+    }
+    20%, 24%, 55% {
+        filter: none;
+        opacity: 0.85;
+    }
 }
