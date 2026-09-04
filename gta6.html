@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GTA VI - Cuenta Regresiva Oficial</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,800;1,900&family=Teko:wght@600;700&family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -16,14 +19,14 @@
             --neon-magenta: #e11d48;
             --neon-purple: #a855f7;
             --neon-gold: #fbbf24;
-            --glass-bg: rgba(18, 10, 28, 0.72);
+            --glass-bg: rgba(18, 10, 28, 0.74);
             --border-glow: rgba(244, 63, 94, 0.55);
         }
 
         body {
             background-color: #0d0614;
             background-image: 
-                linear-gradient(180deg, rgba(13, 6, 20, 0.7) 0%, rgba(20, 8, 30, 0.85) 60%, rgba(13, 6, 20, 0.95) 100%),
+                linear-gradient(180deg, rgba(13, 6, 20, 0.72) 0%, rgba(20, 8, 30, 0.86) 60%, rgba(13, 6, 20, 0.95) 100%),
                 url('https://cloudfront-eu-central-1.images.arcpublishing.com/diarioas/I6CXYTTBXBCQBASHTUNJIIDWLI.jpg');
             background-repeat: no-repeat;
             background-position: center center;
@@ -34,8 +37,26 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            font-family: 'Montserrat', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Montserrat', system-ui, sans-serif;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Scanlines CRT */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.12),
+                rgba(0, 0, 0, 0.12) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 99;
         }
 
         .top-bar {
@@ -152,7 +173,6 @@
             text-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
         }
 
-        /* Fila Superior: MESES y SEMANAS */
         .top-row {
             display: grid;
             grid-template-columns: repeat(2, minmax(150px, 240px));
@@ -161,7 +181,6 @@
             margin-bottom: 22px;
         }
 
-        /* Fila Inferior: DÍAS, HORAS, MINUTOS y SEGUNDOS juntos */
         .bottom-row-wrapper {
             background: linear-gradient(160deg, rgba(28, 12, 40, 0.9), rgba(12, 4, 18, 0.95));
             border: 2px solid rgba(244, 63, 94, 0.4);
@@ -194,12 +213,11 @@
             overflow: hidden;
             transition: all 0.25s ease;
         }
-        
+
         .mega-box::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
+            top: 0; left: 0; right: 0; height: 2px;
             background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
         }
 
@@ -228,7 +246,6 @@
             font-weight: 800;
         }
 
-        /* Destello sutil en el pulso de segundos */
         .pulse-sec {
             animation: secBeat 1s infinite;
         }
@@ -238,19 +255,18 @@
             50% { transform: scale(1.04); text-shadow: 0 0 35px var(--neon-pink), 0 0 55px var(--neon-gold); }
         }
 
-        /* Reproductor de Música Flotante Persistente */
         .music-player-widget {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 24px;
+            right: 24px;
             background: rgba(18, 10, 28, 0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid var(--border-glow);
-            border-radius: 30px;
-            padding: 8px 16px;
+            border: 2px solid var(--border-glow);
+            border-radius: 40px;
+            padding: 8px 18px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             box-shadow: 0 4px 25px rgba(244, 63, 94, 0.35);
             z-index: 100;
         }
@@ -259,8 +275,8 @@
             background: var(--neon-pink);
             border: none;
             color: #fff;
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: grid;
             place-content: center;
@@ -272,22 +288,23 @@
         .music-btn:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--neon-pink); }
 
         .music-info {
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             color: #fff;
             display: flex;
             flex-direction: column;
         }
-        .music-info span:first-child { font-weight: bold; }
-        .music-info span:last-child { color: var(--text-dim); font-size: 0.7rem; }
+        .music-info span:first-child { font-weight: 800; text-transform: uppercase; }
+        .music-info span:last-child { color: var(--neon-gold); font-size: 0.72rem; font-family: 'Teko', sans-serif; letter-spacing: 1.5px; }
 
         footer {
-            padding: 20px;
+            padding: 24px 20px;
             text-align: center;
             color: rgba(255, 255, 255, 0.5);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             letter-spacing: 2px;
             text-transform: uppercase;
             font-weight: 700;
+            background-color: #050408;
         }
     </style>
 </head>
@@ -342,9 +359,9 @@
         </div>
     </main>
 
-    <!-- Reproductor Flotante de Música Persistente -->
+    <!-- Reproductor Flotante -->
     <div class="music-player-widget">
-        <audio id="bgMusic" loop preload="auto" src="https://raw.githubusercontent.com/OzkrGarzon/GTAHistory/main/gtasong.mp3"></audio>
+        <audio id="bgMusic" loop preload="auto" src="gtasong.mp3"></audio>
         <button id="musicToggleBtn" class="music-btn" onclick="togglePlayMusic()">▶</button>
         <div class="music-info">
             <span>Banda Sonora</span>
@@ -357,10 +374,8 @@
     </footer>
 
     <script>
-        // Fecha oficial de lanzamiento de GTA VI: 19 de Noviembre de 2026
         const releaseDate = new Date("2026-11-19T00:00:00").getTime();
 
-        // Generador de Tic-Tac Mecánico con Web Audio API
         let audioCtx = null;
         let tickEnabled = true;
 
@@ -439,17 +454,16 @@
             document.getElementById("c-mins").innerText = minutes;
             document.getElementById("c-secs").innerText = seconds;
 
-            // Suena el clic mecánico
             tickAlternator = !tickAlternator;
             playMechanicalTick(tickAlternator);
         }
 
-        // Manejo de la Música Persistente
         const audio = document.getElementById('bgMusic');
         const btn = document.getElementById('musicToggleBtn');
         const status = document.getElementById('musicStatus');
 
         function setupMusicPersistence() {
+            if (!audio) return;
             const savedTime = localStorage.getItem('gta_music_time');
             const isPlaying = localStorage.getItem('gta_music_playing') === 'true';
 
@@ -458,11 +472,11 @@
             if (isPlaying) {
                 audio.volume = 0.35;
                 audio.play().then(() => {
-                    btn.innerText = "⏸";
-                    status.innerText = "Reproduciendo";
+                    if (btn) btn.innerText = "⏸";
+                    if (status) status.innerText = "Reproduciendo";
                 }).catch(() => {
-                    btn.innerText = "▶";
-                    status.innerText = "Pausado";
+                    if (btn) btn.innerText = "▶";
+                    if (status) status.innerText = "Pausado";
                 });
             }
 
@@ -473,6 +487,7 @@
 
         function togglePlayMusic() {
             initAudioContext();
+            if (!audio) return;
             if (audio.paused) {
                 audio.volume = 0.35;
                 audio.play().then(() => {
@@ -490,7 +505,6 @@
             }
         }
 
-        // Al interactuar con cualquier parte de la pantalla se inicializa el contexto de sonido
         window.addEventListener('click', initAudioContext, { once: true });
         window.addEventListener('DOMContentLoaded', () => {
             setupMusicPersistence();
