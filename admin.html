@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTA Master Hub - Panel de Control Secreto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,800;1,900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #08060c;
+            color: #f3f4f6;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            padding: 30px 20px;
+        }
+        .admin-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(18, 14, 28, 0.95);
+            border: 2px solid #f43f5e;
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 0 40px rgba(244, 63, 94, 0.3);
+        }
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-style: italic;
+            text-transform: uppercase;
+            font-size: 1.8rem;
+            color: #f43f5e;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        .control-group {
+            margin-bottom: 20px;
+            background: rgba(10, 6, 16, 0.8);
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        label {
+            display: block;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fb7185;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        select {
+            width: 100%;
+            background: #050408;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+        }
+        .missions-list {
+            max-height: 360px;
+            overflow-y: auto;
+            background: #050408;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .mission-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            gap: 15px;
+        }
+        .mission-name {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #fff;
+            flex-grow: 1;
+        }
+        .action-btns {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .btn-status {
+            padding: 6px 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: #110d1c;
+            color: #9ca3af;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-status.done-active {
+            background: #10b981;
+            border-color: #10b981;
+            color: #000;
+        }
+        .btn-status.progress-active {
+            background: #f5a623;
+            border-color: #f5a623;
+            color: #000;
+        }
+        .btn-save {
+            background: linear-gradient(135deg, #f43f5e, #e11d48);
+            color: #fff;
+            border: none;
+            padding: 14px 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        .btn-save:hover { filter: brightness(1.1); }
+        .instructions {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <h1>Panel Secreto de Control</h1>
+        
+        <div class="control-group">
+            <label for="gameSelector">1. Seleccionar Juego:</label>
+            <select id="gameSelector" onchange="loadGameMissions()">
+                <option value="gtavc">GTA Vice City</option>
+                <option value="gtasa">GTA San Andreas</option>
+                <option value="gta3">GTA III</option>
+                <option value="gta4">GTA IV</option>
+                <option value="gta5">GTA V</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>2. Estado de las Misiones (Completado / En curso):</label>
+            <div id="missionsListContainer" class="missions-list">
+                <!-- Se cargan dinámicamente -->
+            </div>
+        </div>
+
+        <button class="btn-save" onclick="exportAndSaveData()">💾 Generar / Copiar JSON Actualizado</button>
+        
+        <p class="instructions">
+            * Al hacer clic en <b>En curso</b> en cualquier misión, el widget flotante mostrará automáticamente "Misión en curso: [Nombre]". Al hacer clic en <b>Completado</b>, se sumará al porcentaje global. No olvides guardar y actualizar el archivo <b>my-progress.json</b> en GitHub.
+        </p>
+    </div>
+
+    <script>
+        const gameTasksCatalog = {
+            gtavc: Array.from({length: 48}, (_, i) => ({ id: `vc_${String(i+1).padStart(2,'0')}`, name: `Misión ${i+1} - Vice City` })),
+            gtasa: Array.from({length: 100}, (_, i) => ({ id: `sa_${String(i+1).padStart(2,'0')}`, name: `Misión ${i+1} - San Andreas` })),
+            gta3: Array.from({length: 51}, (_, i) => ({ id: `g3_${String(i+1).padStart(2,'0')}`, name: `Misión ${i+1} - GTA III` })),
+            gta4: Array.from({length: 46}, (_, i) => ({ id: `g4_${String(i+1).padStart(2,'0')}`, name: `Misión ${i+1} - GTA IV` })),
+            gta5: Array.from({length: 42}, (_, i) => ({ id: `g5_${String(i+1).padStart(2,'0')}`, name: `Misión ${i+1} - GTA V` }))
+        };
+
+        let currentProgressData = {};
+
+        async function initAdmin() {
+            try {
+                const res = await fetch('my-progress.json?' + new Date().getTime());
+                if (res.ok) currentProgressData = await res.json();
+            } catch(e) {}
+            loadGameMissions();
+        }
+
+        function loadGameMissions() {
+            const gameKey = document.getElementById('gameSelector').value;
+            const container = document.getElementById('missionsListContainer');
+            container.innerHTML = '';
+
+            if (!currentProgressData[gameKey]) currentProgressData[gameKey] = {};
+
+            gameTasksCatalog[gameKey].forEach(task => {
+                const item = currentProgressData[gameKey][task.id] || { done: false, inProgress: false };
+                
+                const row = document.createElement('div');
+                row.className = 'mission-row';
+                row.innerHTML = `
+                    <span class="mission-name">${task.name}</span>
+                    <div class="action-btns">
+                        <button type="button" id="btn_prog_${task.id}" class="btn-status ${item.inProgress ? 'progress-active' : ''}" onclick="setMissionStatus('${gameKey}', '${task.id}', 'progress')">En curso</button>
+                        <button type="button" id="btn_done_${task.id}" class="btn-status ${item.done ? 'done-active' : ''}" onclick="setMissionStatus('${gameKey}', '${task.id}', 'done')">Completado</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function setMissionStatus(gameKey, taskId, type) {
+            if (!currentProgressData[gameKey]) currentProgressData[gameKey] = {};
+            if (!currentProgressData[gameKey][taskId]) currentProgressData[gameKey][taskId] = { video: null };
+
+            const taskRef = currentProgressData[gameKey][taskId];
+
+            if (type === 'done') {
+                // Si marca completado, se quita de en curso y pasa a true
+                taskRef.done = !taskRef.done;
+                if (taskRef.done) taskRef.inProgress = false;
+            } else if (type === 'progress') {
+                // Activar o desactivar "en curso" (solo puede haber una misión en curso a la vez en toda la base)
+                const targetState = !taskRef.inProgress;
+                
+                // Limpiar cualquier otra misión en curso en todos los juegos
+                Object.keys(currentProgressData).forEach(g => {
+                    Object.keys(currentProgressData[g]).forEach(t => {
+                        if (currentProgressData[g][t]) currentProgressData[g][t].inProgress = false;
+                    });
+                });
+
+                taskRef.inProgress = targetState;
+            }
+
+            // Guardar también de forma local para respuesta instantánea del widget
+            localStorage.setItem('gta_progress_cache', JSON.stringify(currentProgressData));
+            loadGameMissions();
+        }
+
+        function exportAndSaveData() {
+            const jsonString = JSON.stringify(currentProgressData, null, 2);
+            localStorage.setItem('gta_progress_cache', jsonString);
+            
+            navigator.clipboard.writeText(jsonString).then(() => {
+                alert("¡Datos actualizados y copiados al portapapeles!\n\nPega este contenido en tu archivo 'my-progress.json' de GitHub.");
+            }).catch(err => {
+                prompt("Copia este código JSON y pégalo en my-progress.json:", jsonString);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', initAdmin);
+    </script>
+</body>
+</html>
