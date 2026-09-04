@@ -533,26 +533,33 @@
         }
 
         function updateGTA6CountdownBar() {
-            const startDate = new Date("2023-12-05T00:00:00").getTime();
-            const releaseDate = new Date("2026-11-19T00:00:00").getTime();
-            const now = new Date().getTime();
+    const startDate = new Date("2023-12-05T00:00:00").getTime();   // Anuncio oficial
+    const releaseDate = new Date("2026-11-19T00:00:00").getTime(); // Fecha de estreno
+    const now = new Date().getTime();
 
-            const total = releaseDate - startDate;
-            const elapsed = now - startDate;
+    const total = releaseDate - startDate;
+    const remaining = releaseDate - now;
 
-            let pct = Math.floor((elapsed / total) * 100);
-            if (pct < 0) pct = 0;
-            if (pct > 100) pct = 100;
+    let pct;
 
-            const pctElem = document.getElementById('pct-gta6');
-            const barElem = document.getElementById('bar-gta6');
+    // Si ya no queda tiempo (0 días, 0 horas, 0 seg o fecha superada)
+    if (remaining <= 0) {
+        pct = 100;
+    } else {
+        const elapsed = now - startDate;
+        pct = Math.floor((elapsed / total) * 100);
+        if (pct < 0) pct = 0;
+        if (pct >= 100) pct = 99; // Se mantiene en 99% hasta el último segundo
+    }
 
-            if (pctElem && barElem) {
-                pctElem.innerText = `${pct}%`;
-                barElem.style.width = `${pct}%`;
-            }
-        }
+    const pctElem = document.getElementById('pct-gta6');
+    const barElem = document.getElementById('bar-gta6');
 
+    if (pctElem && barElem) {
+        pctElem.innerText = `${pct}%`;
+        barElem.style.width = `${pct}%`;
+    }
+}
         const audio = document.getElementById('bgMusic');
         const btn = document.getElementById('musicToggleBtn');
         const status = document.getElementById('musicStatus');
