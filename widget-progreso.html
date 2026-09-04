@@ -90,57 +90,32 @@
     <script>
         const expectedStoryTotals = { gtavc: 48, gtasa: 100, gta3: 51, gta4: 46, gta5: 42 };
         const absoluteTotalMissions = 287;
-        
-        const gameNamesMap = {
-            gtavc: "Vice City",
-            gtasa: "San Andreas",
-            gta3: "GTA III",
-            gta4: "GTA IV",
-            gta5: "GTA V"
-        };
 
-        async function fetchWidgetProgress() {
-            let publicData = {};
-            
-            // Intenta leer primero de la caché local para respuesta instantánea en el directo
-            const localCache = localStorage.getItem('gta_progress_cache');
-            if (localCache) {
-                try { publicData = JSON.parse(localCache); } catch(e){}
+        function updateWidgetLive() {
+            let localData = {};
+            const savedCache = localStorage.getItem('gta_progress_autonomous');
+            if (savedCache) {
+                try { localData = JSON.parse(savedCache); } catch(e){}
             }
 
-            try {
-                const response = await fetch('my-progress.json?' + new Date().getTime());
-                if (response.ok) {
-                    publicData = await response.json();
-                }
-            } catch (e) {}
-
             let totalCompletedAllGames = 0;
-            let currentMissionActiveText = "Ninguna misión en curso";
-
             Object.keys(expectedStoryTotals).forEach(gameKey => {
-                const gameData = publicData[gameKey] || {};
-                
-                Object.keys(gameData).forEach(taskId => {
-                    const taskInfo = gameData[taskId];
-                    if (taskInfo.done) {
-                        totalCompletedAllGames++;
-                    }
-                    if (taskInfo.inProgress) {
-                        currentMissionActiveText = `Misión en curso: ${taskId.toUpperCase()} (${gameNamesMap[gameKey]})`;
-                    }
+                const gameData = localData[gameKey] || {};
+                Object.values(gameData).forEach(task => {
+                    if (task && task.done) totalCompletedAllGames++;
                 });
             });
 
             const globalPct = Math.min(100, Math.round((totalCompletedAllGames / absoluteTotalMissions) * 100));
+            const activeMissionName = localStorage.getItem('gta_current_mission_name') || "Ninguna misión en curso";
             
             document.getElementById('globalPctDisplay').innerText = `${globalPct}%`;
             document.getElementById('globalBarFill').style.width = `${globalPct}%`;
-            document.getElementById('globalStatsText').innerText = currentMissionActiveText;
+            document.getElementById('globalStatsText').innerText = `Misión en curso: ${activeMissionName}`;
         }
 
-        fetchWidgetProgress();
-        setInterval(fetchWidgetProgress, 5000); // Se actualiza cada 5 segundos en directo
+        updateWidgetLive();
+        setInterval(updateWidgetLive, 1000); // Refresco en tiempo real cada segundo
     </script>
 </body>
 </html>
