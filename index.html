@@ -508,18 +508,18 @@
 
         async function refreshHubStats() {
             let publicData = {};
-            try {
-                const response = await fetch('my-progress.json?' + new Date().getTime());
-                if (response.ok) {
-                    publicData = await response.json();
-                }
-            } catch (e) {
-                console.log("Cargando valores predeterminados.");
+            
+            // Leer directamente del almacenamiento local autónomo del panel de admin
+            const savedCache = localStorage.getItem('gta_progress_autonomous');
+            if (savedCache) {
+                try {
+                    publicData = JSON.parse(savedCache);
+                } catch(e) {}
             }
 
             Object.keys(expectedStoryTotals).forEach(gameKey => {
                 const gameData = publicData[gameKey] || {};
-                const completed = Object.values(gameData).filter(task => task.done).length;
+                const completed = Object.values(gameData).filter(task => task && task.done).length;
                 const total = expectedStoryTotals[gameKey];
                 const pct = Math.min(100, Math.round((completed / total) * 100));
 
@@ -533,33 +533,34 @@
         }
 
         function updateGTA6CountdownBar() {
-    const startDate = new Date("2023-12-05T00:00:00").getTime();   // Anuncio oficial
-    const releaseDate = new Date("2026-11-19T00:00:00").getTime(); // Fecha de estreno
-    const now = new Date().getTime();
+            const startDate = new Date("2023-12-05T00:00:00").getTime();   // Anuncio oficial
+            const releaseDate = new Date("2026-11-19T00:00:00").getTime(); // Fecha de estreno
+            const now = new Date().getTime();
 
-    const total = releaseDate - startDate;
-    const remaining = releaseDate - now;
+            const total = releaseDate - startDate;
+            const remaining = releaseDate - now;
 
-    let pct;
+            let pct;
 
-    // Si ya no queda tiempo (0 días, 0 horas, 0 seg o fecha superada)
-    if (remaining <= 0) {
-        pct = 100;
-    } else {
-        const elapsed = now - startDate;
-        pct = Math.floor((elapsed / total) * 100);
-        if (pct < 0) pct = 0;
-        if (pct >= 100) pct = 99; // Se mantiene en 99% hasta el último segundo
-    }
+            // Si ya no queda tiempo (0 días, 0 horas, 0 seg o fecha superada)
+            if (remaining <= 0) {
+                pct = 100;
+            } else {
+                const elapsed = now - startDate;
+                pct = Math.floor((elapsed / total) * 100);
+                if (pct < 0) pct = 0;
+                if (pct >= 100) pct = 99; // Se mantiene en 99% hasta el último segundo
+            }
 
-    const pctElem = document.getElementById('pct-gta6');
-    const barElem = document.getElementById('bar-gta6');
+            const pctElem = document.getElementById('pct-gta6');
+            const barElem = document.getElementById('bar-gta6');
 
-    if (pctElem && barElem) {
-        pctElem.innerText = `${pct}%`;
-        barElem.style.width = `${pct}%`;
-    }
-}
+            if (pctElem && barElem) {
+                pctElem.innerText = `${pct}%`;
+                barElem.style.width = `${pct}%`;
+            }
+        }
+
         const audio = document.getElementById('bgMusic');
         const btn = document.getElementById('musicToggleBtn');
         const status = document.getElementById('musicStatus');
@@ -615,3 +616,4 @@
     </script>
 </body>
 </html>
+
