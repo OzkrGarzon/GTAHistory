@@ -97,6 +97,8 @@
 
     <script>
         const TOTAL_MISSIONS = 287;
+        const BIN_ID = '66d7adbee41b4d34e42a98f1';
+        const API_KEY = '$2a$10$7vN5eL4iZ8qB0.9J3lVlUeJ6wS4uWn0qG.E6j9YfL2oA6fU9lC3q.';
 
         function render(data) {
             if (!data) return;
@@ -111,18 +113,17 @@
 
         async function pullCloudUpdate() {
             try {
-                const res = await fetch('https://kvdb.io/4y9y2rNq5t5mP12ZJz8nE5/gta_ozkr_live?' + new Date().getTime());
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest?nocache=${new Date().getTime()}`, {
+                    headers: { 'X-Master-Key': API_KEY }
+                });
                 if (res.ok) {
-                    const data = await res.json();
-                    render(data);
+                    const json = await res.json();
+                    render(json.record || json);
                 }
-            } catch (e) {
-                // Si la conexión falla temporalmente, mantiene el último estado visible
-            }
+            } catch (e) {}
         }
 
-        // Consultar cada 2 segundos automáticamente
-        setInterval(pullCloudUpdate, 2000);
+        setInterval(pullCloudUpdate, 2500);
         pullCloudUpdate();
     </script>
 </body>
