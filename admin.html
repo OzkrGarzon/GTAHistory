@@ -46,6 +46,9 @@
     </div>
 
     <script>
+        const BIN_ID = '66d7adbee41b4d34e42a98f1';
+        const API_KEY = '$2a$10$7vN5eL4iZ8qB0.9J3lVlUeJ6wS4uWn0qG.E6j9YfL2oA6fU9lC3q.';
+
         const gameCatalogs = {
             gtavc: [
                 {id: "vc_01", name: "1. In The Beginning..."}, {id: "vc_02", name: "2. An Old Friend"}, {id: "vc_03", name: "3. The Party"}, {id: "vc_04", name: "4. Back Alley Brawl"},
@@ -143,6 +146,20 @@
             if (local) {
                 try { liveState = JSON.parse(local); } catch(e){}
             }
+
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': API_KEY }
+                });
+                if (res.ok) {
+                    const json = await res.json();
+                    if (json.record) {
+                        liveState = json.record;
+                        localStorage.setItem("gta_state_store", JSON.stringify(liveState));
+                    }
+                }
+            } catch (e) {}
+
             loadGameMissions();
         }
 
@@ -200,8 +217,12 @@
             loadGameMissions();
 
             try {
-                await fetch('https://kvdb.io/4y9y2rNq5t5mP12ZJz8nE5/gta_ozkr_live', {
-                    method: 'POST',
+                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': API_KEY
+                    },
                     body: JSON.stringify(liveState)
                 });
             } catch(e) {}
