@@ -1,174 +1,213 @@
-<script>
-    // ID público compartido para enlazar tu Admin con tu TikTok Studio
-    const CLOUD_SYNC_URL = "https://api.restful-api.dev/objects/ff808181932badb60193498877660000";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - GTA Master Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,800;1,900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #08060c; color: #f3f4f6; font-family: 'Segoe UI', system-ui, sans-serif; padding: 30px 20px; }
+        .admin-container { max-width: 900px; margin: 0 auto; background: rgba(18, 14, 28, 0.95); border: 2px solid #f43f5e; border-radius: 14px; padding: 30px; box-shadow: 0 0 40px rgba(244, 63, 94, 0.3); }
+        h1 { font-family: 'Montserrat', sans-serif; font-style: italic; text-transform: uppercase; font-size: 1.8rem; color: #f43f5e; margin-bottom: 12px; letter-spacing: 2px; }
+        .status-sync { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 20px; background: #064e3b; color: #34d399; }
+        .control-group { margin-bottom: 20px; background: rgba(10, 6, 16, 0.8); padding: 18px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        label { display: block; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #fb7185; margin-bottom: 8px; font-weight: bold; }
+        select { width: 100%; background: #050408; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px; border-radius: 6px; font-size: 1rem; outline: none; }
+        .missions-list { max-height: 380px; overflow-y: auto; background: #050408; padding: 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); }
+        .mission-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 15px; }
+        .mission-name { font-size: 0.92rem; font-weight: 600; color: #fff; flex-grow: 1; }
+        .action-btns { display: flex; gap: 8px; flex-shrink: 0; }
+        .btn-status { padding: 6px 12px; border: 1px solid rgba(255,255,255,0.2); background: #110d1c; color: #9ca3af; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; border-radius: 4px; cursor: pointer; }
+        .btn-status.done-active { background: #10b981; border-color: #10b981; color: #000; }
+        .btn-status.progress-active { background: #f5a623; border-color: #f5a623; color: #000; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <h1>Panel de Control en Vivo</h1>
+        <div class="status-sync">● Sincronización en Directo Lista</div>
 
-    const gameCatalogs = {
-        gtavc: [
-            {id: "vc_01", name: "1. In The Beginning..."}, {id: "vc_02", name: "2. An Old Friend"}, {id: "vc_03", name: "3. The Party"}, {id: "vc_04", name: "4. Back Alley Brawl"},
-            {id: "vc_05", name: "5. Jury Fury"}, {id: "vc_06", name: "6. Riot"}, {id: "vc_07", name: "7. Four Iron"}, {id: "vc_08", name: "8. Demolition Man"},
-            {id: "vc_09", name: "9. Two Bit Hit"}, {id: "vc_10", name: "10. Treacherous Swine"}, {id: "vc_11", name: "11. Mall Shootout"}, {id: "vc_12", name: "12. Guardian Angels"},
-            {id: "vc_13", name: "13. Sir, Yes Sir!"}, {id: "vc_14", name: "14. All Hands on Deck!"}, {id: "vc_15", name: "15. The Chase"}, {id: "vc_16", name: "16. Phnom Penh '86"},
-            {id: "vc_17", name: "17. The Fastest Boat"}, {id: "vc_18", name: "18. Supply & Demand"}, {id: "vc_19", name: "19. Death Row"}, {id: "vc_20", name: "20. Rub Out"},
-            {id: "vc_21", name: "21. Shakedown"}, {id: "vc_22", name: "22. Bar Brawl"}, {id: "vc_23", name: "23. Cop Land"}, {id: "vc_24", name: "24. Road Kill"},
-            {id: "vc_25", name: "25. Waste the Wife"}, {id: "vc_26", name: "26. Autocide"}, {id: "vc_27", name: "27. Check Out at the Check In"}, {id: "vc_28", name: "28. Loose Ends"},
-            {id: "vc_29", name: "29. Love Juice"}, {id: "vc_30", name: "30. Psycho Killer"}, {id: "vc_31", name: "31. Publicity Tour"}, {id: "vc_32", name: "32. Stunt Boat Challenge"},
-            {id: "vc_33", name: "33. Cannon Fodder"}, {id: "vc_34", name: "34. Naval Engagement"}, {id: "vc_35", name: "35. Juju Scramble"}, {id: "vc_36", name: "36. Bombs Away!"},
-            {id: "vc_37", name: "37. Dirty Lickin's"}, {id: "vc_38", name: "38. Alloy Wheels of Steel"}, {id: "vc_39", name: "39. Messing with the Man"}, {id: "vc_40", name: "40. Hog Tied"},
-            {id: "vc_41", name: "41. No Escape?"}, {id: "vc_42", name: "42. The Shootist"}, {id: "vc_43", name: "43. The Driver"}, {id: "vc_44", name: "44. The Job"},
-            {id: "vc_45", name: "45. Gun Runner"}, {id: "vc_46", name: "46. Boomshine Saigon"}, {id: "vc_47", name: "47. Cap the Collector"}, {id: "vc_48", name: "48. Keep Your Friends Close..."}
-        ],
-        gtasa: [
-            {id: "sa_01", name: "1. In the Beginning"}, {id: "sa_02", name: "2. Big Smoke"}, {id: "sa_03", name: "3. Ryder"}, {id: "sa_04", name: "4. Tagging Up Turf"},
-            {id: "sa_05", name: "5. Cleaning the Hood"}, {id: "sa_06", name: "6. Drive-Thru"}, {id: "sa_07", name: "7. Nines and AK's"}, {id: "sa_08", name: "8. Drive-By"},
-            {id: "sa_09", name: "9. Sweet's Girl"}, {id: "sa_10", name: "10. Cesar Vialpando"}, {id: "sa_11", name: "11. Home Invasion"}, {id: "sa_12", name: "12. Catalyst"},
-            {id: "sa_13", name: "13. Robbing Uncle Sam"}, {id: "sa_14", name: "14. OG Loc"}, {id: "sa_15", name: "15. Running Dog"}, {id: "sa_16", name: "16. Wrong Side of the Tracks"},
-            {id: "sa_17", name: "17. Just Business"}, {id: "sa_18", name: "18. High Stakes, Low-Rider"}, {id: "sa_19", name: "19. Life's a Beach"}, {id: "sa_20", name: "20. Madd Dogg's Rhymes"},
-            {id: "sa_21", name: "21. Management Issues"}, {id: "sa_22", name: "22. House Party"}, {id: "sa_23", name: "23. Burning Desire"}, {id: "sa_24", name: "24. Gray Imports"},
-            {id: "sa_25", name: "25. Doberman"}, {id: "sa_26", name: "26. Los Sepulcros"}, {id: "sa_27", name: "27. Reuniting the Families"}, {id: "sa_28", name: "28. The Green Sabre"},
-            {id: "sa_29", name: "29. Badlands"}, {id: "sa_30", name: "30. First Date"}, {id: "sa_31", name: "31. Tanker Commander"}, {id: "sa_32", name: "32. Body Harvest"},
-            {id: "sa_33", name: "33. King in Exile"}, {id: "sa_34", name: "34. First Base"}, {id: "sa_35", name: "35. Local Liquor Store"}, {id: "sa_36", name: "36. Gone Courting"},
-            {id: "sa_37", name: "37. Against All Odds"}, {id: "sa_38", name: "38. Made in Heaven"}, {id: "sa_39", name: "39. Small Town Bank"}, {id: "sa_40", name: "40. Wu Zi Mu"},
-            {id: "sa_41", name: "41. Farewell, My Love..."}, {id: "sa_42", name: "42. Are You Going to San Fierro?"}, {id: "sa_43", name: "43. Wear Flowers in Your Hair"}, {id: "sa_44", name: "44. 555 We Tip"},
-            {id: "sa_45", name: "45. Deconstruction"}, {id: "sa_46", name: "46. Photo Opportunity"}, {id: "sa_47", name: "47. Jizzy"}, {id: "sa_48", name: "48. T-Bone Mendez"},
-            {id: "sa_49", name: "49. Mike Toreno"}, {id: "sa_50", name: "50. Mountain Cloud Boys"}, {id: "sa_51", name: "51. Ran Fa Li"}, {id: "sa_52", name: "52. Lure"},
-            {id: "sa_53", name: "53. Amphibious Assault"}, {id: "sa_54", name: "54. The Da Nang Thang"}, {id: "sa_55", name: "55. Air Raid"}, {id: "sa_56", name: "56. Supply Lines..."},
-            {id: "sa_57", name: "57. New Model Army"}, {id: "sa_58", name: "58. Outrider"}, {id: "sa_59", name: "59. Snail Trail"}, {id: "sa_60", name: "60. Ice Cold Killa"},
-            {id: "sa_61", name: "61. Pier 69"}, {id: "sa_62", name: "62. Toreno's Last Flight"}, {id: "sa_63", name: "63. Yay Ka-Boom-Boom"}, {id: "sa_64", name: "64. Monster"},
-            {id: "sa_65", name: "65. Highjack"}, {id: "sa_66", name: "66. Interdiction"}, {id: "sa_67", name: "67. Verdant Meadows"}, {id: "sa_68", name: "68. Learning to Fly"},
-            {id: "sa_69", name: "69. N.O.E."}, {id: "sa_70", name: "70. Stowaway"}, {id: "sa_71", name: "71. Black Project"}, {id: "sa_72", name: "72. Green Goo"},
-            {id: "sa_73", name: "73. Fender Ketchup"}, {id: "sa_74", name: "74. Explosive Situation"}, {id: "sa_75", name: "75. You've Had Your Chips"}, {id: "sa_76", name: "76. Misappropriation"},
-            {id: "sa_77", name: "77. The Meat Business"}, {id: "sa_78", name: "78. Madd Dogg"}, {id: "sa_79", name: "79. Architectural Espionage"}, {id: "sa_80", name: "80. Key to Her Heart"},
-            {id: "sa_81", name: "81. Dam and Blast"}, {id: "sa_82", name: "82. Cop Wheels"}, {id: "sa_83", name: "83. Up, Up and Away!"}, {id: "sa_84", name: "84. Don Peyote"},
-            {id: "sa_85", name: "85. Intensive Care"}, {id: "sa_86", name: "86. The Meat Business"}, {id: "sa_87", name: "87. Freefall"}, {id: "sa_88", name: "88. High Noon"},
-            {id: "sa_89", name: "89. Saint Mark's Bistro"}, {id: "sa_90", name: "90. Breaking the Bank at Caligula's"}, {id: "sa_91", name: "91. A Home in the Hills"}, {id: "sa_92", name: "92. Vertical Bird"},
-            {id: "sa_93", name: "93. Home Coming"}, {id: "sa_94", name: "94. Beat Down on B Dup"}, {id: "sa_95", name: "95. Grove 4 Life"}, {id: "sa_96", name: "96. Riot"},
-            {id: "sa_97", name: "97. Cut Throat Business"}, {id: "sa_98", name: "98. Los Desperados"}, {id: "sa_99", name: "99. Control de Territorios"}, {id: "sa_100", name: "100. End of the Line"}
-        ],
-        gta3: [
-            {id: "g3_01", name: "1. Give Me Liberty"}, {id: "g3_02", name: "2. Luigi's Girls"}, {id: "g3_03", name: "3. Don't Spank Ma Bitch Up"}, {id: "g3_04", name: "4. Drive Mister Cheetah"},
-            {id: "g3_05", name: "5. Pump-Action Pimp"}, {id: "g3_06", name: "6. The Fuzz Ball"}, {id: "g3_07", name: "7. Mike Lips Won't Go"}, {id: "g3_08", name: "8. Farewell 'Chunky' Lee Chong"},
-            {id: "g3_09", name: "9. Van Heist"}, {id: "g3_10", name: "10. Cipriani's Chauffeur"}, {id: "g3_11", name: "11. Dead Skunk in the Trunk"}, {id: "g3_12", name: "12. The Getaway"},
-            {id: "g3_13", name: "13. Taking Out the Laundry"}, {id: "g3_14", name: "14. The Pick-Up"}, {id: "g3_15", name: "15. Salvatore's Called a Meeting"}, {id: "g3_16", name: "16. Triads and Tribulations"},
-            {id: "g3_17", name: "17. Blow Fish"}, {id: "g3_18", name: "18. Chaperone"}, {id: "g3_19", name: "19. Cutting the Grass"}, {id: "g3_20", name: "20. Bomb Da Base: Act I"},
-            {id: "g3_21", name: "21. Bomb Da Base: Act II"}, {id: "g3_22", name: "22. Last Requests"}, {id: "g3_23", name: "23. Sayonara Salvatore"}, {id: "g3_24", name: "24. Under Surveillance"},
-            {id: "g3_25", name: "25. Paparazzi Purge"}, {id: "g3_26", name: "26. Payday for Ray"}, {id: "g3_27", name: "27. Two-Faced Tanner"}, {id: "g3_28", name: "28. Kanbu Bust-Out"},
-            {id: "g3_29", name: "29. Grand Theft Auto"}, {id: "g3_30", name: "30. Deal Steal"}, {id: "g3_31", name: "31. Shima"}, {id: "g3_32", name: "32. Smack Down"},
-            {id: "g3_33", name: "33. Silence the Sneak"}, {id: "g3_34", name: "34. Arms Shortage"}, {id: "g3_35", name: "35. Evidence Dash"}, {id: "g3_36", name: "36. Gone Fishing"},
-            {id: "g3_37", name: "37. Plaster Blaster"}, {id: "g3_38", name: "38. Liberator"}, {id: "g3_39", name: "39. Waka-Gashira Wipeout"}, {id: "g3_40", name: "40. A Drop in the Ocean"},
-            {id: "g3_41", name: "41. Grand Theft Aero"}, {id: "g3_42", name: "42. Escort Service"}, {id: "g3_43", name: "43. Decoy"}, {id: "g3_44", name: "44. Love's Disappearance"},
-            {id: "g3_45", name: "45. Marked Man"}, {id: "g3_46", name: "46. Bait"}, {id: "g3_47", name: "47. Espresso-2-Go!"}, {id: "g3_48", name: "48. S.A.M."},
-            {id: "g3_49", name: "49. Ransom"}, {id: "g3_50", name: "50. The Exchange (Parte 1)"}, {id: "g3_51", name: "51. The Exchange (Parte 2 - Final)"}
-        ],
-        gta4: [
-            {id: "g4_01", name: "1. The Cousins Bellic"}, {id: "g4_02", name: "2. It's Your Call"}, {id: "g4_03", name: "3. Three's a Crowd"}, {id: "g4_04", name: "4. Bleed Out"},
-            {id: "g4_05", name: "5. Easy Fare"}, {id: "g4_06", name: "6. Jamaican Heat"}, {id: "g4_07", name: "7. Uncle Vlad"}, {id: "g4_08", name: "8. Crime and Punishment"},
-            {id: "g4_09", name: "9. Do You Have Protection?"}, {id: "g4_10", name: "10. Shadow"}, {id: "g4_11", name: "11. Excavator"}, {id: "g4_12", name: "12. The Puerto Rican Connection"},
-            {id: "g4_13", name: "13. Call and Collect"}, {id: "g4_14", name: "14. Intermezzo"}, {id: "g4_15", name: "15. Meat Capital"}, {id: "g4_16", name: "16. Wearing It Out"},
-            {id: "g4_17", name: "17. Bull in a China Shop"}, {id: "g4_18", name: "18. Escuela of the Streets"}, {id: "g4_19", name: "19. Luck of the Irish"}, {id: "g4_20", name: "20. Blow Your Cover"},
-            {id: "g4_21", name: "21. Deconstruction for Beginners"}, {id: "g4_22", name: "22. Photo Shoot"}, {id: "g4_23", name: "23. Ruff Rider"}, {id: "g4_24", name: "24. The Holland Play"},
-            {id: "g4_25", name: "25. Street Sweeper"}, {id: "g4_26", name: "26. Harbouring a Grudge"}, {id: "g4_27", name: "27. Waste Not Want Kills"}, {id: "g4_28", name: "28. Three Leaf Clover"},
-            {id: "g4_29", name: "29. Smackdown"}, {id: "g4_30", name: "30. Babysitting"}, {id: "g4_31", name: "31. Tunnel of Death"}, {id: "g4_32", name: "32. Blood Brothers"},
-            {id: "g4_33", name: "33. I'll Take Her"}, {id: "g4_34", name: "34. Union Drive"}, {id: "g4_35", name: "35. Smackdown (Gerry)"}, {id: "g4_36", name: "36. Hating the Haters"},
-            {id: "g4_37", name: "37. Union Drive (Bernie)"}, {id: "g4_38", name: "38. Pegorino's Pride"}, {id: "g4_39", name: "39. Payback"}, {id: "g4_40", name: "40. Catch the Wave"},
-            {id: "g4_41", name: "41. Tres Chic"}, {id: "g4_42", name: "42. Entourage"}, {id: "g4_43", name: "43. Dining Out"}, {id: "g4_44", name: "44. Liquidize the Assets"},
-            {id: "g4_45", name: "45. That Special Someone"}, {id: "g4_46", name: "46. One Last Thing (Decisión Final)"}
-        ],
-        gta5: [
-            {id: "g5_01", name: "1. Prólogo"}, {id: "g5_02", name: "2. Franklin y Lamar"}, {id: "g5_03", name: "3. Reposesión"}, {id: "g5_04", name: "4. Complicaciones"},
-            {id: "g5_05", name: "5. Padre e Hijo"}, {id: "g5_06", name: "6. Solicitud de Amistad"}, {id: "g5_07", name: "7. El golpe a la joyería (Prep)"}, {id: "g5_08", name: "8. El golpe a la joyería (Ejecución)"},
-            {id: "g5_09", name: "9. Sr. Philips"}, {id: "g5_10", name: "10. Tráfico Arrojadizo"}, {id: "g5_11", name: "11. Al alimón"}, {id: "g5_12", name: "12. Lamar baja los humos"},
-            {id: "g5_13", name: "13. Reunión de familia"}, {id: "g5_14", name: "14. Vigilando el tido"}, {id: "g5_15", name: "15. Desenterrando el pasado"}, {id: "g5_16", name: "16. Prep. golpe al carguero"},
-            {id: "g5_17", name: "17. El golpe al carguero"}, {id: "g5_18", name: "18. Blitz Play"}, {id: "g5_19", name: "19. Señor Richards"}, {id: "g5_20", name: "20. Asalto al cañón"},
-            {id: "g5_21", name: "21. Oof, la ley"}, {id: "g5_22", name: "22. El escondite"}, {id: "g5_23", name: "23. Safari por el barrio"}, {id: "g5_24", name: "24. Eq. de investigación"},
-            {id: "g5_25", name: "25. Material militar"}, {id: "g5_26", name: "26. El golpe a Paleto Bay"}, {id: "g5_27", name: "27. Lamar contra los Vagos"}, {id: "g5_28", name: "28. Reunión de amigos"},
-            {id: "g5_29", name: "29. El orgullo de Jackie"}, {id: "g5_30", name: "30. Asalto al FBI (Prep)"}, {id: "g5_31", name: "31. Asalto al FBI (Ejecución)"}, {id: "g5_32", name: "32. Desenterrando (Alternativa)"},
-            {id: "g5_33", name: "33. Encargo de la mafia"}, {id: "g5_34", name: "34. Tiempo de paseo"}, {id: "g5_35", name: "35. Insp. Union Depository"}, {id: "g5_36", name: "36. Vehículos de huida"},
-            {id: "g5_37", name: "37. Perforadora"}, {id: "g5_38", name: "38. Trajes de escape"}, {id: "g5_39", name: "39. El gran golpe"}, {id: "g5_40", name: "40. Opción A: Matar a Trevor"},
-            {id: "g5_41", name: "41. Opción B: Matar a Michael"}, {id: "g5_42", name: "42. Opción C: Salvar a los dos"}
-        ]
-    };
+        <div class="control-group">
+            <label for="gameSelector">Juego:</label>
+            <select id="gameSelector" onchange="loadGameMissions()">
+                <option value="gtavc">GTA Vice City</option>
+                <option value="gtasa">GTA San Andreas</option>
+                <option value="gta3">GTA III</option>
+                <option value="gta4">GTA IV</option>
+                <option value="gta5">GTA V</option>
+            </select>
+        </div>
 
-    let liveState = {
-        missions: {},
-        activeMission: "Explorando la Saga GTA",
-        totalCompleted: 0
-    };
+        <div class="control-group">
+            <label>Misiones:</label>
+            <div id="missionsListContainer" class="missions-list"></div>
+        </div>
+    </div>
 
-    // 1. Cargar datos al abrir el panel
-    async function init() {
-        try {
-            const res = await fetch("https://api.counterapi.dev/v1/ozkrgarzon/gtastate");
-            // Usamos almacenamiento en la nube ultrarrápido vía KV
-        } catch(e){}
+    <script>
+        const gameCatalogs = {
+            gtavc: [
+                {id: "vc_01", name: "1. In The Beginning..."}, {id: "vc_02", name: "2. An Old Friend"}, {id: "vc_03", name: "3. The Party"}, {id: "vc_04", name: "4. Back Alley Brawl"},
+                {id: "vc_05", name: "5. Jury Fury"}, {id: "vc_06", name: "6. Riot"}, {id: "vc_07", name: "7. Four Iron"}, {id: "vc_08", name: "8. Demolition Man"},
+                {id: "vc_09", name: "9. Two Bit Hit"}, {id: "vc_10", name: "10. Treacherous Swine"}, {id: "vc_11", name: "11. Mall Shootout"}, {id: "vc_12", name: "12. Guardian Angels"},
+                {id: "vc_13", name: "13. Sir, Yes Sir!"}, {id: "vc_14", name: "14. All Hands on Deck!"}, {id: "vc_15", name: "15. The Chase"}, {id: "vc_16", name: "16. Phnom Penh '86"},
+                {id: "vc_17", name: "17. The Fastest Boat"}, {id: "vc_18", name: "18. Supply & Demand"}, {id: "vc_19", name: "19. Death Row"}, {id: "vc_20", name: "20. Rub Out"},
+                {id: "vc_21", name: "21. Shakedown"}, {id: "vc_22", name: "22. Bar Brawl"}, {id: "vc_23", name: "23. Cop Land"}, {id: "vc_24", name: "24. Road Kill"},
+                {id: "vc_25", name: "25. Waste the Wife"}, {id: "vc_26", name: "26. Autocide"}, {id: "vc_27", name: "27. Check Out at the Check In"}, {id: "vc_28", name: "28. Loose Ends"},
+                {id: "vc_29", name: "29. Love Juice"}, {id: "vc_30", name: "30. Psycho Killer"}, {id: "vc_31", name: "31. Publicity Tour"}, {id: "vc_32", name: "32. Stunt Boat Challenge"},
+                {id: "vc_33", name: "33. Cannon Fodder"}, {id: "vc_34", name: "34. Naval Engagement"}, {id: "vc_35", name: "35. Juju Scramble"}, {id: "vc_36", name: "36. Bombs Away!"},
+                {id: "vc_37", name: "37. Dirty Lickin's"}, {id: "vc_38", name: "38. Alloy Wheels of Steel"}, {id: "vc_39", name: "39. Messing with the Man"}, {id: "vc_40", name: "40. Hog Tied"},
+                {id: "vc_41", name: "41. No Escape?"}, {id: "vc_42", name: "42. The Shootist"}, {id: "vc_43", name: "43. The Driver"}, {id: "vc_44", name: "44. The Job"},
+                {id: "vc_45", name: "45. Gun Runner"}, {id: "vc_46", name: "46. Boomshine Saigon"}, {id: "vc_47", name: "47. Cap the Collector"}, {id: "vc_48", name: "48. Keep Your Friends Close..."}
+            ],
+            gtasa: [
+                {id: "sa_01", name: "1. In the Beginning"}, {id: "sa_02", name: "2. Big Smoke"}, {id: "sa_03", name: "3. Ryder"}, {id: "sa_04", name: "4. Tagging Up Turf"},
+                {id: "sa_05", name: "5. Cleaning the Hood"}, {id: "sa_06", name: "6. Drive-Thru"}, {id: "sa_07", name: "7. Nines and AK's"}, {id: "sa_08", name: "8. Drive-By"},
+                {id: "sa_09", name: "9. Sweet's Girl"}, {id: "sa_10", name: "10. Cesar Vialpando"}, {id: "sa_11", name: "11. Home Invasion"}, {id: "sa_12", name: "12. Catalyst"},
+                {id: "sa_13", name: "13. Robbing Uncle Sam"}, {id: "sa_14", name: "14. OG Loc"}, {id: "sa_15", name: "15. Running Dog"}, {id: "sa_16", name: "16. Wrong Side of the Tracks"},
+                {id: "sa_17", name: "17. Just Business"}, {id: "sa_18", name: "18. High Stakes, Low-Rider"}, {id: "sa_19", name: "19. Life's a Beach"}, {id: "sa_20", name: "20. Madd Dogg's Rhymes"},
+                {id: "sa_21", name: "21. Management Issues"}, {id: "sa_22", name: "22. House Party"}, {id: "sa_23", name: "23. Burning Desire"}, {id: "sa_24", name: "24. Gray Imports"},
+                {id: "sa_25", name: "25. Doberman"}, {id: "sa_26", name: "26. Los Sepulcros"}, {id: "sa_27", name: "27. Reuniting the Families"}, {id: "sa_28", name: "28. The Green Sabre"},
+                {id: "sa_29", name: "29. Badlands"}, {id: "sa_30", name: "30. First Date"}, {id: "sa_31", name: "31. Tanker Commander"}, {id: "sa_32", name: "32. Body Harvest"},
+                {id: "sa_33", name: "33. King in Exile"}, {id: "sa_34", name: "34. First Base"}, {id: "sa_35", name: "35. Local Liquor Store"}, {id: "sa_36", name: "36. Gone Courting"},
+                {id: "sa_37", name: "37. Against All Odds"}, {id: "sa_38", name: "38. Made in Heaven"}, {id: "sa_39", name: "39. Small Town Bank"}, {id: "sa_40", name: "40. Wu Zi Mu"},
+                {id: "sa_41", name: "41. Farewell, My Love..."}, {id: "sa_42", name: "42. Are You Going to San Fierro?"}, {id: "sa_43", name: "43. Wear Flowers in Your Hair"}, {id: "sa_44", name: "44. 555 We Tip"},
+                {id: "sa_45", name: "45. Deconstruction"}, {id: "sa_46", name: "46. Photo Opportunity"}, {id: "sa_47", name: "47. Jizzy"}, {id: "sa_48", name: "48. T-Bone Mendez"},
+                {id: "sa_49", name: "49. Mike Toreno"}, {id: "sa_50", name: "50. Mountain Cloud Boys"}, {id: "sa_51", name: "51. Ran Fa Li"}, {id: "sa_52", name: "52. Lure"},
+                {id: "sa_53", name: "53. Amphibious Assault"}, {id: "sa_54", name: "54. The Da Nang Thang"}, {id: "sa_55", name: "55. Air Raid"}, {id: "sa_56", name: "56. Supply Lines..."},
+                {id: "sa_57", name: "57. New Model Army"}, {id: "sa_58", name: "58. Outrider"}, {id: "sa_59", name: "59. Snail Trail"}, {id: "sa_60", name: "60. Ice Cold Killa"},
+                {id: "sa_61", name: "61. Pier 69"}, {id: "sa_62", name: "62. Toreno's Last Flight"}, {id: "sa_63", name: "63. Yay Ka-Boom-Boom"}, {id: "sa_64", name: "64. Monster"},
+                {id: "sa_65", name: "65. Highjack"}, {id: "sa_66", name: "66. Interdiction"}, {id: "sa_67", name: "67. Verdant Meadows"}, {id: "sa_68", name: "68. Learning to Fly"},
+                {id: "sa_69", name: "69. N.O.E."}, {id: "sa_70", name: "70. Stowaway"}, {id: "sa_71", name: "71. Black Project"}, {id: "sa_72", name: "72. Green Goo"},
+                {id: "sa_73", name: "73. Fender Ketchup"}, {id: "sa_74", name: "74. Explosive Situation"}, {id: "sa_75", name: "75. You've Had Your Chips"}, {id: "sa_76", name: "76. Misappropriation"},
+                {id: "sa_77", name: "77. The Meat Business"}, {id: "sa_78", name: "78. Madd Dogg"}, {id: "sa_79", name: "79. Architectural Espionage"}, {id: "sa_80", name: "80. Key to Her Heart"},
+                {id: "sa_81", name: "81. Dam and Blast"}, {id: "sa_82", name: "82. Cop Wheels"}, {id: "sa_83", name: "83. Up, Up and Away!"}, {id: "sa_84", name: "84. Don Peyote"},
+                {id: "sa_85", name: "85. Intensive Care"}, {id: "sa_86", name: "86. The Meat Business"}, {id: "sa_87", name: "87. Freefall"}, {id: "sa_88", name: "88. High Noon"},
+                {id: "sa_89", name: "89. Saint Mark's Bistro"}, {id: "sa_90", name: "90. Breaking the Bank at Caligula's"}, {id: "sa_91", name: "91. A Home in the Hills"}, {id: "sa_92", name: "92. Vertical Bird"},
+                {id: "sa_93", name: "93. Home Coming"}, {id: "sa_94", name: "94. Beat Down on B Dup"}, {id: "sa_95", name: "95. Grove 4 Life"}, {id: "sa_96", name: "96. Riot"},
+                {id: "sa_97", name: "97. Cut Throat Business"}, {id: "sa_98", name: "98. Los Desperados"}, {id: "sa_99", name: "99. Control de Territorios"}, {id: "sa_100", name: "100. End of the Line"}
+            ],
+            gta3: [
+                {id: "g3_01", name: "1. Give Me Liberty"}, {id: "g3_02", name: "2. Luigi's Girls"}, {id: "g3_03", name: "3. Don't Spank Ma Bitch Up"}, {id: "g3_04", name: "4. Drive Mister Cheetah"},
+                {id: "g3_05", name: "5. Pump-Action Pimp"}, {id: "g3_06", name: "6. The Fuzz Ball"}, {id: "g3_07", name: "7. Mike Lips Won't Go"}, {id: "g3_08", name: "8. Farewell 'Chunky' Lee Chong"},
+                {id: "g3_09", name: "9. Van Heist"}, {id: "g3_10", name: "10. Cipriani's Chauffeur"}, {id: "g3_11", name: "11. Dead Skunk in the Trunk"}, {id: "g3_12", name: "12. The Getaway"},
+                {id: "g3_13", name: "13. Taking Out the Laundry"}, {id: "g3_14", name: "14. The Pick-Up"}, {id: "g3_15", name: "15. Salvatore's Called a Meeting"}, {id: "g3_16", name: "16. Triads and Tribulations"},
+                {id: "g3_17", name: "17. Blow Fish"}, {id: "g3_18", name: "18. Chaperone"}, {id: "g3_19", name: "19. Cutting the Grass"}, {id: "g3_20", name: "20. Bomb Da Base: Act I"},
+                {id: "g3_21", name: "21. Bomb Da Base: Act II"}, {id: "g3_22", name: "22. Last Requests"}, {id: "g3_23", name: "23. Sayonara Salvatore"}, {id: "g3_24", name: "24. Under Surveillance"},
+                {id: "g3_25", name: "25. Paparazzi Purge"}, {id: "g3_26", name: "26. Payday for Ray"}, {id: "g3_27", name: "27. Two-Faced Tanner"}, {id: "g3_28", name: "28. Kanbu Bust-Out"},
+                {id: "g3_29", name: "29. Grand Theft Auto"}, {id: "g3_30", name: "30. Deal Steal"}, {id: "g3_31", name: "31. Shima"}, {id: "g3_32", name: "32. Smack Down"},
+                {id: "g3_33", name: "33. Silence the Sneak"}, {id: "g3_34", name: "34. Arms Shortage"}, {id: "g3_35", name: "35. Evidence Dash"}, {id: "g3_36", name: "36. Gone Fishing"},
+                {id: "g3_37", name: "37. Plaster Blaster"}, {id: "g3_38", name: "38. Liberator"}, {id: "g3_39", name: "39. Waka-Gashira Wipeout"}, {id: "g3_40", name: "40. A Drop in the Ocean"},
+                {id: "g3_41", name: "41. Grand Theft Aero"}, {id: "g3_42", name: "42. Escort Service"}, {id: "g3_43", name: "43. Decoy"}, {id: "g3_44", name: "44. Love's Disappearance"},
+                {id: "g3_45", name: "45. Marked Man"}, {id: "g3_46", name: "46. Bait"}, {id: "g3_47", name: "47. Espresso-2-Go!"}, {id: "g3_48", name: "48. S.A.M."},
+                {id: "g3_49", name: "49. Ransom"}, {id: "g3_50", name: "50. The Exchange (Parte 1)"}, {id: "g3_51", name: "51. The Exchange (Parte 2 - Final)"}
+            ],
+            gta4: [
+                {id: "g4_01", name: "1. The Cousins Bellic"}, {id: "g4_02", name: "2. It's Your Call"}, {id: "g4_03", name: "3. Three's a Crowd"}, {id: "g4_04", name: "4. Bleed Out"},
+                {id: "g4_05", name: "5. Easy Fare"}, {id: "g4_06", name: "6. Jamaican Heat"}, {id: "g4_07", name: "7. Uncle Vlad"}, {id: "g4_08", name: "8. Crime and Punishment"},
+                {id: "g4_09", name: "9. Do You Have Protection?"}, {id: "g4_10", name: "10. Shadow"}, {id: "g4_11", name: "11. Excavator"}, {id: "g4_12", name: "12. The Puerto Rican Connection"},
+                {id: "g4_13", name: "13. Call and Collect"}, {id: "g4_14", name: "14. Intermezzo"}, {id: "g4_15", name: "15. Meat Capital"}, {id: "g4_16", name: "16. Wearing It Out"},
+                {id: "g4_17", name: "17. Bull in a China Shop"}, {id: "g4_18", name: "18. Escuela of the Streets"}, {id: "g4_19", name: "19. Luck of the Irish"}, {id: "g4_20", name: "20. Blow Your Cover"},
+                {id: "g4_21", name: "21. Deconstruction for Beginners"}, {id: "g4_22", name: "22. Photo Shoot"}, {id: "g4_23", name: "23. Ruff Rider"}, {id: "g4_24", name: "24. The Holland Play"},
+                {id: "g4_25", name: "25. Street Sweeper"}, {id: "g4_26", name: "26. Harbouring a Grudge"}, {id: "g4_27", name: "27. Waste Not Want Kills"}, {id: "g4_28", name: "28. Three Leaf Clover"},
+                {id: "g4_29", name: "29. Smackdown"}, {id: "g4_30", name: "30. Babysitting"}, {id: "g4_31", name: "31. Tunnel of Death"}, {id: "g4_32", name: "32. Blood Brothers"},
+                {id: "g4_33", name: "33. I'll Take Her"}, {id: "g4_34", name: "34. Union Drive"}, {id: "g4_35", name: "35. Smackdown (Gerry)"}, {id: "g4_36", name: "36. Hating the Haters"},
+                {id: "g4_37", name: "37. Union Drive (Bernie)"}, {id: "g4_38", name: "38. Pegorino's Pride"}, {id: "g4_39", name: "39. Payback"}, {id: "g4_40", name: "40. Catch the Wave"},
+                {id: "g4_41", name: "41. Tres Chic"}, {id: "g4_42", name: "42. Entourage"}, {id: "g4_43", name: "43. Dining Out"}, {id: "g4_44", name: "44. Liquidize the Assets"},
+                {id: "g4_45", name: "45. That Special Someone"}, {id: "g4_46", name: "46. One Last Thing (Decisión Final)"}
+            ],
+            gta5: [
+                {id: "g5_01", name: "1. Prólogo"}, {id: "g5_02", name: "2. Franklin y Lamar"}, {id: "g5_03", name: "3. Reposesión"}, {id: "g5_04", name: "4. Complicaciones"},
+                {id: "g5_05", name: "5. Padre e Hijo"}, {id: "g5_06", name: "6. Solicitud de Amistad"}, {id: "g5_07", name: "7. El golpe a la joyería (Prep)"}, {id: "g5_08", name: "8. El golpe a la joyería (Ejecución)"},
+                {id: "g5_09", name: "9. Sr. Philips"}, {id: "g5_10", name: "10. Tráfico Arrojadizo"}, {id: "g5_11", name: "11. Al alimón"}, {id: "g5_12", name: "12. Lamar baja los humos"},
+                {id: "g5_13", name: "13. Reunión de familia"}, {id: "g5_14", name: "14. Vigilando el tido"}, {id: "g5_15", name: "15. Desenterrando el pasado"}, {id: "g5_16", name: "16. Prep. golpe al carguero"},
+                {id: "g5_17", name: "17. El golpe al carguero"}, {id: "g5_18", name: "18. Blitz Play"}, {id: "g5_19", name: "19. Señor Richards"}, {id: "g5_20", name: "20. Asalto al cañón"},
+                {id: "g5_21", name: "21. Oof, la ley"}, {id: "g5_22", name: "22. El escondite"}, {id: "g5_23", name: "23. Safari por el barrio"}, {id: "g5_24", name: "24. Eq. de investigación"},
+                {id: "g5_25", name: "25. Material militar"}, {id: "g5_26", name: "26. El golpe a Paleto Bay"}, {id: "g5_27", name: "27. Lamar contra los Vagos"}, {id: "g5_28", name: "28. Reunión de amigos"},
+                {id: "g5_29", name: "29. El orgullo de Jackie"}, {id: "g5_30", name: "30. Asalto al FBI (Prep)"}, {id: "g5_31", name: "31. Asalto al FBI (Ejecución)"}, {id: "g5_32", name: "32. Desenterrando (Alternativa)"},
+                {id: "g5_33", name: "33. Encargo de la mafia"}, {id: "g5_34", name: "34. Tiempo de paseo"}, {id: "g5_35", name: "35. Insp. Union Depository"}, {id: "g5_36", name: "36. Vehículos de huida"},
+                {id: "g5_37", name: "37. Perforadora"}, {id: "g5_38", name: "38. Trajes de escape"}, {id: "g5_39", name: "39. El gran golpe"}, {id: "g5_40", name: "40. Opción A: Matar a Trevor"},
+                {id: "g5_41", name: "41. Opción B: Matar a Michael"}, {id: "g5_42", name: "42. Opción C: Salvar a los dos"}
+            ]
+        };
 
-        const local = localStorage.getItem("gta_state_store");
-        if (local) {
-            try { liveState = JSON.parse(local); } catch(e){}
+        let liveState = {
+            missions: {},
+            activeMission: "Explorando la Saga GTA",
+            totalCompleted: 0
+        };
+
+        async function init() {
+            const local = localStorage.getItem("gta_state_store");
+            if (local) {
+                try { liveState = JSON.parse(local); } catch(e){}
+            }
+            loadGameMissions();
         }
-        loadGameMissions();
-    }
 
-    function loadGameMissions() {
-        const gameKey = document.getElementById('gameSelector').value;
-        const container = document.getElementById('missionsListContainer');
-        container.innerHTML = '';
+        function loadGameMissions() {
+            const gameKey = document.getElementById('gameSelector').value;
+            const container = document.getElementById('missionsListContainer');
+            container.innerHTML = '';
 
-        if (!liveState.missions[gameKey]) liveState.missions[gameKey] = {};
+            if (!liveState.missions[gameKey]) liveState.missions[gameKey] = {};
 
-        gameCatalogs[gameKey].forEach(task => {
-            const item = liveState.missions[gameKey][task.id] || { done: false, inProgress: false };
-            const row = document.createElement('div');
-            row.className = 'mission-row';
-            row.innerHTML = `
-                <span class="mission-name">${task.name}</span>
-                <div class="action-btns">
-                    <button type="button" class="btn-status ${item.inProgress ? 'progress-active' : ''}" onclick="setStatus('${gameKey}', '${task.id}', '${task.name}', 'progress')">En curso</button>
-                    <button type="button" class="btn-status ${item.done ? 'done-active' : ''}" onclick="setStatus('${gameKey}', '${task.id}', '${task.name}', 'done')">Completado</button>
-                </div>
-            `;
-            container.appendChild(row);
-        });
-    }
+            gameCatalogs[gameKey].forEach(task => {
+                const item = liveState.missions[gameKey][task.id] || { done: false, inProgress: false };
+                const row = document.createElement('div');
+                row.className = 'mission-row';
+                row.innerHTML = `
+                    <span class="mission-name">${task.name}</span>
+                    <div class="action-btns">
+                        <button type="button" class="btn-status ${item.inProgress ? 'progress-active' : ''}" onclick="setStatus('${gameKey}', '${task.id}', '${task.name}', 'progress')">En curso</button>
+                        <button type="button" class="btn-status ${item.done ? 'done-active' : ''}" onclick="setStatus('${gameKey}', '${task.id}', '${task.name}', 'done')">Completado</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
 
-    async function setStatus(gameKey, taskId, taskName, type) {
-        if (!liveState.missions[gameKey]) liveState.missions[gameKey] = {};
-        if (!liveState.missions[gameKey][taskId]) liveState.missions[gameKey][taskId] = { done: false, inProgress: false };
+        async function setStatus(gameKey, taskId, taskName, type) {
+            if (!liveState.missions[gameKey]) liveState.missions[gameKey] = {};
+            if (!liveState.missions[gameKey][taskId]) liveState.missions[gameKey][taskId] = { done: false, inProgress: false };
 
-        const t = liveState.missions[gameKey][taskId];
+            const t = liveState.missions[gameKey][taskId];
 
-        if (type === 'done') {
-            t.done = !t.done;
-            if (t.done) t.inProgress = false;
-        } else if (type === 'progress') {
-            const willBe = !t.inProgress;
+            if (type === 'done') {
+                t.done = !t.done;
+                if (t.done) t.inProgress = false;
+            } else if (type === 'progress') {
+                const willBe = !t.inProgress;
+                Object.keys(liveState.missions).forEach(g => {
+                    Object.keys(liveState.missions[g]).forEach(id => {
+                        liveState.missions[g][id].inProgress = false;
+                    });
+                });
+                t.inProgress = willBe;
+                liveState.activeMission = willBe ? taskName : "Explorando la Saga GTA";
+            }
+
+            let count = 0;
             Object.keys(liveState.missions).forEach(g => {
-                Object.keys(liveState.missions[g]).forEach(id => {
-                    liveState.missions[g][id].inProgress = false;
+                Object.values(liveState.missions[g]).forEach(obj => {
+                    if (obj.done) count++;
                 });
             });
-            t.inProgress = willBe;
-            liveState.activeMission = willBe ? taskName : "Explorando la Saga GTA";
+            liveState.totalCompleted = count;
+
+            localStorage.setItem("gta_state_store", JSON.stringify(liveState));
+            loadGameMissions();
+
+            try {
+                await fetch('https://kvdb.io/4y9y2rNq5t5mP12ZJz8nE5/gta_ozkr_live', {
+                    method: 'POST',
+                    body: JSON.stringify(liveState)
+                });
+            } catch(e) {}
         }
 
-        let count = 0;
-        Object.keys(liveState.missions).forEach(g => {
-            Object.values(liveState.missions[g]).forEach(obj => {
-                if (obj.done) count++;
-            });
-        });
-        liveState.totalCompleted = count;
-
-        localStorage.setItem("gta_state_store", JSON.stringify(liveState));
-        loadGameMissions();
-
-        // Enviar a la nube pública para que TikTok Studio lo reciba de inmediato
-        try {
-            await fetch('https://kvdb.io/4y9y2rNq5t5mP12ZJz8nE5/gta_ozkr_live', {
-                method: 'POST',
-                body: JSON.stringify(liveState)
-            });
-        } catch(e) {}
-    }
-
-    window.addEventListener('DOMContentLoaded', init);
-</script>
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
