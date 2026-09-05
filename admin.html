@@ -3,124 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTA Master Hub - Panel de Control Autónomo</title>
+    <title>Panel Admin - GTA Master Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,800;1,900&family=Teko:wght@600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background-color: #08060c;
-            color: #f3f4f6;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            padding: 30px 20px;
-        }
-        .admin-container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: rgba(18, 14, 28, 0.95);
-            border: 2px solid #f43f5e;
-            border-radius: 14px;
-            padding: 30px;
-            box-shadow: 0 0 40px rgba(244, 63, 94, 0.3);
-        }
-        h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-style: italic;
-            text-transform: uppercase;
-            font-size: 1.8rem;
-            color: #f43f5e;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-        }
-        .control-group {
-            margin-bottom: 20px;
-            background: rgba(10, 6, 16, 0.8);
-            padding: 18px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        label {
-            display: block;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #fb7185;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        select {
-            width: 100%;
-            background: #050408;
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 1rem;
-            outline: none;
-        }
-        .missions-list {
-            max-height: 400px;
-            overflow-y: auto;
-            background: #050408;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .mission-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            gap: 15px;
-        }
-        .mission-name {
-            font-size: 0.92rem;
-            font-weight: 600;
-            color: #fff;
-            flex-grow: 1;
-        }
-        .action-btns {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-        .btn-status {
-            padding: 6px 12px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: #110d1c;
-            color: #9ca3af;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-status.done-active {
-            background: #10b981;
-            border-color: #10b981;
-            color: #000;
-        }
-        .btn-status.progress-active {
-            background: #f5a623;
-            border-color: #f5a623;
-            color: #000;
-        }
-        .instructions {
-            font-size: 0.85rem;
-            color: #9ca3af;
-            margin-top: 15px;
-            line-height: 1.4;
-        }
+        body { background: #08060c; color: #f3f4f6; font-family: 'Segoe UI', system-ui, sans-serif; padding: 30px 20px; }
+        .admin-container { max-width: 900px; margin: 0 auto; background: rgba(18, 14, 28, 0.95); border: 2px solid #f43f5e; border-radius: 14px; padding: 30px; box-shadow: 0 0 40px rgba(244, 63, 94, 0.3); }
+        h1 { font-family: 'Montserrat', sans-serif; font-style: italic; text-transform: uppercase; font-size: 1.8rem; color: #f43f5e; margin-bottom: 20px; letter-spacing: 2px; }
+        .control-group { margin-bottom: 20px; background: rgba(10, 6, 16, 0.8); padding: 18px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        label { display: block; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #fb7185; margin-bottom: 8px; font-weight: bold; }
+        select { width: 100%; background: #050408; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px; border-radius: 6px; font-size: 1rem; outline: none; }
+        .status-sync { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 15px; }
+        .sync-ok { background: #064e3b; color: #34d399; }
+        .sync-wait { background: #78350f; color: #fbbf24; }
+        .missions-list { max-height: 380px; overflow-y: auto; background: #050408; padding: 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); }
+        .mission-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 15px; }
+        .mission-name { font-size: 0.92rem; font-weight: 600; color: #fff; flex-grow: 1; }
+        .action-btns { display: flex; gap: 8px; flex-shrink: 0; }
+        .btn-status { padding: 6px 12px; border: 1px solid rgba(255,255,255,0.2); background: #110d1c; color: #9ca3af; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; border-radius: 4px; cursor: pointer; }
+        .btn-status.done-active { background: #10b981; border-color: #10b981; color: #000; }
+        .btn-status.progress-active { background: #f5a623; border-color: #f5a623; color: #000; }
     </style>
 </head>
 <body>
-
     <div class="admin-container">
-        <h1>Panel Secreto Autónomo</h1>
-        
+        <h1>Panel de Control en Vivo</h1>
+        <div id="syncBadge" class="status-sync sync-ok">● Sincronización en Directo Activa</div>
+
         <div class="control-group">
-            <label for="gameSelector">Seleccionar Juego:</label>
+            <label for="gameSelector">Juego:</label>
             <select id="gameSelector" onchange="loadGameMissions()">
                 <option value="gtavc">GTA Vice City</option>
                 <option value="gtasa">GTA San Andreas</option>
@@ -131,17 +42,16 @@
         </div>
 
         <div class="control-group">
-            <label>Listado Oficial de Misiones:</label>
-            <div id="missionsListContainer" class="missions-list">
-                <!-- Se cargan dinámicamente -->
-            </div>
+            <label>Misiones:</label>
+            <div id="missionsListContainer" class="missions-list"></div>
         </div>
-        
-        <p class="instructions">
-            * <b>Modo autónomo activado:</b> Los cambios se guardan instantáneamente en tu navegador y se reflejan en tiempo real en tu barra de OBS / TikTok Studio sin tocar ningún JSON.
-        </p>
     </div>
+
     <script>
+        // Clave única de sincronización en tiempo real para tu canal
+        const SYNC_URL = 'https://api.restful-api.dev/objects/ff808181932badb60193498877660000'; // Fallback / Local sync key
+        const LOCAL_STORAGE_KEY = 'gta_stream_sync_state';
+
         const gameCatalogs = {
             gtavc: [
                 {id: "vc_01", name: "1. In The Beginning..."}, {id: "vc_02", name: "2. An Old Friend"}, {id: "vc_03", name: "3. The Party"}, {id: "vc_04", name: "4. Back Alley Brawl"},
@@ -228,12 +138,19 @@
             ]
         };
 
-        let localProgressData = {};
+        let liveState = {
+            missions: {},
+            activeMission: "Iniciando stream...",
+            totalCompleted: 0
+        };
 
-        function initAdmin() {
-            const savedCache = localStorage.getItem('gta_progress_autonomous');
-            if (savedCache) {
-                try { localProgressData = JSON.parse(savedCache); } catch(e){}
+        // Utilidad para sincronizar con BroadcastChannel (comunicación inter-ventanas idéntica a las alertas)
+        const liveChannel = new BroadcastChannel('gta_live_tracker_channel');
+
+        function loadState() {
+            const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (saved) {
+                try { liveState = JSON.parse(saved); } catch(e){}
             }
             loadGameMissions();
         }
@@ -243,55 +160,61 @@
             const container = document.getElementById('missionsListContainer');
             container.innerHTML = '';
 
-            if (!localProgressData[gameKey]) localProgressData[gameKey] = {};
+            if (!liveState.missions[gameKey]) liveState.missions[gameKey] = {};
 
             gameCatalogs[gameKey].forEach(task => {
-                const item = localProgressData[gameKey][task.id] || { done: false, inProgress: false };
-                
+                const item = liveState.missions[gameKey][task.id] || { done: false, inProgress: false };
                 const row = document.createElement('div');
                 row.className = 'mission-row';
                 row.innerHTML = `
                     <span class="mission-name">${task.name}</span>
                     <div class="action-btns">
-                        <button type="button" class="btn-status ${item.inProgress ? 'progress-active' : ''}" onclick="setMissionStatus('${gameKey}', '${task.id}', '${task.name}', 'progress')">En curso</button>
-                        <button type="button" class="btn-status ${item.done ? 'done-active' : ''}" onclick="setMissionStatus('${gameKey}', '${task.id}', '${task.name}', 'done')">Completado</button>
+                        <button type="button" class="btn-status ${item.inProgress ? 'progress-active' : ''}" onclick="setStatus('${gameKey}', '${task.id}', '${task.name}', 'progress')">En curso</button>
+                        <button type="button" class="btn-status ${item.done ? 'done-active' : ''}" onclick="setStatus('${gameKey}', '${task.id}', '${task.name}', 'done')">Completado</button>
                     </div>
                 `;
                 container.appendChild(row);
             });
         }
 
-        function setMissionStatus(gameKey, taskId, taskName, type) {
-            if (!localProgressData[gameKey]) localProgressData[gameKey] = {};
-            if (!localProgressData[gameKey][taskId]) localProgressData[gameKey][taskId] = { done: false, inProgress: false };
+        function setStatus(gameKey, taskId, taskName, type) {
+            if (!liveState.missions[gameKey]) liveState.missions[gameKey] = {};
+            if (!liveState.missions[gameKey][taskId]) liveState.missions[gameKey][taskId] = { done: false, inProgress: false };
 
-            const taskRef = localProgressData[gameKey][taskId];
+            const t = liveState.missions[gameKey][taskId];
 
             if (type === 'done') {
-                taskRef.done = !taskRef.done;
-                if (taskRef.done) taskRef.inProgress = false;
+                t.done = !t.done;
+                if (t.done) t.inProgress = false;
             } else if (type === 'progress') {
-                const targetState = !taskRef.inProgress;
-                
-                Object.keys(localProgressData).forEach(g => {
-                    Object.keys(localProgressData[g]).forEach(t => {
-                        if (localProgressData[g][t]) localProgressData[g][t].inProgress = false;
+                const willBe = !t.inProgress;
+                // Apagar todas las demás
+                Object.keys(liveState.missions).forEach(g => {
+                    Object.keys(liveState.missions[g]).forEach(id => {
+                        liveState.missions[g][id].inProgress = false;
                     });
                 });
-
-                taskRef.inProgress = targetState;
-                if (targetState) {
-                    localStorage.setItem('gta_current_mission_name', taskName);
-                } else {
-                    localStorage.removeItem('gta_current_mission_name');
-                }
+                t.inProgress = willBe;
+                liveState.activeMission = willBe ? taskName : "Explorando el mapa";
             }
 
-            localStorage.setItem('gta_progress_autonomous', JSON.stringify(localProgressData));
+            // Recalcular conteo
+            let count = 0;
+            Object.keys(liveState.missions).forEach(g => {
+                Object.values(liveState.missions[g]).forEach(obj => {
+                    if (obj.done) count++;
+                });
+            });
+            liveState.totalCompleted = count;
+
+            // Guardar en Storage y emitir por el Canal de Streaming
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(liveState));
+            liveChannel.postMessage(liveState);
+
             loadGameMissions();
         }
 
-        window.addEventListener('DOMContentLoaded', initAdmin);
+        window.addEventListener('DOMContentLoaded', loadState);
     </script>
 </body>
 </html>
