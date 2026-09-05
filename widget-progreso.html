@@ -19,7 +19,7 @@
         }
         .widget-container {
             width: 520px;
-            background: rgba(18, 14, 28, 0.9);
+            background: rgba(18, 14, 28, 0.92);
             backdrop-filter: blur(10px);
             border: 2px solid #f5a623;
             border-radius: 12px;
@@ -57,17 +57,17 @@
             height: 100%;
             width: 0%;
             background: linear-gradient(90deg, #f5a623, #f43f5e, #00f0ff);
-            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.4s ease;
             box-shadow: 0 0 10px #f5a623;
         }
         #globalStatsText {
             margin-top: 8px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: #fb7185;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
             font-family: 'Teko', sans-serif;
             font-weight: 700;
+            letter-spacing: 1.5px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -84,38 +84,48 @@
         <div class="global-bar-bg">
             <div id="globalBarFill" class="global-bar-fill"></div>
         </div>
-        <p id="globalStatsText">Cargando...</p>
+        <p id="globalStatsText">Misión en curso: Conectando...</p>
     </div>
 
     <script>
-        const expectedStoryTotals = { gtavc: 48, gtasa: 100, gta3: 51, gta4: 46, gta5: 42 };
-        const absoluteTotalMissions = 287;
+        const TOTAL_MISSIONS = 287;
+        const LOCAL_STORAGE_KEY = 'gta_stream_sync_state';
 
-        function updateWidgetLive() {
-            let localData = {};
-            const savedCache = localStorage.getItem('gta_progress_autonomous');
-            if (savedCache) {
-                try { localData = JSON.parse(savedCache); } catch(e){}
-            }
+        function renderState(data) {
+            if (!data) return;
+            const completed = data.totalCompleted || 0;
+            const pct = Math.min(100, Math.round((completed / TOTAL_MISSIONS) * 100));
+            const missionName = data.activeMission || "Explorando la Saga";
 
-            let totalCompletedAllGames = 0;
-            Object.keys(expectedStoryTotals).forEach(gameKey => {
-                const gameData = localData[gameKey] || {};
-                Object.values(gameData).forEach(task => {
-                    if (task && task.done) totalCompletedAllGames++;
-                });
-            });
-
-            const globalPct = Math.min(100, Math.round((totalCompletedAllGames / absoluteTotalMissions) * 100));
-            const activeMissionName = localStorage.getItem('gta_current_mission_name') || "Ninguna misión en curso";
-            
-            document.getElementById('globalPctDisplay').innerText = `${globalPct}%`;
-            document.getElementById('globalBarFill').style.width = `${globalPct}%`;
-            document.getElementById('globalStatsText').innerText = `Misión en curso: ${activeMissionName}`;
+            document.getElementById('globalPctDisplay').innerText = `${pct}%`;
+            document.getElementById('globalBarFill').style.width = `${pct}%`;
+            document.getElementById('globalStatsText').innerText = `Misión en curso: ${missionName}`;
         }
 
-        updateWidgetLive();
-        setInterval(updateWidgetLive, 1000); // Refresco en tiempo real cada segundo
+        // 1. Canal en tiempo real como las alertas (inter-proceso)
+        const liveChannel = new BroadcastChannel('gta_live_tracker_channel');
+        liveChannel.onmessage = (event) => {
+            renderState(event.data);
+        };
+
+        // 2. Listener clásico de storage por si TikTok Studio usa iframe
+        window.addEventListener('storage', (e) => {
+            if (e.key === LOCAL_STORAGE_KEY && e.newValue) {
+                try { renderState(JSON.parse(e.newValue)); } catch(err){}
+            }
+        });
+
+        // 3. Chequeo inicial
+        function init() {
+            const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (raw) {
+                try { renderState(JSON.parse(raw)); } catch(e){}
+            } else {
+                renderState({ totalCompleted: 0, activeMission: "En espera de inicio" });
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
