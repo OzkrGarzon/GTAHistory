@@ -1,28 +1,129 @@
-<script>
-    const TOTAL_MISSIONS = 287;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Barra de Progreso GTA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&family=Teko:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background: transparent;
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-    function render(data) {
-        if (!data) return;
-        const completed = data.totalCompleted || 0;
-        const pct = Math.min(100, Math.round((completed / TOTAL_MISSIONS) * 100));
-        const missionName = data.activeMission || "Explorando la Saga GTA";
+        .widget-container {
+            width: 520px;
+            background: rgba(18, 14, 28, 0.92);
+            backdrop-filter: blur(10px);
+            border: 2px solid #f5a623;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 0 30px rgba(245, 166, 35, 0.35);
+            clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+        }
 
-        document.getElementById('globalPctDisplay').innerText = `${pct}%`;
-        document.getElementById('globalBarFill').style.width = `${pct}%`;
-        document.getElementById('globalStatsText').innerText = `Misión en curso: ${missionName}`;
-    }
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
 
-    async function pullCloudUpdate() {
-        try {
-            const res = await fetch('https://kvdb.io/4y9y2rNq5t5mP12ZJz8nE5/gta_ozkr_live?' + new Date().getTime());
-            if (res.ok) {
-                const data = await res.json();
-                render(data);
+        .widget-header h3 {
+            font-size: 0.95rem;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fff;
+        }
+
+        #globalPctDisplay {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #f5a623;
+        }
+
+        .global-bar-bg {
+            background-color: #050408;
+            height: 14px;
+            border-radius: 2px;
+            overflow: hidden;
+            border: 1px solid rgba(245, 166, 35, 0.5);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .global-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f5a623, #f43f5e, #00f0ff);
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px #f5a623;
+        }
+
+        #globalStatsText {
+            margin-top: 8px;
+            font-size: 0.95rem;
+            color: #fb7185;
+            text-transform: uppercase;
+            font-family: 'Teko', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="widget-container">
+        <div class="widget-header">
+            <h3>Progreso Saga GTA</h3>
+            <span id="globalPctDisplay">0%</span>
+        </div>
+        <div class="global-bar-bg">
+            <div id="globalBarFill" class="global-bar-fill"></div>
+        </div>
+        <p id="globalStatsText">Misión en curso: Conectando...</p>
+    </div>
+
+    <script>
+        const TOTAL_MISSIONS = 287;
+
+        function render(data) {
+            if (!data) return;
+            const completed = data.totalCompleted || 0;
+            const pct = Math.min(100, Math.round((completed / TOTAL_MISSIONS) * 100));
+            const missionName = data.activeMission || "Explorando la Saga GTA";
+
+            document.getElementById('globalPctDisplay').innerText = `${pct}%`;
+            document.getElementById('globalBarFill').style.width = `${pct}%`;
+            document.getElementById('globalStatsText').innerText = `Misión en curso: ${missionName}`;
+        }
+
+        async function pullCloudUpdate() {
+            try {
+                const res = await fetch('https://kvdb.io/4y9y2rNq5t5mP12ZJz8nE5/gta_ozkr_live?' + new Date().getTime());
+                if (res.ok) {
+                    const data = await res.json();
+                    render(data);
+                }
+            } catch (e) {
+                // Si la conexión falla temporalmente, mantiene el último estado visible
             }
-        } catch (e) {}
-    }
+        }
 
-    // Consulta en vivo continua cada 2 segundos
-    setInterval(pullCloudUpdate, 2000);
-    pullCloudUpdate();
-</script>
+        // Consultar cada 2 segundos automáticamente
+        setInterval(pullCloudUpdate, 2000);
+        pullCloudUpdate();
+    </script>
+</body>
+</html>
